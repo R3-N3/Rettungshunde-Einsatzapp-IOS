@@ -4,15 +4,153 @@
 //
 //  Created by René Nettekoven on 24.06.25.
 //
-
 import SwiftUI
 
 struct LoginView: View {
+    @State private var username: String = ""
+    @State private var password: String = ""
+    @State private var selectedOrg = "BRH RHS Bonn/Rhein-Sieg"
+    
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    @State private var isSubmitting = false
+
+    @FocusState private var focusedField: Field?
+
+    let org = ["BRH RHS Bonn/Rhein-Sieg", "Demo", "Debug"]
+
+    enum Field {
+        case username, password, role
+    }
+
     var body: some View {
-        VStack {
-            Text("Login View")
-                .font(.title)
-                .padding()
+        ZStack {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Logo
+                        Image("LogoWithoutBackgroundRettungshundeEinsatzapp")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80, height: 80)
+                            .padding(.top, 60)
+
+                        // Benutzername
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "username"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            TextField("", text: $username)
+                                .padding(12)
+                                .background(RoundedRectangle(cornerRadius: 12)
+                                    .stroke(focusedField == .username ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
+                                .background(Color(.systemBackground))
+                                .focused($focusedField, equals: .username)
+                        }
+                        .padding(.horizontal)
+
+                        // Passwort
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "password"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            SecureField("", text: $password)
+                                .padding(12)
+                                .background(RoundedRectangle(cornerRadius: 12)
+                                    .stroke(focusedField == .password ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
+                                .background(Color(.systemBackground))
+                                .focused($focusedField, equals: .password)
+                        }
+                        .padding(.horizontal)
+
+                        // Organisation
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "organisation"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            Picker(String(localized: "organisation"), selection: $selectedOrg) {
+                                ForEach(org, id: \.self) { role in
+                                    Text(role).tag(role)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .padding(12)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(focusedField == .role ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
+                            )
+                            .background(Color(.systemBackground))
+                            .focused($focusedField, equals: .role)
+                            .onTapGesture {
+                                focusedField = .role
+                            }
+                        }
+                        .padding(.horizontal)
+
+                        // Login Button
+                        Button(action: {
+                            guard !isSubmitting else { return }
+                            isSubmitting = true
+
+                            
+                            let (success, message) = checkLoginParam(username: username, password: password, org: selectedOrg)
+
+                            if success {
+                                // Weiterleitung oder Navigation einbauen
+                                print("✅ Login erfolgreich")
+                            } else {
+                                print("❌ Login nicht erfolgreich")
+                                alertMessage = message
+                                showAlert = true
+                                isSubmitting = false
+                            }
+
+                            
+
+
+                        }) {
+                            Text(String(localized: "login"))
+                                .fontWeight(.medium)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(isSubmitting ? Color.gray : Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(50)
+                                .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                        }
+                        .disabled(isSubmitting)
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        .alert(String(localized: "login_error"), isPresented: $showAlert) {
+                            Button("OK", role: .cancel) {}
+                        } message: {
+                            Text(alertMessage)
+                        }
+                    }
+                    .padding(.bottom, 40)
+                }
+                .scrollDismissesKeyboard(.interactively)
+            }
+
+            // Lade-Overlay
+            if isSubmitting {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.5)
+                    Text(String(localized: "processing"))
+                        .foregroundColor(.white)
+                }
+                .padding(40)
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color.black.opacity(0.7)))
+            }
         }
     }
 }
