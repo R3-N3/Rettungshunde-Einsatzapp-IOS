@@ -1,0 +1,601 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8EB4760F2E0ADC4500B55EB9 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8EB4760E2E0ADC4500B55EB9 /* Localizable.xcstrings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8ED5EE522E0ABE3400121B22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8ED5EE3C2E0ABE3000121B22 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8ED5EE432E0ABE3100121B22;
+			remoteInfo = RettungshundeEinsatzApp;
+		};
+		8ED5EE5C2E0ABE3400121B22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8ED5EE3C2E0ABE3000121B22 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8ED5EE432E0ABE3100121B22;
+			remoteInfo = RettungshundeEinsatzApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		8EB476002E0AC27E00B55EB9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		8EB476012E0AC27E00B55EB9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		8EB4760E2E0ADC4500B55EB9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		8ED5EE442E0ABE3100121B22 /* RettungshundeEinsatzApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RettungshundeEinsatzApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8ED5EE512E0ABE3400121B22 /* RettungshundeEinsatzAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RettungshundeEinsatzAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8ED5EE5B2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RettungshundeEinsatzAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8EB4760C2E0AD89500B55EB9 /* Exceptions for "RettungshundeEinsatzApp" folder in "RettungshundeEinsatzApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8ED5EE432E0ABE3100121B22 /* RettungshundeEinsatzApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8ED5EE462E0ABE3100121B22 /* RettungshundeEinsatzApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8EB4760C2E0AD89500B55EB9 /* Exceptions for "RettungshundeEinsatzApp" folder in "RettungshundeEinsatzApp" target */,
+			);
+			path = RettungshundeEinsatzApp;
+			sourceTree = "<group>";
+		};
+		8ED5EE542E0ABE3400121B22 /* RettungshundeEinsatzAppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RettungshundeEinsatzAppTests;
+			sourceTree = "<group>";
+		};
+		8ED5EE5E2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RettungshundeEinsatzAppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8ED5EE412E0ABE3100121B22 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8ED5EE4E2E0ABE3400121B22 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8ED5EE582E0ABE3400121B22 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8ED5EE3B2E0ABE3000121B22 = {
+			isa = PBXGroup;
+			children = (
+				8EB4760E2E0ADC4500B55EB9 /* Localizable.xcstrings */,
+				8EB476002E0AC27E00B55EB9 /* LICENSE */,
+				8EB476012E0AC27E00B55EB9 /* README.md */,
+				8ED5EE462E0ABE3100121B22 /* RettungshundeEinsatzApp */,
+				8ED5EE542E0ABE3400121B22 /* RettungshundeEinsatzAppTests */,
+				8ED5EE5E2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests */,
+				8ED5EE452E0ABE3100121B22 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8ED5EE452E0ABE3100121B22 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8ED5EE442E0ABE3100121B22 /* RettungshundeEinsatzApp.app */,
+				8ED5EE512E0ABE3400121B22 /* RettungshundeEinsatzAppTests.xctest */,
+				8ED5EE5B2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8ED5EE432E0ABE3100121B22 /* RettungshundeEinsatzApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8ED5EE652E0ABE3400121B22 /* Build configuration list for PBXNativeTarget "RettungshundeEinsatzApp" */;
+			buildPhases = (
+				8ED5EE402E0ABE3100121B22 /* Sources */,
+				8ED5EE412E0ABE3100121B22 /* Frameworks */,
+				8ED5EE422E0ABE3100121B22 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8ED5EE462E0ABE3100121B22 /* RettungshundeEinsatzApp */,
+			);
+			name = RettungshundeEinsatzApp;
+			packageProductDependencies = (
+			);
+			productName = RettungshundeEinsatzApp;
+			productReference = 8ED5EE442E0ABE3100121B22 /* RettungshundeEinsatzApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8ED5EE502E0ABE3400121B22 /* RettungshundeEinsatzAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8ED5EE682E0ABE3400121B22 /* Build configuration list for PBXNativeTarget "RettungshundeEinsatzAppTests" */;
+			buildPhases = (
+				8ED5EE4D2E0ABE3400121B22 /* Sources */,
+				8ED5EE4E2E0ABE3400121B22 /* Frameworks */,
+				8ED5EE4F2E0ABE3400121B22 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8ED5EE532E0ABE3400121B22 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8ED5EE542E0ABE3400121B22 /* RettungshundeEinsatzAppTests */,
+			);
+			name = RettungshundeEinsatzAppTests;
+			packageProductDependencies = (
+			);
+			productName = RettungshundeEinsatzAppTests;
+			productReference = 8ED5EE512E0ABE3400121B22 /* RettungshundeEinsatzAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8ED5EE5A2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8ED5EE6B2E0ABE3400121B22 /* Build configuration list for PBXNativeTarget "RettungshundeEinsatzAppUITests" */;
+			buildPhases = (
+				8ED5EE572E0ABE3400121B22 /* Sources */,
+				8ED5EE582E0ABE3400121B22 /* Frameworks */,
+				8ED5EE592E0ABE3400121B22 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8ED5EE5D2E0ABE3400121B22 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8ED5EE5E2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests */,
+			);
+			name = RettungshundeEinsatzAppUITests;
+			packageProductDependencies = (
+			);
+			productName = RettungshundeEinsatzAppUITests;
+			productReference = 8ED5EE5B2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8ED5EE3C2E0ABE3000121B22 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					8ED5EE432E0ABE3100121B22 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					8ED5EE502E0ABE3400121B22 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 8ED5EE432E0ABE3100121B22;
+					};
+					8ED5EE5A2E0ABE3400121B22 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 8ED5EE432E0ABE3100121B22;
+					};
+				};
+			};
+			buildConfigurationList = 8ED5EE3F2E0ABE3000121B22 /* Build configuration list for PBXProject "RettungshundeEinsatzApp" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				de,
+			);
+			mainGroup = 8ED5EE3B2E0ABE3000121B22;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8ED5EE452E0ABE3100121B22 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8ED5EE432E0ABE3100121B22 /* RettungshundeEinsatzApp */,
+				8ED5EE502E0ABE3400121B22 /* RettungshundeEinsatzAppTests */,
+				8ED5EE5A2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8ED5EE422E0ABE3100121B22 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8EB4760F2E0ADC4500B55EB9 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8ED5EE4F2E0ABE3400121B22 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8ED5EE592E0ABE3400121B22 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8ED5EE402E0ABE3100121B22 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8ED5EE4D2E0ABE3400121B22 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8ED5EE572E0ABE3400121B22 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8ED5EE532E0ABE3400121B22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8ED5EE432E0ABE3100121B22 /* RettungshundeEinsatzApp */;
+			targetProxy = 8ED5EE522E0ABE3400121B22 /* PBXContainerItemProxy */;
+		};
+		8ED5EE5D2E0ABE3400121B22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8ED5EE432E0ABE3100121B22 /* RettungshundeEinsatzApp */;
+			targetProxy = 8ED5EE5C2E0ABE3400121B22 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		8ED5EE632E0ABE3400121B22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8ED5EE642E0ABE3400121B22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8ED5EE662E0ABE3400121B22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "$(SRCROOT)/RettungshundeEinsatzApp/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RettungshundeEinsatzApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8ED5EE672E0ABE3400121B22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "$(SRCROOT)/RettungshundeEinsatzApp/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RettungshundeEinsatzApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8ED5EE692E0ABE3400121B22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RettungshundeEinsatzAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RettungshundeEinsatzApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RettungshundeEinsatzApp";
+			};
+			name = Debug;
+		};
+		8ED5EE6A2E0ABE3400121B22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RettungshundeEinsatzAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RettungshundeEinsatzApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RettungshundeEinsatzApp";
+			};
+			name = Release;
+		};
+		8ED5EE6C2E0ABE3400121B22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RettungshundeEinsatzAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RettungshundeEinsatzApp;
+			};
+			name = Debug;
+		};
+		8ED5EE6D2E0ABE3400121B22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9G3W6C55JV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.RettungshundeEinsatzAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RettungshundeEinsatzApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8ED5EE3F2E0ABE3000121B22 /* Build configuration list for PBXProject "RettungshundeEinsatzApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8ED5EE632E0ABE3400121B22 /* Debug */,
+				8ED5EE642E0ABE3400121B22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8ED5EE652E0ABE3400121B22 /* Build configuration list for PBXNativeTarget "RettungshundeEinsatzApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8ED5EE662E0ABE3400121B22 /* Debug */,
+				8ED5EE672E0ABE3400121B22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8ED5EE682E0ABE3400121B22 /* Build configuration list for PBXNativeTarget "RettungshundeEinsatzAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8ED5EE692E0ABE3400121B22 /* Debug */,
+				8ED5EE6A2E0ABE3400121B22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8ED5EE6B2E0ABE3400121B22 /* Build configuration list for PBXNativeTarget "RettungshundeEinsatzAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8ED5EE6C2E0ABE3400121B22 /* Debug */,
+				8ED5EE6D2E0ABE3400121B22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8ED5EE3C2E0ABE3000121B22 /* Project object */;
+}
