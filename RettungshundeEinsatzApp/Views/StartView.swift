@@ -11,16 +11,18 @@ struct StartView: View {
     var body: some View {
         NavigationStack {
             ScrollView{
-                VStack(spacing: 30) {
+                VStack(spacing: 10) {
                     
-                    Spacer().frame(height: 70)
+                    Spacer().frame(height: 120)
                     
                     Image("LogoWithoutBackgroundRettungshundeEinsatzapp")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 150, height: 150)
                     
-                    VStack(alignment: .leading, spacing: 4) {
+                    Spacer().frame(height: 0)
+                    
+                    VStack(alignment: .leading, spacing: 0) {
                         
                         HStack(alignment: .firstTextBaseline, spacing: 0) {
                             Text("R")
@@ -63,7 +65,7 @@ struct StartView: View {
                         Text("Start")
                             .fontWeight(.medium)
                             .padding()
-                            .frame(maxWidth: .infinity)
+                            .frame(width: 250)
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(50)
@@ -73,7 +75,11 @@ struct StartView: View {
                     
                     
                 }
-                .padding()
+                .frame(maxWidth: 500)
+                .padding(.horizontal)
+                .padding(.top, 60)
+                .padding(.bottom, 40)
+                .frame(maxWidth: .infinity)
             }
         }
     }

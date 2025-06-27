@@ -9,9 +9,18 @@ import SwiftUI
 
 @main
 struct RettungshundeEinsatzAppApp: App {
+    @StateObject private var router = AppRouter()
+    
     var body: some Scene {
+        WindowGroup {
+            RootView()
+                .environmentObject(router)
+        }
+    }
+    
+    /*var body: some Scene {
         WindowGroup {
             StartView()
         }
-    }
+    }*/
 }

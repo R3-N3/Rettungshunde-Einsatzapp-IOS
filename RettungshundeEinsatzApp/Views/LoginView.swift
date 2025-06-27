@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject var router: AppRouter
+    
     @State private var username: String = ""
     @State private var password: String = ""
     @State private var selectedOrg = "BRH RHS Bonn/Rhein-Sieg"
@@ -14,6 +16,7 @@ struct LoginView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isSubmitting = false
+
 
     @FocusState private var focusedField: Field?
 
@@ -46,7 +49,6 @@ struct LoginView: View {
                                 .background(RoundedRectangle(cornerRadius: 12)
                                     .stroke(focusedField == .username ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
                                 .background(Color(.systemBackground))
-                                .focused($focusedField, equals: .username)
                         }
                         .padding(.horizontal)
 
@@ -61,7 +63,6 @@ struct LoginView: View {
                                 .background(RoundedRectangle(cornerRadius: 12)
                                     .stroke(focusedField == .password ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
                                 .background(Color(.systemBackground))
-                                .focused($focusedField, equals: .password)
                         }
                         .padding(.horizontal)
 
@@ -84,10 +85,7 @@ struct LoginView: View {
                                     .stroke(focusedField == .role ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
                             )
                             .background(Color(.systemBackground))
-                            .focused($focusedField, equals: .role)
-                            .onTapGesture {
-                                focusedField = .role
-                            }
+ 
                         }
                         .padding(.horizontal)
 
@@ -95,28 +93,34 @@ struct LoginView: View {
                         Button(action: {
                             guard !isSubmitting else { return }
                             isSubmitting = true
-
-                            
-                            let (success, message) = checkLoginParam(username: username, password: password, org: selectedOrg)
-
-                            if success {
-                                // Weiterleitung oder Navigation einbauen
-                                print("✅ Login erfolgreich")
-                            } else {
-                                print("❌ Login nicht erfolgreich")
-                                alertMessage = message
-                                showAlert = true
-                                isSubmitting = false
+     
+                            checkLoginParam(
+                                username: username,
+                                password: password,
+                                org: selectedOrg
+                            ) { success, message in
+                                DispatchQueue.main.async {
+                                    if success {
+                                        if let token = KeychainHelper.loadToken() {
+                                            print("🔑 Token geladen: \(token)")
+                                        } else {
+                                            print("❌❌❌ Kein Token gespeichert ❌❌❌")
+                                        }
+                                        router.isLoggedIn = true // wechselt zu MapView
+                                    } else {
+                                        print("❌ Login nicht erfolgreich")
+                                        alertMessage = message
+                                        showAlert = true
+                                        isSubmitting = false
+                                    }
+                                    isSubmitting = false
+                                }
                             }
-
-                            
-
-
                         }) {
                             Text(String(localized: "login"))
                                 .fontWeight(.medium)
                                 .padding()
-                                .frame(maxWidth: .infinity)
+                                .frame(width: 250)
                                 .background(isSubmitting ? Color.gray : Color.blue)
                                 .foregroundColor(.white)
                                 .cornerRadius(50)
@@ -125,16 +129,43 @@ struct LoginView: View {
                         .disabled(isSubmitting)
                         .padding(.horizontal)
                         .padding(.top, 20)
-                        .alert(String(localized: "login_error"), isPresented: $showAlert) {
+                        .alert(String(localized: "error"), isPresented: $showAlert) {
                             Button("OK", role: .cancel) {}
                         } message: {
                             Text(alertMessage)
                         }
+                        
+                        
+                        Spacer()
+                        
+                        
+  
+                        
+                        
+                        //ForgotPassword Button
+                        NavigationLink(destination: ForgotPasswordView()) {
+                            Text(String(localized: "reset_password"))
+                                .fontWeight(.medium)
+                                .padding()
+                                .frame(width: 250)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(50)
+                                .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                        }
+                        
+                        
+                        
                     }
+                    .frame(maxWidth: 500)
+                    .padding(.horizontal)
+                    .padding(.top, 60)
                     .padding(.bottom, 40)
+                    .frame(maxWidth: .infinity)
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
+
 
             // Lade-Overlay
             if isSubmitting {
@@ -151,6 +182,7 @@ struct LoginView: View {
                 .padding(40)
                 .background(RoundedRectangle(cornerRadius: 16).fill(Color.black.opacity(0.7)))
             }
+            
         }
     }
 }

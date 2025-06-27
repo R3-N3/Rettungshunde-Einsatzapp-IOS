@@ -36,5 +36,7 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Wir benötigen deinen Standort, um dich auf der Karte anzuzeigen.</string>
 </dict>
 </plist>

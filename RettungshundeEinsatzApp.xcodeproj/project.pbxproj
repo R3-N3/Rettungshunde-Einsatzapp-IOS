@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		8EB4760F2E0ADC4500B55EB9 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8EB4760E2E0ADC4500B55EB9 /* Localizable.xcstrings */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		8ED5EE522E0ABE3400121B22 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -30,7 +26,6 @@
 /* Begin PBXFileReference section */
 		8EB476002E0AC27E00B55EB9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		8EB476012E0AC27E00B55EB9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		8EB4760E2E0ADC4500B55EB9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		8ED5EE442E0ABE3100121B22 /* RettungshundeEinsatzApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RettungshundeEinsatzApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8ED5EE512E0ABE3400121B22 /* RettungshundeEinsatzAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RettungshundeEinsatzAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8ED5EE5B2E0ABE3400121B22 /* RettungshundeEinsatzAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RettungshundeEinsatzAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -40,7 +35,7 @@
 		8EB4760C2E0AD89500B55EB9 /* Exceptions for "RettungshundeEinsatzApp" folder in "RettungshundeEinsatzApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				"/Localized: Info.plist",
 			);
 			target = 8ED5EE432E0ABE3100121B22 /* RettungshundeEinsatzApp */;
 		};
@@ -95,7 +90,6 @@
 		8ED5EE3B2E0ABE3000121B22 = {
 			isa = PBXGroup;
 			children = (
-				8EB4760E2E0ADC4500B55EB9 /* Localizable.xcstrings */,
 				8EB476002E0AC27E00B55EB9 /* LICENSE */,
 				8EB476012E0AC27E00B55EB9 /* README.md */,
 				8ED5EE462E0ABE3100121B22 /* RettungshundeEinsatzApp */,
@@ -236,7 +230,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8EB4760F2E0ADC4500B55EB9 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,7 +425,7 @@
 				DEVELOPMENT_TEAM = 9G3W6C55JV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "$(SRCROOT)/RettungshundeEinsatzApp/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RettungshundeEinsatzApp/Base.lproj/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -461,7 +454,7 @@
 				DEVELOPMENT_TEAM = 9G3W6C55JV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "$(SRCROOT)/RettungshundeEinsatzApp/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RettungshundeEinsatzApp/Base.lproj/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
