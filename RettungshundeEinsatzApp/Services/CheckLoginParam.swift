@@ -12,6 +12,8 @@ func checkLoginParam(username: String, password: String, org: String, completion
     
     print("Starte checkLoginParam mit Benutzername: \(username) Passwort: \(password) Organisation \(org)")
     
+    let defaults = UserDefaults.standard
+    
     if username.trimmingCharacters(in: .whitespaces).isEmpty {
         completion(false, String(localized: "username_required"))
         return
@@ -75,6 +77,7 @@ func checkLoginParam(username: String, password: String, org: String, completion
                         case "success":
                             message = String(localized: "login_successful")
                             KeychainHelper.saveToken(token)
+                            defaults.set(serverApiURL, forKey: "serverApiURL")
                             completion(true, message)
                         case "false":
                             message = String(localized: "incorect_user_param")

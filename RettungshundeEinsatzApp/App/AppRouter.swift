@@ -10,22 +10,35 @@
 import SwiftUI
 
 class AppRouter: ObservableObject {
-    
     @Published var isLoggedIn: Bool
-        
-        init() {
-            
-            //print("Testmodus, lösche token in AppRouter.swift")
-            //KeychainHelper.deleteToken()
-            
-            
-            // Beim Init Token prüfen, wenn keiner da (=nil) false, wenn da true, sodass RootView die MapView startet
-            if KeychainHelper.loadToken() != nil {
-                print("🔑 Token gespeichert, starte MapView ")
-                isLoggedIn = true
-            } else {
-                print("❌ Kein Token gespeichert, starte StartView")
-                isLoggedIn = false
-            }
+
+
+    init() {
+        if KeychainHelper.loadToken() != nil {
+            print("🔑 Token gespeichert, starte MapView ")
+            isLoggedIn = true
+        } else {
+            print("❌ Kein Token gespeichert, starte StartView")
+            isLoggedIn = false
         }
+    }
+    
+    func logout() {
+        print("Starte Logout")
+        
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: "username")
+        defaults.removeObject(forKey: "email")
+        defaults.removeObject(forKey: "phoneNumber")
+        defaults.removeObject(forKey: "securityLevel")
+        defaults.removeObject(forKey: "radioCallName")
+        defaults.removeObject(forKey: "serverApiURL")
+        
+        KeychainHelper.deleteToken()
+        
+        DispatchQueue.main.async {
+            self.isLoggedIn = false
+            print("✅ Logout erfolgreich durchgeführt")
+        }
+    }
 }

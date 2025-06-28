@@ -20,6 +20,7 @@ struct LoginView: View {
 
     @FocusState private var focusedField: Field?
 
+    let defaults = UserDefaults.standard
     let org = ["BRH RHS Bonn/Rhein-Sieg", "Demo", "Debug"]
 
     enum Field {
@@ -47,7 +48,7 @@ struct LoginView: View {
                             TextField("", text: $username)
                                 .padding(12)
                                 .background(RoundedRectangle(cornerRadius: 12)
-                                    .stroke(focusedField == .username ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
+                                .stroke(focusedField == .username ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
                                 .background(Color(.systemBackground))
                         }
                         .padding(.horizontal)
@@ -102,11 +103,13 @@ struct LoginView: View {
                                 DispatchQueue.main.async {
                                     if success {
                                         if let token = KeychainHelper.loadToken() {
-                                            print("🔑 Token geladen: \(token)")
+                                            let defaults = UserDefaults.standard
+                                            let serverURL = defaults.string(forKey: "serverApiURL") ?? ""
+                                            print("🔑 Token geladen: \(token) Server URL: \(serverURL)")
                                         } else {
                                             print("❌❌❌ Kein Token gespeichert ❌❌❌")
                                         }
-                                        router.isLoggedIn = true // wechselt zu MapView
+                                        router.isLoggedIn = true
                                     } else {
                                         print("❌ Login nicht erfolgreich")
                                         alertMessage = message

@@ -10,11 +10,14 @@ import SwiftUI
 @main
 struct RettungshundeEinsatzAppApp: App {
     @StateObject private var router = AppRouter()
+    @StateObject private var bannerManager = BannerManager()
+
     
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(router)
+                .environmentObject(bannerManager)
         }
     }
     

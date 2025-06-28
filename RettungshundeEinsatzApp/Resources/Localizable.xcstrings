@@ -17,6 +17,24 @@
     "A" : {
       "shouldTranslate" : false
     },
+    "Abbrechen" : {
+
+    },
+    "Benutzerdaten" : {
+
+    },
+    "Benutzerdaten ändern" : {
+
+    },
+    "Benutzername" : {
+
+    },
+    "Benutzername: %@" : {
+
+    },
+    "Bitte beachten Sie: Nur Ihre E-Mail Adresse, Handynummer und Track-Farbe können selbst angepasst werden. Für Änderungen anderer Angaben wenden Sie sich bitte an den Administrator oder eine befugte Person." : {
+
+    },
     "cancel" : {
       "localizations" : {
         "de" : {
@@ -100,6 +118,15 @@
     "E" : {
       "shouldTranslate" : false
     },
+    "E-Mail" : {
+
+    },
+    "E-Mail: %@" : {
+
+    },
+    "Einstellungen" : {
+
+    },
     "email" : {
       "localizations" : {
         "de" : {
@@ -167,6 +194,18 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
+    "Funkrufname" : {
+
+    },
+    "Funkrufname: %@" : {
+
+    },
+    "Handynummer" : {
+
+    },
+    "Handynummer: %@" : {
+
+    },
     "incorect_user_param" : {
       "localizations" : {
         "de" : {
@@ -182,6 +221,9 @@
           }
         }
       }
+    },
+    "Info" : {
+
     },
     "insatz" : {
       "shouldTranslate" : false
@@ -235,6 +277,9 @@
         }
       }
     },
+    "Logout" : {
+
+    },
     "manage_users" : {
       "localizations" : {
         "de" : {
@@ -250,6 +295,9 @@
           }
         }
       }
+    },
+    "Meine Daten" : {
+
     },
     "Menü" : {
       "localizations" : {
@@ -267,6 +315,12 @@
         }
       }
     },
+    "Möchten Sie die Daten wirklich speichern?" : {
+
+    },
+    "Möchten Sie sich wirklich abmelden?" : {
+
+    },
     "my_position" : {
       "localizations" : {
         "de" : {
@@ -282,6 +336,9 @@
           }
         }
       }
+    },
+    "Neue Track-Farbe auswählen:" : {
+
     },
     "no_data_received" : {
       "extractionState" : "manual",
@@ -485,6 +542,15 @@
         }
       }
     },
+    "Sicherheitslevel" : {
+
+    },
+    "Sicherheitslevel: %@" : {
+
+    },
+    "Speichern" : {
+
+    },
     "Start" : {
       "localizations" : {
         "de" : {
@@ -532,6 +598,9 @@
           }
         }
       }
+    },
+    "Track-Farbe:" : {
+
     },
     "unknown_error" : {
       "extractionState" : "manual",
