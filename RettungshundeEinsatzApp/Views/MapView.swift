@@ -9,6 +9,10 @@ import SwiftUI
 struct MapView: View {
     @State private var showMenu = false
     @EnvironmentObject var router: AppRouter // Für die Logout Funktion notwendig
+    @StateObject private var locationManager = LocationManager()
+    @State private var isTracking = false
+
+
 
     
     
@@ -22,41 +26,82 @@ struct MapView: View {
                 if showMenu {
                     HStack(spacing: 0) {
                         ScrollView {
-                            VStack(alignment: .leading, spacing: 20) {
+                            VStack(alignment: .leading, spacing: 0) {
                                 
                                 
                                 Text(String(localized: "my_position"))
                                     .padding(.horizontal)
                                     .padding(.top, 5)
+                                    .font(.headline)
                                 
                                 
-                                Text("...")
+                                Text("Geographische Koordinaten")
                                     .padding(.horizontal)
                                     .padding(.top, 5)
-                                
-                                
-                                Text("Menü")
+                                    .font(.footnote)
+                                Text("   Latitude: \(locationManager.latitude)")
+                                    .padding(.horizontal)
+                                    //.padding(.top, 0)
+                                Text("   Longitude: \(locationManager.longitude)")
+                                    .padding(.horizontal)
+                                Text("MGRS")
                                     .padding(.horizontal)
                                     .padding(.top, 5)
+                                    .font(.footnote)
+                                Text("   ...")
+                                    .padding(.horizontal)
+                                Text("Genauigkeit")
+                                    .padding(.horizontal)
+                                    .padding(.top, 5)
+                                    .font(.footnote)
+                                Text("   \(Int(locationManager.accuracy)) m")
+                                    .padding(.horizontal)
+                                Text("Letzte Änderung")
+                                    .padding(.horizontal)
+                                    .padding(.top, 5)
+                                    .font(.footnote)
+                                Text("\(locationManager.time.formatted(date: .numeric, time: .standard))")
+                                    .padding(.horizontal)
+                                    .padding(.horizontal)
+                                
+                                
+                                Text(String(localized: "Menü"))
+                                    .padding(.horizontal)
+                                    .padding(.top, 20)
+                                    .font(.headline)
                                 
                                 
                                 Button(action: {
-                                    
+                                    if isTracking {
+                                        locationManager.stopUpdating()
+                                    } else {
+                                        locationManager.startUpdating()
+                                    }
+                                    isTracking.toggle()
                                 }) {
                                     HStack {
-                                        Image(systemName: "play.fill")
-                                        Text(String(localized: "start_gps")).fontWeight(.medium)
+                                        Image(systemName: isTracking ? "stop.fill" : "play.fill")
+                                        Text(isTracking ? String(localized: "stop_gps") : String(localized: "start_gps"))
+                                            .fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 40)
-                                    .background(Color(.systemRed))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .buttonStyleREA()
                                 }
                                 .padding(.horizontal)
                                 .padding(.top, 5)
                                 
+
+                                Button(action: {
+                                    locationManager.fetchAllLocations()
+                                }) {
+                                    HStack {
+                                        Image(systemName: "list.bullet")
+                                        Text("Debug Alle GPS Daten")
+                                            .fontWeight(.medium)
+                                    }
+                                    .buttonStyleREAGreen()
+                                }
+                                .padding(.horizontal)
+                                .padding(.top, 20)
                                 
                                 Button(action: {
                                     
@@ -65,15 +110,10 @@ struct MapView: View {
                                         Image(systemName: "person.3")
                                         Text(String(localized: "contacts")).fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 40)
-                                    .background(Color(.systemRed))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .buttonStyleREARed()
                                 }
                                 .padding(.horizontal)
-                                .padding(.top, 5)
+                                .padding(.top, 20)
                                 
                                 
                                 Button(action: {
@@ -81,17 +121,12 @@ struct MapView: View {
                                 }) {
                                     HStack {
                                         Image(systemName: "trash")
-                                        Text(String(localized: "delete_mx_gps_data")).fontWeight(.medium)
+                                        Text(String(localized: "delete_my_gps_data")).fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 80)
-                                    .background(Color(.systemRed))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .buttonStyleREARed()
                                 }
                                 .padding(.horizontal)
-                                .padding(.top, 5)
+                                .padding(.top, 20)
                                 
                                 
                                 Button(action: {
@@ -101,15 +136,10 @@ struct MapView: View {
                                         Image(systemName: "pencil")
                                         Text(String(localized: "write_operation_report")).fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 80)
-                                    .background(Color(.systemRed))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .buttonStyleREARed()
                                 }
                                 .padding(.horizontal)
-                                .padding(.top, 5)
+                                .padding(.top, 20)
                                 
                                 
                                 Button(action: {
@@ -119,15 +149,10 @@ struct MapView: View {
                                         Image(systemName: "trash.fill")
                                         Text(String(localized: "delete_all_gps_data")).fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 80)
-                                    .background(Color(.systemRed))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .buttonStyleREARed()
                                 }
                                 .padding(.horizontal)
-                                .padding(.top, 5)
+                                .padding(.top, 20)
                                 
                                 
                                 
@@ -138,15 +163,10 @@ struct MapView: View {
                                         Image(systemName: "trash.fill")
                                         Text(String(localized: "delete_all_areas")).fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 40)
-                                    .background(Color(.systemRed))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .buttonStyleREARed()
                                 }
                                 .padding(.horizontal)
-                                .padding(.top, 5)
+                                .padding(.top, 20)
                                 
                                 Button(action: {
                                     
@@ -155,31 +175,22 @@ struct MapView: View {
                                         Image(systemName: "person.crop.circle.badge.xmark")
                                         Text(String(localized: "manage_users")).fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 40)
-                                    .background(Color(.systemRed))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    
+                                    .buttonStyleREARed()
                                 }
                                 .padding(.horizontal)
-                                .padding(.top, 5)
+                                .padding(.top, 20)
                                 
-                                
+                                // Settings Button
                                 NavigationLink(destination: SettingsView()) {
                                     HStack {
                                         Image(systemName: "gear")
                                         Text(String(localized: "settings")).fontWeight(.medium)
                                     }
-                                    .padding()
-                                    .frame(width: 220, height: 40)
-                                    .background(Color(.systemBlue))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .buttonStyleREA()
                                 }
                                 .padding(.horizontal)
-                                .padding(.top, 5)
+                                .padding(.top, 20)
                                 .padding(.bottom, 150)
                                 
                                 

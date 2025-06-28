@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  UploadLocationToServer.swift
 //  RettungshundeEinsatzApp
 //
 //  Created by René Nettekoven on 28.06.25.
@@ -7,38 +7,44 @@
 
 import Foundation
 
-func editMyUserData(
-    email: String,
-    phoneNumber: String,
+
+func uploadLocation(
+    latitude: Double,
+    longitude: Double,
+    accuracy: Double,
+    time: Date,
     completion: @escaping (Bool, String) -> Void
 ) {
-    
-    print("Starte EditMyUserData")
+    print("Starte uploadLocation")
     
     let defaults = UserDefaults.standard
-    
     let serverApiURL = defaults.string(forKey: "serverApiURL") ?? ""
     let token = KeychainHelper.loadToken() ?? ""
     
     // URL bauen
-    guard let url = URL(string: serverApiURL + "editmyuserdata") else {
+    guard let url = URL(string: serverApiURL + "uploadmygpspoint") else {
         completion(false, "Invalid URL")
         return
     }
     
-    // 2. Request vorbereiten
+    // Timestamp formatieren
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    let formattedTimestamp = formatter.string(from: time)
+    
+    // Request vorbereiten
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     
-    // 3. Body Parameter
-    let bodyParams = "token=\(token)&email=\(email)&phoneNumber=\(phoneNumber)"
+    // Body Parameter
+    let bodyParams = "latitude=\(latitude)&longitude=\(longitude)&accuracy=\(accuracy)&token=\(token)&timestamp=\(formattedTimestamp)"
     request.httpBody = bodyParams.data(using: .utf8)
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
     
-    // 4. URLSession Task
+    // URLSession Task
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
-            print("❌ editMyUserData Error: \(error.localizedDescription)")
+            print("❌ uploadLocation Error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
             return
         }
@@ -49,23 +55,23 @@ func editMyUserData(
         }
         
         do {
-            // 5. JSON parsen
+            // JSON parsen
             if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 let status = json["status"] as? String ?? "error"
                 let message = json["message"] as? String ?? "Unknown error"
                 
                 if status == "success" {
-                    print("✅ editMyUserData Success: \(message)")
+                    print("✅ uploadLocation Success: \(message)")
                     completion(true, message)
                 } else {
-                    print("⚠️ editMyUserData Failure: \(message)")
+                    print("⚠️ uploadLocation Failure: \(message)")
                     completion(false, message)
                 }
             } else {
                 completion(false, "Invalid JSON format")
             }
         } catch {
-            print("❌ editMyUserData JSON parse error: \(error.localizedDescription)")
+            print("❌ uploadLocation JSON parse error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
         }
     }

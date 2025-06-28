@@ -37,6 +37,17 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Wir benötigen deinen Standort, um dich auf der Karte anzuzeigen.</string>
+    <string>Wir benötigen deinen Standort, um dich während des Einsatzes zu verfolgen.</string>
+
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Wir benötigen deinen Standort auch im Hintergrund, um dich während des Einsatzes zu verfolgen.</string>
+
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Wir benötigen deinen Standort immer, um dich während des Einsatzes zu verfolgen.</string>
+
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+    </array>
 </dict>
 </plist>

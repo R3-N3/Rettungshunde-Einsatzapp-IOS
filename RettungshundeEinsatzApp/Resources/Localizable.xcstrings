@@ -11,7 +11,19 @@
         }
       }
     },
-    "..." : {
+    "   ..." : {
+
+    },
+    "   %lld m" : {
+
+    },
+    "   Latitude: %lf" : {
+
+    },
+    "   Longitude: %lf" : {
+
+    },
+    "%@" : {
 
     },
     "A" : {
@@ -67,6 +79,9 @@
         }
       }
     },
+    "Debug Alle GPS Daten" : {
+
+    },
     "delete_all_areas" : {
       "localizations" : {
         "de" : {
@@ -100,6 +115,7 @@
       }
     },
     "delete_mx_gps_data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -114,6 +130,9 @@
           }
         }
       }
+    },
+    "delete_my_gps_data" : {
+
     },
     "E" : {
       "shouldTranslate" : false
@@ -200,6 +219,12 @@
     "Funkrufname: %@" : {
 
     },
+    "Genauigkeit" : {
+
+    },
+    "Geographische Koordinaten" : {
+
+    },
     "Handynummer" : {
 
     },
@@ -243,6 +268,9 @@
           }
         }
       }
+    },
+    "Letzte Änderung" : {
+
     },
     "login" : {
       "extractionState" : "manual",
@@ -314,6 +342,9 @@
           }
         }
       }
+    },
+    "MGRS" : {
+
     },
     "Möchten Sie die Daten wirklich speichern?" : {
 
@@ -582,6 +613,9 @@
           }
         }
       }
+    },
+    "stop_gps" : {
+
     },
     "success" : {
       "localizations" : {

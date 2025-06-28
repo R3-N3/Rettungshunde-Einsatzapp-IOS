@@ -11,6 +11,7 @@ import SwiftUI
 struct RettungshundeEinsatzAppApp: App {
     @StateObject private var router = AppRouter()
     @StateObject private var bannerManager = BannerManager()
+    let persistenceController = PersistenceController.shared
 
     
     var body: some Scene {
@@ -18,6 +19,7 @@ struct RettungshundeEinsatzAppApp: App {
             RootView()
                 .environmentObject(router)
                 .environmentObject(bannerManager)
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
     
