@@ -16,7 +16,7 @@ struct RootView: View {
             if router.isLoggedIn {
                 MapView()
             } else {
-                LoginView()
+                StartView()
             }
             
             if bannerManager.show {

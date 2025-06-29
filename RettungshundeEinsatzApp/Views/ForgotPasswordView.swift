@@ -98,14 +98,8 @@ struct ForgotPasswordView: View {
                                 dismiss() //zurück zur vorherigen View
                             }) {
                                 Text(String(localized: "cancel"))
-                                    .fontWeight(.medium)
-                                    .padding()
-                                    .frame(width: 130)
-                                    .background(isSubmitting ? Color.gray : Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
                             }
+                            .buttonStyle(buttonStyleREAAnimated())
  
                             
                             
@@ -116,12 +110,6 @@ struct ForgotPasswordView: View {
                             Button(action: {
                                 guard !isSubmitting else { return }
                                 isSubmitting = true
-                                
-                                
-                                
-                                
-                                
-                                
                                 resetPassword(
                                     org: selectedOrg,
                                     email: email
@@ -150,26 +138,10 @@ struct ForgotPasswordView: View {
                                         isSubmitting = false
                                     }
                                 }
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
                             }) {
                                 Text(String(localized: "reset"))
-                                    .fontWeight(.medium)
-                                    .padding()
-                                    .frame(width: 130)
-                                    .background(isSubmitting ? Color.gray : Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
                             }
+                            .buttonStyle(buttonStyleREAAnimated())
                             .disabled(isSubmitting)
                             .alert(alertTitle, isPresented: $showAlert) {
                                 Button("OK", role: .cancel) {

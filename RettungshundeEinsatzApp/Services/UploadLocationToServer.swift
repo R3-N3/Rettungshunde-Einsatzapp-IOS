@@ -15,7 +15,7 @@ func uploadLocation(
     time: Date,
     completion: @escaping (Bool, String) -> Void
 ) {
-    print("Starte uploadLocation")
+    print("🟢 Starte uploadLocation")
     
     let defaults = UserDefaults.standard
     let serverApiURL = defaults.string(forKey: "serverApiURL") ?? ""
@@ -61,10 +61,10 @@ func uploadLocation(
                 let message = json["message"] as? String ?? "Unknown error"
                 
                 if status == "success" {
-                    print("✅ uploadLocation Success: \(message)")
+                    print("✅ Standort erfolgreich auf Server geladen: \(message)")
                     completion(true, message)
                 } else {
-                    print("⚠️ uploadLocation Failure: \(message)")
+                    print("❌ uploadLocation Failure: \(message)")
                     completion(false, message)
                 }
             } else {

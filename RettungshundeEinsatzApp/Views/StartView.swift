@@ -63,15 +63,9 @@ struct StartView: View {
                     
                     NavigationLink(destination: LoginView()) {
                         Text("Start")
-                            .fontWeight(.medium)
-                            .padding()
-                            .frame(width: 250)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(50)
-                            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
                     }
                     .padding(.horizontal)
+                    .buttonStyle(buttonStyleREAAnimated())
                     
                     
                 }

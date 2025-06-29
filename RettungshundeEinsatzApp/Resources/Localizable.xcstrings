@@ -11,41 +11,37 @@
         }
       }
     },
-    "   ..." : {
-
-    },
-    "   %lld m" : {
-
-    },
-    "   Latitude: %lf" : {
-
-    },
-    "   Longitude: %lf" : {
-
+    "   ±%lld%@m" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "   ±%1$lld%2$@m"
+          }
+        }
+      }
     },
     "%@" : {
-
+      "shouldTranslate" : false
     },
     "A" : {
       "shouldTranslate" : false
     },
-    "Abbrechen" : {
-
-    },
-    "Benutzerdaten" : {
-
-    },
-    "Benutzerdaten ändern" : {
-
-    },
-    "Benutzername" : {
-
-    },
-    "Benutzername: %@" : {
-
-    },
-    "Bitte beachten Sie: Nur Ihre E-Mail Adresse, Handynummer und Track-Farbe können selbst angepasst werden. Für Änderungen anderer Angaben wenden Sie sich bitte an den Administrator oder eine befugte Person." : {
-
+    "accuracy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genauigkeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy"
+          }
+        }
+      }
     },
     "cancel" : {
       "localizations" : {
@@ -59,6 +55,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "confirmation_logout" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Möchten Sie sich wirklich abmelden?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you really want to logout?"
           }
         }
       }
@@ -79,8 +91,21 @@
         }
       }
     },
-    "Debug Alle GPS Daten" : {
-
+    "debug_button" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug Button"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug Button"
+          }
+        }
+      }
     },
     "delete_all_areas" : {
       "localizations" : {
@@ -114,37 +139,88 @@
         }
       }
     },
-    "delete_mx_gps_data" : {
-      "extractionState" : "stale",
+    "delete_my_gps_data" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Meine GPS Daten löschen"
+            "value" : "Lösche meine GPS Daten"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Delete my GPS Data"
+            "value" : "Delete My GPS Data"
           }
         }
       }
     },
-    "delete_my_gps_data" : {
-
+    "delete_my_gps_data_error" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die GPS Daten konnten nicht gelöscht werden!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS data could not be deleted."
+          }
+        }
+      }
+    },
+    "delete_my_gps_data_success" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS Daten gelöscht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS data deleted."
+          }
+        }
+      }
     },
     "E" : {
       "shouldTranslate" : false
     },
-    "E-Mail" : {
-
+    "edit_user_data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzerdaten ändern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit User Data"
+          }
+        }
+      }
     },
-    "E-Mail: %@" : {
-
-    },
-    "Einstellungen" : {
-
+    "edit_user_data_info_text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte beachten Sie: Nur Ihre E-Mail Adresse, Handynummer und Track-Farbe können selbst angepasst werden. Für Änderungen anderer Angaben wenden Sie sich bitte an den Administrator oder eine befugte Person."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please note: Only your email address, mobile number, and track color can be changed by yourself. To modify other details, please contact the administrator or an authorized person."
+          }
+        }
+      }
     },
     "email" : {
       "localizations" : {
@@ -213,23 +289,21 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
-    "Funkrufname" : {
-
-    },
-    "Funkrufname: %@" : {
-
-    },
-    "Genauigkeit" : {
-
-    },
-    "Geographische Koordinaten" : {
-
-    },
-    "Handynummer" : {
-
-    },
-    "Handynummer: %@" : {
-
+    "geographical_coordinates" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geographische Koordinaten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geographical Coordinates"
+          }
+        }
+      }
     },
     "incorect_user_param" : {
       "localizations" : {
@@ -247,8 +321,53 @@
         }
       }
     },
-    "Info" : {
-
+    "info" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        }
+      }
+    },
+    "input_saved_error" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingabe konnte nicht gespeichert werden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Input could not be saved"
+          }
+        }
+      }
+    },
+    "input_saved_successfully" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingabe wurde gespeichert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The input has been saved"
+          }
+        }
+      }
     },
     "insatz" : {
       "shouldTranslate" : false
@@ -269,8 +388,21 @@
         }
       }
     },
-    "Letzte Änderung" : {
-
+    "last_change" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Ändeurng"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Change"
+          }
+        }
+      }
     },
     "login" : {
       "extractionState" : "manual",
@@ -305,8 +437,21 @@
         }
       }
     },
-    "Logout" : {
-
+    "logout" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abmelden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logout"
+          }
+        }
+      }
     },
     "manage_users" : {
       "localizations" : {
@@ -324,10 +469,7 @@
         }
       }
     },
-    "Meine Daten" : {
-
-    },
-    "Menü" : {
+    "menu" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -344,13 +486,7 @@
       }
     },
     "MGRS" : {
-
-    },
-    "Möchten Sie die Daten wirklich speichern?" : {
-
-    },
-    "Möchten Sie sich wirklich abmelden?" : {
-
+      "shouldTranslate" : false
     },
     "my_position" : {
       "localizations" : {
@@ -368,8 +504,21 @@
         }
       }
     },
-    "Neue Track-Farbe auswählen:" : {
-
+    "my_user_data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meine Benutzerdaten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My User Data"
+          }
+        }
+      }
     },
     "no_data_received" : {
       "extractionState" : "manual",
@@ -452,6 +601,22 @@
         }
       }
     },
+    "phone_number" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handynummer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mobile Phone Number"
+          }
+        }
+      }
+    },
     "please_choose" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -491,6 +656,22 @@
     },
     "R" : {
       "shouldTranslate" : false
+    },
+    "radio_call_name" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funkrufname"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radio Call Sign"
+          }
+        }
+      }
     },
     "reset" : {
       "localizations" : {
@@ -557,6 +738,70 @@
         }
       }
     },
+    "save" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "save_user_data_confirmation_text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Möchten Sie die Daten wirklich speichern?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you really want to save the data?"
+          }
+        }
+      }
+    },
+    "security_level" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sicherheitslevel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Security level"
+          }
+        }
+      }
+    },
+    "select_new_track_color" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle neue Track Farbe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select new track color"
+          }
+        }
+      }
+    },
     "settings" : {
       "localizations" : {
         "de" : {
@@ -572,15 +817,6 @@
           }
         }
       }
-    },
-    "Sicherheitslevel" : {
-
-    },
-    "Sicherheitslevel: %@" : {
-
-    },
-    "Speichern" : {
-
     },
     "Start" : {
       "localizations" : {
@@ -614,7 +850,26 @@
         }
       }
     },
+    "start_gps_done" : {
+
+    },
     "stop_gps" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop GPS"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop GPS"
+          }
+        }
+      }
+    },
+    "stop_gps_done" : {
 
     },
     "success" : {
@@ -633,8 +888,21 @@
         }
       }
     },
-    "Track-Farbe:" : {
-
+    "track_color" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track-Farbe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track Color"
+          }
+        }
+      }
     },
     "unknown_error" : {
       "extractionState" : "manual",
@@ -665,6 +933,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unknown Organisation"
+          }
+        }
+      }
+    },
+    "user_data" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzerdaten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User Data"
           }
         }
       }

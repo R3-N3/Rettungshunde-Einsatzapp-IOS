@@ -23,23 +23,23 @@ struct SettingsView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     // z.B. Section-Titel
-                    Text("Meine Daten")
+                    Text(String(localized: "my_user_data"))
                         .font(.headline)
                         .padding(.top)
                     
-                    Text("Benutzername: \(defaults.string(forKey: "username") ?? "")")
+                    Text(String(localized: "username") + ": " + (defaults.string(forKey: "username") ?? ""))
                         .padding(.top)
                     
-                    Text("E-Mail: \(defaults.string(forKey: "email") ?? "")")
+                    Text(String(localized: "email") + ": " + (defaults.string(forKey: "email") ?? ""))
                     
-                    Text("Handynummer: \(defaults.string(forKey: "phoneNumber") ?? "")")
+                    Text(String(localized: "phone_number") + ": " + (defaults.string(forKey: "phoneNumber") ?? ""))
                     
-                    Text("Funkrufname: \(defaults.string(forKey: "radioCallName") ?? "")")
+                    Text(String(localized: "radio_call_name") + ": " + (defaults.string(forKey: "radioCallName") ?? ""))
                     
-                    Text("Sicherheitslevel: \((defaults.string(forKey: "securityLevel") ?? "").securityLevelText)")
+                    Text(String(localized: "security_level") + ": " + ((defaults.string(forKey: "securityLevel") ?? "")).securityLevelText)
                     
                     HStack {
-                        Text("Track-Farbe:")
+                        Text(String(localized: "track_color") + ": ")
                         
                         Rectangle()
                             .fill(selectedColor)
@@ -58,8 +58,6 @@ struct SettingsView: View {
                     }
                     
 
-   
-
                     // Divider für visuelle Trennung
                     Divider()
                         .padding(.top)
@@ -70,9 +68,9 @@ struct SettingsView: View {
                     //Benutzerdaten ändern
                     HStack {
                         NavigationLink(destination: EditMyUserDataView()) {
-                            Label("Benutzerdaten ändern", systemImage: "person.fill")
+                            Label(String(localized: "edit_user_data"), systemImage: "person.fill")
                         }
-                        .buttonStyleREA()
+                        .buttonStyle(buttonStyleREAAnimated())
                         .padding(.top, 16)
                         }
                     .frame(maxWidth: .infinity)
@@ -80,7 +78,7 @@ struct SettingsView: View {
                     
                     // "Farbe ändern" Button
                     HStack {
-                        ColorPicker("Neue Track-Farbe auswählen:", selection: $selectedColor)
+                        ColorPicker(String(localized: "select_new_track_color") + ": ", selection: $selectedColor)
                             .onChange(of: selectedColor) { _, newValue in
                             if let uiColor = UIColor(newValue).cgColor.components {
                                 let r = Int((uiColor[0] * 255.0).rounded())
@@ -100,10 +98,10 @@ struct SettingsView: View {
                         Button(role: .destructive) {
                             showLogoutConfirmation = true
                         } label: {
-                            Label("Logout", systemImage: "arrow.backward.circle")
+                            Label(String(localized: "logout"), systemImage: "arrow.backward.circle")
                                 .frame(maxWidth: .infinity)
                         }
-                        .buttonStyleREARed()
+                        .buttonStyle(buttonStyleREAAnimatedRed())
                         .padding(.top, 50)
                     }
                     .frame(maxWidth: .infinity)
@@ -117,53 +115,17 @@ struct SettingsView: View {
                         selectedColor = color
                     }
                 }
-                .confirmationDialog("Möchten Sie sich wirklich abmelden?", isPresented: $showLogoutConfirmation, titleVisibility: .visible) {
-                    Button("Logout", role: .destructive) {
+                .confirmationDialog(String(localized: "confirmation_logout"), isPresented: $showLogoutConfirmation, titleVisibility: .visible) {
+                    Button(String(localized: "logout"), role: .destructive) {
                         router.logout() // Startet Logout Funktion in AppRouter.swift
                         bannerManager.showBanner("Erfolgreich ausgeloggt!", type: .success)
                     }
-                    Button("Abbrechen", role: .cancel) { }
+                    Button(String(localized: "cancel"), role: .cancel) { }
                 }
             }
-            .navigationTitle("Einstellungen")
+            .navigationTitle(String(localized: "settings"))
         }
     }
 }
 
-extension Color {
-    init?(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-        
-        var rgb: UInt64 = 0
-        var r: Double = 0, g: Double = 0, b: Double = 0, a: Double = 1.0
-        
-        let length = hexSanitized.count
-        
-        guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else { return nil }
-        
-        if length == 6 {
-            r = Double((rgb & 0xFF0000) >> 16) / 255.0
-            g = Double((rgb & 0x00FF00) >> 8) / 255.0
-            b = Double(rgb & 0x0000FF) / 255.0
-        } else {
-            return nil
-        }
-        
-        self.init(red: r, green: g, blue: b, opacity: a)
-    }
-    
-}
-
-extension Color {
-    func toHex() -> String {
-        if let uiColor = UIColor(self).cgColor.components {
-            let r = Int((uiColor[0] * 255.0).rounded())
-            let g = Int((uiColor[1] * 255.0).rounded())
-            let b = Int((uiColor[2] * 255.0).rounded())
-            return String(format: "#%02X%02X%02X", r, g, b)
-        }
-        return "#000000"
-    }
-}
 

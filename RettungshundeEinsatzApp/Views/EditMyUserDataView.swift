@@ -35,17 +35,17 @@ struct EditMyUserDataView: View {
             NavigationStack {
                 VStack {
                     Form {
-                        Section(header: Text("Info")) {
-                            Text("Bitte beachten Sie: Nur Ihre E-Mail Adresse, Handynummer und Track-Farbe können selbst angepasst werden. Für Änderungen anderer Angaben wenden Sie sich bitte an den Administrator oder eine befugte Person.")
+                        Section(header: Text(String(localized: "info"))) {
+                            Text(String(localized: "edit_user_data_info_text"))
                         }
-                        Section(header: Text("Benutzerdaten")) {
+                        Section(header: Text(String(localized: "user_data"))) {
                             
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("Benutzername")
+                                Text(String(localized: "username"))
                                     .font(.caption)
                                     .foregroundColor(.gray)
 
-                                TextField("Benutzername", text: $username)
+                                TextField(String(localized: "username"), text: $username)
                                     .padding(12)
                                     .background(Color(.systemBackground))
                                     .overlay(
@@ -56,11 +56,11 @@ struct EditMyUserDataView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("E-Mail")
+                                Text(String(localized: "email"))
                                     .font(.caption)
                                     .foregroundColor(.gray)
 
-                                TextField("E-Mail", text: $email)
+                                TextField(String(localized: "email"), text: $email)
                                     .padding(12)
                                     .background(Color(.systemBackground))
                                     .overlay(
@@ -71,11 +71,11 @@ struct EditMyUserDataView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("Handynummer")
+                                Text(String(localized: "phone_number"))
                                     .font(.caption)
                                     .foregroundColor(.gray)
 
-                                TextField("Handynummer", text: $phoneNumber)
+                                TextField(String(localized: "phone_number"), text: $phoneNumber)
                                     .padding(12)
                                     .background(Color(.systemBackground))
                                     .overlay(
@@ -86,11 +86,11 @@ struct EditMyUserDataView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("Funkrufname")
+                                Text(String(localized: "radio_call_name"))
                                     .font(.caption)
                                     .foregroundColor(.gray)
 
-                                TextField("Funkrufname", text: $radioCallName)
+                                TextField(String(localized: "radio_call_name"), text: $radioCallName)
                                     .padding(12)
                                     .background(Color(.systemBackground))
                                     .overlay(
@@ -101,11 +101,11 @@ struct EditMyUserDataView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("Sicherheitslevel")
+                                Text(String(localized: "security_level"))
                                     .font(.caption)
                                     .foregroundColor(.gray)
 
-                                TextField("Sicherheitslevel", text: .constant(securityLevel.securityLevelText))
+                                TextField(String(localized: "security_level"), text: .constant(securityLevel.securityLevelText))
                                     .padding(12)
                                     .background(Color(.systemBackground))
                                     .overlay(
@@ -121,28 +121,20 @@ struct EditMyUserDataView: View {
                     Spacer()
                     
                     HStack {
-                        Button("Abbrechen") {
+                        Button(String(localized: "cancel")) {
                             presentationMode.wrappedValue.dismiss()
                         }
-                        .buttonStyleREA()
+                        .buttonStyle(buttonStyleREAAnimated())
                         
-                        Button("Speichern") {
+                        Button(String(localized: "save")) {
                             focusedField = nil
                             showSaveConfirmation = true
-                            // Speicherung in UserDefaults (Beispiel)
-                            /*defaults.set(username, forKey: "username")
-                            defaults.set(email, forKey: "email")
-                            defaults.set(phoneNumber, forKey: "phoneNumber")
-                            defaults.set(radioCallName, forKey: "radioCallName")
-                            */
-                            // Schließe View
-                            //presentationMode.wrappedValue.dismiss()
                         }
-                        .buttonStyleREAGreen()
+                        .buttonStyle(buttonStyleREAAnimatedGreen())
                     }
                     .padding()
                 }
-                .navigationTitle("Benutzerdaten ändern")
+                .navigationTitle(String(localized: "edit_user_data"))
                 .onAppear {
                     // Bestehende Daten laden
                     username = defaults.string(forKey: "username") ?? ""
@@ -150,8 +142,8 @@ struct EditMyUserDataView: View {
                     phoneNumber = defaults.string(forKey: "phoneNumber") ?? ""
                     radioCallName = defaults.string(forKey: "radioCallName") ?? ""
                 }
-                .confirmationDialog("Möchten Sie die Daten wirklich speichern?", isPresented: $showSaveConfirmation, titleVisibility: .visible) {
-                    Button("Speichern", role: .destructive) {
+                .confirmationDialog(String(localized: "save_user_data_confirmation_text"), isPresented: $showSaveConfirmation, titleVisibility: .visible) {
+                    Button(String(localized: "save"), role: .destructive) {
                         isSubmitting = true
                         editMyUserData(
                             email: email,
@@ -159,11 +151,11 @@ struct EditMyUserDataView: View {
                         ) { success, message in
                             DispatchQueue.main.async {
                                 if success {
-                                    bannerManager.showBanner("Eingabe erfolgreich gespeichert!", type: .success)
+                                    bannerManager.showBanner(String(localized: "input_saved_successfully"), type: .success)
                                     checkTokenAndDownloadMyUserData(router: router) { success, message in}
                                     presentationMode.wrappedValue.dismiss()
                                 } else {
-                                    bannerManager.showBanner("Daten konnten nicht gespeichert werden.", type: .error)
+                                    bannerManager.showBanner(String(localized: "input_saved_error"), type: .error)
                                     
                                 }
                                 isSubmitting = false
@@ -175,13 +167,13 @@ struct EditMyUserDataView: View {
                         
                         
                         
-                        bannerManager.showBanner("Erfolgreich gespeichert!", type: .success)
+                        bannerManager.showBanner(String(localized: "input_saved_successfully"), type: .success)
                         //bannerManager.showBanner("Nicht Erfolgreich gespeichert!", type: .error)
                         //bannerManager.showBanner("Erfolgreich gespeichert!", type: .warning)
                         //bannerManager.showBanner("Erfolgreich gespeichert!", type: .info)
                         //router.logout() // Startet die Speicherung
                     }
-                    Button("Abbrechen", role: .cancel) { }
+                    Button(String(localized: "cancel"), role: .cancel) { }
                 }
             }
             // Lade-Overlay

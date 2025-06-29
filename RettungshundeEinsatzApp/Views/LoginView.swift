@@ -121,14 +121,8 @@ struct LoginView: View {
                             }
                         }) {
                             Text(String(localized: "login"))
-                                .fontWeight(.medium)
-                                .padding()
-                                .frame(width: 250)
-                                .background(isSubmitting ? Color.gray : Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(50)
-                                .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
                         }
+                        .buttonStyle(buttonStyleREAAnimated())
                         .disabled(isSubmitting)
                         .padding(.horizontal)
                         .padding(.top, 20)
@@ -148,14 +142,8 @@ struct LoginView: View {
                         //ForgotPassword Button
                         NavigationLink(destination: ForgotPasswordView()) {
                             Text(String(localized: "reset_password"))
-                                .fontWeight(.medium)
-                                .padding()
-                                .frame(width: 250)
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(50)
-                                .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
                         }
+                        .buttonStyle(buttonStyleREAAnimated())
                         
                         
                         
