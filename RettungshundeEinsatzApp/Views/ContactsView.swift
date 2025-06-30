@@ -26,10 +26,10 @@ struct ContactsView: View {
             List {
                 ForEach(users, id: \.id) { user in
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(user.username ?? "Unbekannt")
+                        Text(user.username ?? String(localized: "unknown"))
                             .font(.headline)
                         
-                        Text("Funkrufname: \(user.radiocallname ?? "")")
+                        Text(String(localized: "radio_call_name") + ": \(user.radiocallname ?? "")")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                         
@@ -37,7 +37,7 @@ struct ContactsView: View {
                             Button(action: {
                                 callNumber(phone)
                             }) {
-                                Text("Handynummer: \(phone)")
+                                Text(String(localized: "phone_number") + ": \(phone)")
                                     .foregroundColor(.blue)
                             }
                         }
@@ -45,7 +45,7 @@ struct ContactsView: View {
                     .padding(.vertical, 4)
                 }
             }
-            .navigationTitle("Kontakte")
+            .navigationTitle(String(localized: "contacts"))
         }
     }
     

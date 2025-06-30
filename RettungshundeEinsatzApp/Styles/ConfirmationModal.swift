@@ -26,7 +26,7 @@ struct DeleteConfirmationModal: View {
 
             HStack(spacing: 20) {
                 Button(action: onCancel) {
-                    Text("Abbrechen")
+                    Text(String(localized: "cancel"))
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(buttonStyleREAAnimated())
@@ -66,7 +66,7 @@ struct SaveConfirmationModal: View {
 
             HStack(spacing: 20) {
                 Button(action: onCancel) {
-                    Text("Abbrechen")
+                    Text(String(localized: "cancel"))
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(buttonStyleREAAnimated())

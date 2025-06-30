@@ -140,9 +140,9 @@ struct EditMyUserDataView: View {
             }
             .sheet(isPresented: $showSaveModal) {
                 SaveConfirmationModal(
-                    title: "✅ Änderungen speichern?",
-                    message: "Möchtest du deine Benutzerdaten jetzt speichern?",
-                    confirmButtonTitle: "Speichern",
+                    title: String(localized: "confirm_edit_my_user_data_titel"),
+                    message: String(localized: "confirm_edit_my_user_data_text"), 
+                    confirmButtonTitle: String(localized: "save"),
                     onConfirm: {
                         isSubmitting = true
                         editMyUserData(

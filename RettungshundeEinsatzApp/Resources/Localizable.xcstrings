@@ -11,27 +11,8 @@
         }
       }
     },
-    "   ±%lld%@m" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "   ±%1$lld%2$@m"
-          }
-        }
-      }
-    },
-    "%@" : {
-
-    },
-    "👤 %@" : {
-
-    },
     "A" : {
       "shouldTranslate" : false
-    },
-    "Abbrechen" : {
-
     },
     "accuracy" : {
       "localizations" : {
@@ -45,6 +26,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accuracy"
+          }
+        }
+      }
+    },
+    "banner_download_all_gps_data_error" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim Herunterladen der GPS-Tracks"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error downloading GPS tracks"
+          }
+        }
+      }
+    },
+    "banner_download_all_gps_data_success" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herunterladen der GPS-Tracks erfolgreich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS tracks downloaded successfully"
+          }
+        }
+      }
+    },
+    "banner_user_data_update_error" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzerdaten erfolgreich aktualisiert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User data updated successfully"
+          }
+        }
+      }
+    },
+    "banner_user_data_update_success" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler bei Aktualisierung der Benutzerdaten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error updating user data"
           }
         }
       }
@@ -65,19 +110,98 @@
         }
       }
     },
-    "confirmation_logout" : {
-      "extractionState" : "stale",
+    "confirm_delete_all_user_gps_text" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Möchten Sie sich wirklich abmelden?"
+            "value" : "Möchtest du wirklich die GPS-Daten aller Benutzer vom Server löschen? Diese Aktion kann nicht rückgängig gemacht werden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Do you really want to logout?"
+            "value" : "Do you really want to delete all GPS data of all users? This action cannot be undone."
+          }
+        }
+      }
+    },
+    "confirm_delete_all_user_gps_titel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Wirklich löschen?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Really delete?"
+          }
+        }
+      }
+    },
+    "confirm_delete_my_gps_text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Möchtest du wirklich alle deine GPS-Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you really want to delete all your GPS data? This action cannot be undone."
+          }
+        }
+      }
+    },
+    "confirm_delete_my_gps_titel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Wirklich löschen?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Really delete?"
+          }
+        }
+      }
+    },
+    "confirm_edit_my_user_data_text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Möchtest du deine Benutzerdaten jetzt speichern?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you want to save your user data now?"
+          }
+        }
+      }
+    },
+    "confirm_edit_my_user_data_titel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Änderungen speichern?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " ✅ Save changes?"
           }
         }
       }
@@ -110,6 +234,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Debug Button"
+          }
+        }
+      }
+    },
+    "delete" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
           }
         }
       }
@@ -147,7 +287,20 @@
       }
     },
     "delete_all_gps_data_error" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim löschen aller GPS Daten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error deleting all GPS data"
+          }
+        }
+      }
     },
     "delete_my_gps_data" : {
       "localizations" : {
@@ -299,9 +452,6 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
-    "Funkrufname: %@" : {
-
-    },
     "geographical_coordinates" : {
       "localizations" : {
         "de" : {
@@ -317,9 +467,6 @@
           }
         }
       }
-    },
-    "Handynummer: %@" : {
-
     },
     "incorect_user_param" : {
       "localizations" : {
@@ -403,9 +550,6 @@
           }
         }
       }
-    },
-    "Kontakte" : {
-
     },
     "last_change" : {
       "localizations" : {
@@ -505,7 +649,7 @@
       }
     },
     "MGRS" : {
-
+      "shouldTranslate" : false
     },
     "my_position" : {
       "localizations" : {
@@ -568,6 +712,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
+          }
+        }
+      }
+    },
+    "operation_date" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einsatzdatum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Operation Date"
+          }
+        }
+      }
+    },
+    "operation_report" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einsatzbericht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Operation Report"
+          }
+        }
+      }
+    },
+    "operation_report_info_text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für jeden Einsatz soll ein Einsatzbericht von jeder Einsatzkraft geschrieben werden. Dieser soll kurz den Ablauf des Einsatzes beschreiben. Er soll insbesondere auf Besonderheiten und Schwierigkeiten während des Einsatzes eingehen. Der Inhalt wird vertraulich behandelt. In den Einsatzbericht über die App können keine Anhänge mit übermittelt werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For each operation, every team member is required to write an operation report.\nThis report should briefly describe the course of the operation.\nIt should particularly address any special circumstances or difficulties encountered during the operation.\nThe content will be treated confidentially.\nAttachments cannot be submitted with the report via the app."
           }
         }
       }
@@ -692,6 +884,22 @@
         }
       }
     },
+    "report" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report"
+          }
+        }
+      }
+    },
     "reset" : {
       "localizations" : {
         "de" : {
@@ -769,23 +977,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save"
-          }
-        }
-      }
-    },
-    "save_user_data_confirmation_text" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Möchten Sie die Daten wirklich speichern?"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Do you really want to save the data?"
           }
         }
       }
@@ -871,7 +1062,20 @@
       }
     },
     "start_gps_done" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS Tracking gestartet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS tracking started"
+          }
+        }
+      }
     },
     "stop_gps" : {
       "localizations" : {
@@ -890,7 +1094,36 @@
       }
     },
     "stop_gps_done" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS Tracking gestoppt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPS tracking stoped"
+          }
+        }
+      }
+    },
+    "submit" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Absenden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submit"
+          }
+        }
+      }
     },
     "success" : {
       "localizations" : {
@@ -924,8 +1157,21 @@
         }
       }
     },
-    "TrackColor: %@" : {
-
+    "unknown" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown"
+          }
+        }
+      }
     },
     "unknown_error" : {
       "extractionState" : "manual",

@@ -20,14 +20,17 @@ class BannerManager: ObservableObject {
     }
 
     func showBanner(_ text: String, type: BannerType) {
-        message = text
-        bannerType = type
-        withAnimation(.easeInOut(duration: 0.3)) {
-            show = true
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation(.easeInOut(duration: 0.5)) {
-                self.show = false
+        DispatchQueue.main.async {
+            self.message = text
+            self.bannerType = type
+            withAnimation(.easeInOut(duration: 0.3)) {
+                self.show = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    self.show = false
+                }
             }
         }
     }

@@ -73,7 +73,7 @@ struct MapView: View {
                                     .padding(.top, 5)
                                     .font(.footnote)
                                 
-                                Text("   ±\(Int(locationManager.accuracy))\(thinSpace)m")
+                                Text("   ±" + "\(Int(locationManager.accuracy))\(thinSpace)m")
                                     .padding(.horizontal)
                                 
                                 Text(String(localized: "last_change"))
@@ -81,7 +81,7 @@ struct MapView: View {
                                     .padding(.top, 5)
                                     .font(.footnote)
                                 
-                                Text("\(locationManager.time.formatted(date: .numeric, time: .standard))")
+                                Text(locationManager.time.formatted(date: .numeric, time: .standard))
                                     .padding(.horizontal)
                                     .padding(.horizontal)
                                 
@@ -134,9 +134,9 @@ struct MapView: View {
                                 .buttonStyle(buttonStyleREAAnimated())
                                 .sheet(isPresented: $showDeleteModal) {
                                     DeleteConfirmationModal(
-                                        title: "⚠️ Wirklich löschen?",
-                                        message: "Möchtest du wirklich alle deine GPS-Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
-                                        confirmButtonTitle: "Löschen",
+                                        title: String(localized: "confirm_delete_my_gps_titel"), //"⚠️ Wirklich löschen?",
+                                        message: String(localized: "confirm_delete_my_gps_text"), //"Möchtest du wirklich alle deine GPS-Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+                                        confirmButtonTitle: String(localized: "delete"),
                                         onConfirm: {
                                             let success = deleteLokalGPSData()
                                             if success {
@@ -158,15 +158,14 @@ struct MapView: View {
                                 .padding(.horizontal)
                                 .padding(.top, 20)
                                 
-                                Button(action: {
-                                    
-                                }) {
+                                
+                                NavigationLink(destination: OperationReportView()) {
                                     HStack {
                                         Image(systemName: "pencil")
                                         Text(String(localized: "write_operation_report")).fontWeight(.medium)
                                     }
                                 }
-                                .buttonStyle(buttonStyleREAAnimatedRed())
+                                .buttonStyle(buttonStyleREAAnimated())
                                 .padding(.horizontal)
                                 .padding(.top, 20)
                                 
@@ -182,9 +181,9 @@ struct MapView: View {
                                 .buttonStyle(buttonStyleREAAnimated())
                                 .sheet(isPresented: $showDeleteAllGPSDataModal) {
                                     DeleteConfirmationModal(
-                                        title: "⚠️ Wirklich löschen?",
-                                        message: "Möchtest du wirklich alle GPS-Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden. Die Daten sind dann auch für andere nicht mehr sichtbar!",
-                                        confirmButtonTitle: "Löschen",
+                                        title: String(localized: "confirm_delete_all_user_gps_titel"),
+                                        message: String(localized: "confirm_delete_all_user_gps_text"),
+                                        confirmButtonTitle: String(localized: "delete"),
                                         onConfirm: {
                                             showDeleteAllGPSDataModal = false
                                             deleteAllGPSData { success, message in
@@ -194,7 +193,6 @@ struct MapView: View {
                                                             
                                                             // Download alle GPS Locations aller Benutzer und trigger update der UI
                                                             downloadAllGpsLocations(context: context) { success, message in
-                                                                bannerManager.showBanner("GPS-Daten erfolgreich heruntergeladen", type: .success)
                                                                 refreshUserTracks = true
                                                                 userTracks = loadUserTracks(context: context)
                                                             }
@@ -291,13 +289,17 @@ struct MapView: View {
                         
                         Button(action: {
                             downloadAllUserData(context: context) { success, message in
-                                bannerManager.showBanner("Benutzerdaten erfolgreich aktualisiert", type: .success)
+                                bannerManager.showBanner(String(localized: "banner_user_data_update_success"), type: .success)
                                 
                                 // Download alle GPS Locations aller Benutzer
                                 downloadAllGpsLocations(context: context) { success, message in
-                                    bannerManager.showBanner("GPS-Daten erfolgreich heruntergeladen", type: .success)
-                                    refreshUserTracks = true
-                                    userTracks = loadUserTracks(context: context)
+                                    if success {
+                                        bannerManager.showBanner(String(localized: "banner_download_all_gps_data_success"), type: .success)
+                                        refreshUserTracks = true
+                                        userTracks = loadUserTracks(context: context)
+                                    } else {
+                                        bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
+                                    }
                                 }
                             }
                         }) {
@@ -373,9 +375,9 @@ struct MapView: View {
             }
             .sheet(item: $selectedUser) { user in
                 VStack {
-                    Text("👤 \(user.username ?? "Unbekannt")")
+                    Text("👤 " + (user.username ?? String(localized: "unknown")))
                         .font(.title)
-                    Text("TrackColor: \(user.trackcolor ?? "nil")")
+                    Text(String(localized: "track_color") + ": \(user.trackcolor ?? "nil")")
                     // Weitere Infos oder Buttons
                 }
                 .padding()
@@ -387,13 +389,17 @@ struct MapView: View {
 
             // Download alle user data – verwende direkt den Environment Context
             downloadAllUserData(context: context) { success, message in
-                bannerManager.showBanner("Benutzerdaten erfolgreich aktualisiert", type: .success)
+                bannerManager.showBanner(String(localized: "banner_user_data_update_success"), type: .success)
                 
                 // Download alle GPS Locations aller Benutzer
                 downloadAllGpsLocations(context: context) { success, message in
-                    bannerManager.showBanner("GPS-Daten erfolgreich heruntergeladen", type: .success)
-                    refreshUserTracks = true
-                    userTracks = loadUserTracks(context: context)
+                    if success {
+                        bannerManager.showBanner(String(localized: "banner_download_all_gps_data_success"), type: .success)
+                        refreshUserTracks = true
+                        userTracks = loadUserTracks(context: context)
+                    } else {
+                        bannerManager.showBanner(String(localized: "banner_download_all_gps_data_error"), type: .error)
+                    }
                 }
             }
             

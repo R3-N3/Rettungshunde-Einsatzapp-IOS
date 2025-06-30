@@ -122,12 +122,6 @@ struct ForgotPasswordView: View {
                                             showAlert = true
                                             isSubmitting = false
                                             email = ""
-                                            /*if let token = KeychainHelper.loadToken() {
-                                                print("🔑 Token geladen: \(token)")
-                                            } else {
-                                                print("❌❌❌ Kein Token gespeichert ❌❌❌")
-                                            }
-                                            router.isLoggedIn = true // wechselt zu MapView*/
                                         } else {
                                             print("❌ Reset nicht erfolgreich")
                                             alertTitle = String(localized: "error")
