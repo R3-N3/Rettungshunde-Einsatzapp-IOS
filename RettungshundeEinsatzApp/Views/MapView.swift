@@ -226,17 +226,16 @@ struct MapView: View {
                                 .padding(.horizontal)
                                 .padding(.top, 20)
                                 
-                                Button(action: {
-                                    
-                                }) {
+                                NavigationLink(destination: UserListView()) {
                                     HStack {
                                         Image(systemName: "person.crop.circle.badge.xmark")
                                         Text(String(localized: "manage_users")).fontWeight(.medium)
                                     }
-                                }
-                                .buttonStyle(buttonStyleREAAnimatedRed())
-                                .padding(.horizontal)
-                                .padding(.top, 20)
+                                }.buttonStyle(buttonStyleREAAnimated())
+                                    .padding(.horizontal)
+                                    .padding(.top, 20)
+                                
+                                
                                 
                                 // Settings Button
                                 NavigationLink(destination: SettingsView()) {
@@ -381,10 +380,51 @@ struct MapView: View {
                 VStack {
                     Text("👤 " + (user.username ?? String(localized: "unknown")))
                         .font(.title)
-                    Text(String(localized: "track_color") + ": \(user.trackcolor ?? "nil")")
+                    
+                    if let locationsSet = user.locations,
+                               let locations = locationsSet.allObjects as? [AllUserGPSData],
+                               let lastLocation = locations.sorted(by: { ($0.time ?? "") > ($1.time ?? "") }).first {
+                        
+                        Text(String(localized: "geographical_coordinates"))
+                            .padding(.top, 0)
+                            .font(.footnote)
+                        
+                        Text("   " + latLonToFormattedString(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
+                        
+                        Text("MGRS Koordinaten")
+                            .padding(.top, 2)
+                            .font(.footnote)
+                        
+                        Text("   " + latLonToMGRS(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
+                        
+                        Text(String(localized: "accuracy"))
+                            .padding(.top, 2)
+                            .font(.footnote)
+                        
+                        Text("   ±" + "\(Int(lastLocation.accuracy))\(thinSpace)m")
+                            .padding(.horizontal)
+                        
+                        Text(String(localized: "last_change"))
+                            .padding(.top, 2)
+                            .font(.footnote)
+                        
+                        Text(lastLocation.time ?? "Unknown")
+                            .padding(.horizontal)
+                            .padding(.horizontal)
+                        
+                        
+                            } else {
+                                Text("Keine Koordinaten verfügbar")
+                            }
+                    
+                    
+
+      
                     // Weitere Infos oder Buttons
                 }
                 .padding()
+                .presentationDetents([.height(300)]) // ➔ Höhe auf z.B. 200pt begrenzt
+                .presentationDragIndicator(.visible) // ➔ optional, Drag-Indikator anzeigen
             }
         }
         .onAppear {

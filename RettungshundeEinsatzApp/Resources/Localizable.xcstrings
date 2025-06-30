@@ -11,8 +11,14 @@
         }
       }
     },
+    "-" : {
+
+    },
     "A" : {
       "shouldTranslate" : false
+    },
+    "Abbrechen" : {
+
     },
     "accuracy" : {
       "localizations" : {
@@ -29,6 +35,9 @@
           }
         }
       }
+    },
+    "Alle Benutzer" : {
+
     },
     "banner_download_all_gps_data_error" : {
       "localizations" : {
@@ -62,6 +71,25 @@
         }
       }
     },
+    "banner_edit_user_error" : {
+
+    },
+    "banner_edit_user_success" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzerdaten erfolgreich geändert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " User data update successfull"
+          }
+        }
+      }
+    },
     "banner_logout_success" : {
       "localizations" : {
         "de" : {
@@ -76,23 +104,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Benutzerdaten erfolgreich aktualisiert"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "User data updated successfully"
-          }
-        }
-      }
-    },
-    "banner_user_data_update_success" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Fehler bei Aktualisierung der Benutzerdaten"
           }
         },
@@ -103,6 +115,28 @@
           }
         }
       }
+    },
+    "banner_user_data_update_success" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Benutzerdaten erfolgreich geändert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " User data update successfull"
+          }
+        }
+      }
+    },
+    "Benutzer bearbeiten" : {
+
+    },
+    "Benutzerdaten" : {
+
     },
     "cancel" : {
       "localizations" : {
@@ -427,6 +461,12 @@
     "E" : {
       "shouldTranslate" : false
     },
+    "E-Mail" : {
+
+    },
+    "E-Mail: %@" : {
+
+    },
     "edit_user_data" : {
       "localizations" : {
         "de" : {
@@ -526,6 +566,15 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
+    "Farbe auswählen" : {
+
+    },
+    "Funkrufname" : {
+
+    },
+    "Funkrufname: %@" : {
+
+    },
     "geographical_coordinates" : {
       "localizations" : {
         "de" : {
@@ -541,6 +590,12 @@
           }
         }
       }
+    },
+    "Handy: %@" : {
+
+    },
+    "Handynummer" : {
+
     },
     "incorect_user_param" : {
       "localizations" : {
@@ -624,6 +679,9 @@
           }
         }
       }
+    },
+    "Keine Koordinaten verfügbar" : {
+
     },
     "last_change" : {
       "localizations" : {
@@ -724,6 +782,9 @@
     },
     "MGRS" : {
       "shouldTranslate" : false
+    },
+    "MGRS Koordinaten" : {
+
     },
     "my_position" : {
       "localizations" : {
@@ -1119,6 +1180,12 @@
         }
       }
     },
+    "Sicherheitslevel" : {
+
+    },
+    "Speichern" : {
+
+    },
     "Start" : {
       "localizations" : {
         "de" : {
@@ -1247,6 +1314,12 @@
         }
       }
     },
+    "Track-Farbe" : {
+
+    },
+    "Track-Farbe:" : {
+
+    },
     "unknown" : {
       "localizations" : {
         "de" : {
@@ -1327,6 +1400,9 @@
           }
         }
       }
+    },
+    "Username" : {
+
     },
     "username_required" : {
       "localizations" : {

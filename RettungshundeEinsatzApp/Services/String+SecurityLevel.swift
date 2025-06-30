@@ -21,3 +21,18 @@ extension String {
         }
     }
 }
+
+extension Int16 {
+    var securityLevelTextFromInt16: String {
+        switch self {
+        case 1:
+            return "(1) Einsatzkraft"
+        case 2:
+            return "(2) Zugführer"
+        case 3:
+            return "(3) Administrator"
+        default:
+            return "Unbekannt"
+        }
+    }
+}

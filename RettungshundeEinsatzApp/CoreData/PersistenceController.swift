@@ -51,6 +51,9 @@ struct PersistenceController {
             }
         }
 
-        container.viewContext.automaticallyMergesChangesFromParent = true
-    }
+        // ➔ Merge-Policy setzen (verhindert Konflikte beim Speichern)
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+
+        // ➔ Änderungen anderer Contexts automatisch mergen
+        container.viewContext.automaticallyMergesChangesFromParent = true    }
 }
