@@ -80,7 +80,7 @@ struct SettingsView: View {
                                     defaults.set(hexString, forKey: "trackColor")
                                 }
                             }
-                            .buttonStyleREA()
+                            .buttonStyle(buttonStyleREAAnimated())
                             .padding(.top, 16)
                     }
                     .frame(maxWidth: .infinity)

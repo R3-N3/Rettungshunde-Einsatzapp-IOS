@@ -20,16 +20,7 @@ struct MapView: View {
     @State private var selectedUser: AllUserData? = nil
     @State private var refreshUserTracks = false
     @State private var showDeleteModal = false
-
-
-
-
-
-
-    
-    
-
-
+    @State private var showDeleteAllGPSDataModal = false
 
 
     var body: some View {
@@ -181,17 +172,48 @@ struct MapView: View {
                                 
                                 
                                 Button(action: {
-                                    
+                                    showDeleteAllGPSDataModal = true
                                 }) {
                                     HStack {
                                         Image(systemName: "trash.fill")
                                         Text(String(localized: "delete_all_gps_data")).fontWeight(.medium)
                                     }
                                 }
-                                .buttonStyle(buttonStyleREAAnimatedRed())
+                                .buttonStyle(buttonStyleREAAnimated())
+                                .sheet(isPresented: $showDeleteAllGPSDataModal) {
+                                    DeleteConfirmationModal(
+                                        title: "⚠️ Wirklich löschen?",
+                                        message: "Möchtest du wirklich alle GPS-Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden. Die Daten sind dann auch für andere nicht mehr sichtbar!",
+                                        confirmButtonTitle: "Löschen",
+                                        onConfirm: {
+                                            showDeleteAllGPSDataModal = false
+                                            deleteAllGPSData { success, message in
+                                                DispatchQueue.main.async {
+                                                    if success {
+                                      
+                                                            
+                                                            // Download alle GPS Locations aller Benutzer und trigger update der UI
+                                                            downloadAllGpsLocations(context: context) { success, message in
+                                                                bannerManager.showBanner("GPS-Daten erfolgreich heruntergeladen", type: .success)
+                                                                refreshUserTracks = true
+                                                                userTracks = loadUserTracks(context: context)
+                                                            }
+                                                        
+                                                    } else {
+                                                        bannerManager.showBanner(String(localized: "delete_all_gps_data_error"), type: .error)
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        onCancel: {
+                                            showDeleteAllGPSDataModal = false
+                                        }
+                                    )
+                                    .presentationDetents([.height(300)])
+                                    .presentationDragIndicator(.visible)
+                                }
                                 .padding(.horizontal)
                                 .padding(.top, 20)
-                                
                                 
                                 
                                 Button(action: {
@@ -241,7 +263,7 @@ struct MapView: View {
                                         Text(String(localized: "debug_button"))
                                             .fontWeight(.medium)
                                     }
-                                    .buttonStyleREAGreen()
+                                    .buttonStyle(buttonStyleREAAnimatedGreen())
                                 }
                                 .padding(.horizontal)
                                 .padding(.top, 20)
@@ -431,7 +453,7 @@ struct MapView: View {
 }
 
 
-
+#if DEBUG
 // Nur für Debug/Test zwecke
 func fetchAllUserData() {
     let context = PersistenceController.shared.container.viewContext
@@ -450,7 +472,7 @@ func fetchAllUserData() {
         print("❌ Fehler beim Abrufen der Benutzerdaten: \(error.localizedDescription)")
     }
 }
-
+#endif
 
 
 

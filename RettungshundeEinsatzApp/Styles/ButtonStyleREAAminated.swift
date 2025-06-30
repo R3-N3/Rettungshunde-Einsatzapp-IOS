@@ -17,5 +17,6 @@ struct buttonStyleREAAnimated: ButtonStyle {
             .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            .opacity(configuration.isPressed ? 0.6 : 1.0)
     }
 }

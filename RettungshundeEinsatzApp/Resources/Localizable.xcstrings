@@ -146,6 +146,9 @@
         }
       }
     },
+    "delete_all_gps_data_error" : {
+
+    },
     "delete_my_gps_data" : {
       "localizations" : {
         "de" : {
