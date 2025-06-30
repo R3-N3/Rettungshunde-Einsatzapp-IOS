@@ -109,12 +109,12 @@ struct SettingsView: View {
             .navigationTitle(String(localized: "settings"))
             .sheet(isPresented: $showLogoutModal) {
                 DeleteConfirmationModal(
-                    title: "⚠️ Logout bestätigen",
-                    message: "Möchtest du dich wirklich ausloggen?",
-                    confirmButtonTitle: "Logout",
+                    title: String(localized: "confirm_logout_titel"), //"⚠️ Logout bestätigen",
+                    message: String(localized: "confirm_logout_text"), //"Möchtest du dich wirklich ausloggen?",
+                    confirmButtonTitle: String(localized: "logout"),
                     onConfirm: {
                         router.logout()
-                        bannerManager.showBanner("Erfolgreich ausgeloggt!", type: .success)
+                        bannerManager.showBanner(String(localized: "banner_logout_success"), type: .success)
                         showLogoutModal = false
                     },
                     onCancel: {

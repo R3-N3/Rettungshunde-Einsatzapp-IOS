@@ -94,9 +94,9 @@ struct OperationReportView: View {
                         .buttonStyle(buttonStyleREAAnimatedGreen())
                         .sheet(isPresented: $showConfirmModal) {
                             DeleteConfirmationModal(
-                                title: "✅ Bericht absenden?",
-                                message: "Möchtest du den Einsatzbericht jetzt absenden?",
-                                confirmButtonTitle: "Absenden",
+                                title: String(localized: "confirm_send_operation_report_titel"),
+                                message: String(localized: "confirm_send_operation_report_text"), //"Möchtest du den Einsatzbericht jetzt absenden?",
+                                confirmButtonTitle: String(localized: "send"),
                                 onConfirm: {
                                     uploadReport(
                                         selectedDate: formattedDate(reportDate),

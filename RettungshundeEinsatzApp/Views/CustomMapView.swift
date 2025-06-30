@@ -49,7 +49,7 @@ struct CustomMapView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        print("update UI")
+        print("🟢 Starte UpdateUI in CustomMapView")
         uiView.mapType = mapType
 
         // 🔷 Hole hexString vorab

@@ -27,23 +27,22 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-        locationManager.distanceFilter = 0 // mindest Distandunterschied 5 = 5 m
+        locationManager.distanceFilter = 0
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.showsBackgroundLocationIndicator = true
         locationManager.requestAlwaysAuthorization()
         
-        // Timer alle 5 Sekunden starten
-        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
-            self?.processCurrentLocation()
-        }
+        // Entferne hier den Timer Start!
+        // timer wird nur in startUpdating() gestartet
     }
 
     func startUpdating() {
         locationManager.startUpdatingLocation()
         isUpdating = true
         print("🟢 Standort-Tracking gestartet")
-        
-        // Starte den Timer neu
+
+        // Starte Timer nur hier
+        timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.processCurrentLocation()
         }

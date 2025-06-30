@@ -263,8 +263,12 @@ struct MapView: View {
                                     }
                                     .buttonStyle(buttonStyleREAAnimatedGreen())
                                 }
+                                .buttonStyle(buttonStyleREAAnimatedYellow())
                                 .padding(.horizontal)
                                 .padding(.top, 20)
+                                .padding(.bottom, 150)
+                                
+                                
                                 #endif
                                 
                             }

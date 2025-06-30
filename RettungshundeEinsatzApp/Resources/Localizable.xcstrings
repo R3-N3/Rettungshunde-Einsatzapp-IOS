@@ -62,6 +62,16 @@
         }
       }
     },
+    "banner_logout_success" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfolgreich ausgeloggt"
+          }
+        }
+      }
+    },
     "banner_user_data_update_error" : {
       "localizations" : {
         "de" : {
@@ -202,6 +212,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : " ✅ Save changes?"
+          }
+        }
+      }
+    },
+    "confirm_logout_text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Möchtest du dich wirklich ausloggen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you really want to log out?"
+          }
+        }
+      }
+    },
+    "confirm_logout_titel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Logout bestätigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Confirm logout"
+          }
+        }
+      }
+    },
+    "confirm_send_operation_report_text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Möchtest du den Einsatzbericht jetzt absenden?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you want to submit the operation report now?"
+          }
+        }
+      }
+    },
+    "confirm_send_operation_report_titel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Bericht absenden?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Submit report?"
           }
         }
       }
@@ -1009,6 +1083,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select new track color"
+          }
+        }
+      }
+    },
+    "send" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send"
           }
         }
       }
