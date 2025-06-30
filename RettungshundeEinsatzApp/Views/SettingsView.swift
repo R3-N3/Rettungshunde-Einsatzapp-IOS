@@ -13,16 +13,14 @@ struct SettingsView: View {
 
     let defaults = UserDefaults.standard
     @State private var selectedColor: Color = .blue
-    @State private var showLogoutConfirmation = false
-
-
+    @State private var showLogoutModal = false
 
     var body: some View {
 
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    // z.B. Section-Titel
+                    // Section-Titel
                     Text(String(localized: "my_user_data"))
                         .font(.headline)
                         .padding(.top)
@@ -57,46 +55,40 @@ struct SettingsView: View {
                             )
                     }
                     
-
-                    // Divider für visuelle Trennung
                     Divider()
                         .padding(.top)
                     
-
-                    // Weitere Einstellungen
-                    
-                    //Benutzerdaten ändern
+                    // Benutzerdaten ändern
                     HStack {
                         NavigationLink(destination: EditMyUserDataView()) {
                             Label(String(localized: "edit_user_data"), systemImage: "person.fill")
                         }
                         .buttonStyle(buttonStyleREAAnimated())
                         .padding(.top, 16)
-                        }
+                    }
                     .frame(maxWidth: .infinity)
                     
-                    
-                    // "Farbe ändern" Button
+                    // Farbe ändern Button
                     HStack {
                         ColorPicker(String(localized: "select_new_track_color") + ": ", selection: $selectedColor)
                             .onChange(of: selectedColor) { _, newValue in
-                            if let uiColor = UIColor(newValue).cgColor.components {
-                                let r = Int((uiColor[0] * 255.0).rounded())
-                                let g = Int((uiColor[1] * 255.0).rounded())
-                                let b = Int((uiColor[2] * 255.0).rounded())
-                                let hexString = String(format: "#%02X%02X%02X", r, g, b)
-                                defaults.set(hexString, forKey: "trackColor")
+                                if let uiColor = UIColor(newValue).cgColor.components {
+                                    let r = Int((uiColor[0] * 255.0).rounded())
+                                    let g = Int((uiColor[1] * 255.0).rounded())
+                                    let b = Int((uiColor[2] * 255.0).rounded())
+                                    let hexString = String(format: "#%02X%02X%02X", r, g, b)
+                                    defaults.set(hexString, forKey: "trackColor")
+                                }
                             }
-                        }
-                        .buttonStyleREA()
-                        .padding(.top, 16)
+                            .buttonStyleREA()
+                            .padding(.top, 16)
                     }
                     .frame(maxWidth: .infinity)
                     
                     // Logout Button
                     HStack {
                         Button(role: .destructive) {
-                            showLogoutConfirmation = true
+                            showLogoutModal = true
                         } label: {
                             Label(String(localized: "logout"), systemImage: "arrow.backward.circle")
                                 .frame(maxWidth: .infinity)
@@ -105,8 +97,6 @@ struct SettingsView: View {
                         .padding(.top, 50)
                     }
                     .frame(maxWidth: .infinity)
-                    
-
                 }
                 .padding()
                 .onAppear {
@@ -115,17 +105,24 @@ struct SettingsView: View {
                         selectedColor = color
                     }
                 }
-                .confirmationDialog(String(localized: "confirmation_logout"), isPresented: $showLogoutConfirmation, titleVisibility: .visible) {
-                    Button(String(localized: "logout"), role: .destructive) {
-                        router.logout() // Startet Logout Funktion in AppRouter.swift
-                        bannerManager.showBanner("Erfolgreich ausgeloggt!", type: .success)
-                    }
-                    Button(String(localized: "cancel"), role: .cancel) { }
-                }
             }
             .navigationTitle(String(localized: "settings"))
+            .sheet(isPresented: $showLogoutModal) {
+                DeleteConfirmationModal(
+                    title: "⚠️ Logout bestätigen",
+                    message: "Möchtest du dich wirklich ausloggen?",
+                    confirmButtonTitle: "Logout",
+                    onConfirm: {
+                        router.logout()
+                        bannerManager.showBanner("Erfolgreich ausgeloggt!", type: .success)
+                        showLogoutModal = false
+                    },
+                    onCancel: {
+                        showLogoutModal = false
+                    }
+                )
+                .presentationDetents([.height(250)])
+            }
         }
     }
 }
-
-

@@ -9,15 +9,14 @@ import SwiftUI
 
 struct EditMyUserDataView: View {
     
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var bannerManager: BannerManager
     @EnvironmentObject var router: AppRouter
     @State private var isSubmitting = false
 
-
     let defaults = UserDefaults.standard
 
-    @State private var showSaveConfirmation = false
+    @State private var showSaveModal = false
     @State private var username: String = UserDefaults.standard.string(forKey: "username") ?? ""
     @State private var email: String = UserDefaults.standard.string(forKey: "email") ?? ""
     @State private var phoneNumber: String = UserDefaults.standard.string(forKey: "phoneNumber") ?? ""
@@ -26,124 +25,125 @@ struct EditMyUserDataView: View {
 
     @FocusState private var focusedField: Field?
 
-    
     enum Field {
         case email, phoneNumber
     }
 
-        var body: some View {
-            NavigationStack {
-                VStack {
-                    Form {
-                        Section(header: Text(String(localized: "info"))) {
-                            Text(String(localized: "edit_user_data_info_text"))
-                        }
-                        Section(header: Text(String(localized: "user_data"))) {
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(String(localized: "username"))
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-
-                                TextField(String(localized: "username"), text: $username)
-                                    .padding(12)
-                                    .background(Color(.systemBackground))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1.5)
-                                        )
-                                    .disabled(true)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(String(localized: "email"))
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-
-                                TextField(String(localized: "email"), text: $email)
-                                    .padding(12)
-                                    .background(Color(.systemBackground))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(focusedField == .email ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
-                                        )
-                                        .focused($focusedField, equals: .email)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(String(localized: "phone_number"))
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-
-                                TextField(String(localized: "phone_number"), text: $phoneNumber)
-                                    .padding(12)
-                                    .background(Color(.systemBackground))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(focusedField == .phoneNumber ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
-                                        )
-                                        .focused($focusedField, equals: .phoneNumber)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(String(localized: "radio_call_name"))
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-
-                                TextField(String(localized: "radio_call_name"), text: $radioCallName)
-                                    .padding(12)
-                                    .background(Color(.systemBackground))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1.5)
-                                        )
-                                    .disabled(true)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(String(localized: "security_level"))
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-
-                                TextField(String(localized: "security_level"), text: .constant(securityLevel.securityLevelText))
-                                    .padding(12)
-                                    .background(Color(.systemBackground))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1.5)
-                                        )
-                                    .disabled(true)
-                            }
-                            
-                        }
+    var body: some View {
+        NavigationStack {
+            VStack {
+                Form {
+                    Section(header: Text(String(localized: "info"))) {
+                        Text(String(localized: "edit_user_data_info_text"))
                     }
-                    
-                    Spacer()
-                    
-                    HStack {
-                        Button(String(localized: "cancel")) {
-                            presentationMode.wrappedValue.dismiss()
-                        }
-                        .buttonStyle(buttonStyleREAAnimated())
+                    Section(header: Text(String(localized: "user_data"))) {
                         
-                        Button(String(localized: "save")) {
-                            focusedField = nil
-                            showSaveConfirmation = true
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "username"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            TextField(String(localized: "username"), text: $username)
+                                .padding(12)
+                                .background(Color(.systemBackground))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.gray.opacity(0.5), lineWidth: 1.5)
+                                )
+                                .disabled(true)
                         }
-                        .buttonStyle(buttonStyleREAAnimatedGreen())
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "email"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            TextField(String(localized: "email"), text: $email)
+                                .padding(12)
+                                .background(Color(.systemBackground))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .email ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
+                                )
+                                .focused($focusedField, equals: .email)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "phone_number"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            TextField(String(localized: "phone_number"), text: $phoneNumber)
+                                .padding(12)
+                                .background(Color(.systemBackground))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .phoneNumber ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
+                                )
+                                .focused($focusedField, equals: .phoneNumber)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "radio_call_name"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            TextField(String(localized: "radio_call_name"), text: $radioCallName)
+                                .padding(12)
+                                .background(Color(.systemBackground))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.gray.opacity(0.5), lineWidth: 1.5)
+                                )
+                                .disabled(true)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(String(localized: "security_level"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+
+                            TextField(String(localized: "security_level"), text: .constant(securityLevel.securityLevelText))
+                                .padding(12)
+                                .background(Color(.systemBackground))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.gray.opacity(0.5), lineWidth: 1.5)
+                                )
+                                .disabled(true)
+                        }
                     }
-                    .padding()
                 }
-                .navigationTitle(String(localized: "edit_user_data"))
-                .onAppear {
-                    // Bestehende Daten laden
-                    username = defaults.string(forKey: "username") ?? ""
-                    email = defaults.string(forKey: "email") ?? ""
-                    phoneNumber = defaults.string(forKey: "phoneNumber") ?? ""
-                    radioCallName = defaults.string(forKey: "radioCallName") ?? ""
+                
+                Spacer()
+                
+                HStack {
+                    Button(String(localized: "cancel")) {
+                        dismiss()
+                    }
+                    .buttonStyle(buttonStyleREAAnimated())
+                    
+                    Button(String(localized: "save")) {
+                        focusedField = nil
+                        showSaveModal = true
+                    }
+                    .buttonStyle(buttonStyleREAAnimatedGreen())
                 }
-                .confirmationDialog(String(localized: "save_user_data_confirmation_text"), isPresented: $showSaveConfirmation, titleVisibility: .visible) {
-                    Button(String(localized: "save"), role: .destructive) {
+                .padding()
+            }
+            .navigationTitle(String(localized: "edit_user_data"))
+            .onAppear {
+                username = defaults.string(forKey: "username") ?? ""
+                email = defaults.string(forKey: "email") ?? ""
+                phoneNumber = defaults.string(forKey: "phoneNumber") ?? ""
+                radioCallName = defaults.string(forKey: "radioCallName") ?? ""
+            }
+            .sheet(isPresented: $showSaveModal) {
+                SaveConfirmationModal(
+                    title: "✅ Änderungen speichern?",
+                    message: "Möchtest du deine Benutzerdaten jetzt speichern?",
+                    confirmButtonTitle: "Speichern",
+                    onConfirm: {
                         isSubmitting = true
                         editMyUserData(
                             email: email,
@@ -152,51 +152,37 @@ struct EditMyUserDataView: View {
                             DispatchQueue.main.async {
                                 if success {
                                     bannerManager.showBanner(String(localized: "input_saved_successfully"), type: .success)
-                                    checkTokenAndDownloadMyUserData(router: router) { success, message in}
-                                    presentationMode.wrappedValue.dismiss()
+                                    checkTokenAndDownloadMyUserData(router: router) { success, message in }
+                                    dismiss()
                                 } else {
                                     bannerManager.showBanner(String(localized: "input_saved_error"), type: .error)
-                                    
                                 }
                                 isSubmitting = false
+                                showSaveModal = false
                             }
                         }
-                        
-                        
-                        
-                        
-                        
-                        
-                        bannerManager.showBanner(String(localized: "input_saved_successfully"), type: .success)
-                        //bannerManager.showBanner("Nicht Erfolgreich gespeichert!", type: .error)
-                        //bannerManager.showBanner("Erfolgreich gespeichert!", type: .warning)
-                        //bannerManager.showBanner("Erfolgreich gespeichert!", type: .info)
-                        //router.logout() // Startet die Speicherung
+                    },
+                    onCancel: {
+                        showSaveModal = false
                     }
-                    Button(String(localized: "cancel"), role: .cancel) { }
-                }
-            }
-            // Lade-Overlay
-            if isSubmitting {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(1.5)
-                    Text(String(localized: "processing"))
-                        .foregroundColor(.white)
-                }
-                .padding(40)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.black.opacity(0.7)))
+                )
+                .presentationDetents([.height(250)])
             }
         }
-    
-}
+        
+        if isSubmitting {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
 
-
-
-#Preview {
-    EditMyUserDataView()
+            VStack(spacing: 16) {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+                Text(String(localized: "processing"))
+                    .foregroundColor(.white)
+            }
+            .padding(40)
+            .background(RoundedRectangle(cornerRadius: 16).fill(Color.black.opacity(0.7)))
+        }
+    }
 }

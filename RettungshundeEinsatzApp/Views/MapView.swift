@@ -19,6 +19,8 @@ struct MapView: View {
     @State private var userTracks: [UserTrack] = []
     @State private var selectedUser: AllUserData? = nil
     @State private var refreshUserTracks = false
+    @State private var showDeleteModal = false
+
 
 
 
@@ -130,27 +132,40 @@ struct MapView: View {
                                 
                                 
                                 Button(action: {
-                                    let success = deleteLokalGPSData()
-                                    if success {
-                                        bannerManager.showBanner(String(localized: "delete_my_gps_data_success"), type: .success)
-                                        
-                                        userTracks = loadUserTracks(context: context)
-                                        // Falls du deinen eigenen Track aus LocationManager aktualisieren willst:
-                                        locationManager.fetchAllCoordinates()
-                                    } else {
-                                        bannerManager.showBanner(String(localized: "delete_my_gps_data_error"), type: .error)
-                                    }
-                                    
+                                    showDeleteModal = true
                                 }) {
                                     HStack {
                                         Image(systemName: "trash")
-                                        Text(String(localized: "delete_my_gps_data")).fontWeight(.medium)
+                                        Text(String(localized: "delete_my_gps_data"))
+                                            .fontWeight(.medium)
                                     }
                                 }
                                 .buttonStyle(buttonStyleREAAnimated())
+                                .sheet(isPresented: $showDeleteModal) {
+                                    DeleteConfirmationModal(
+                                        title: "⚠️ Wirklich löschen?",
+                                        message: "Möchtest du wirklich alle deine GPS-Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+                                        confirmButtonTitle: "Löschen",
+                                        onConfirm: {
+                                            let success = deleteLokalGPSData()
+                                            if success {
+                                                bannerManager.showBanner(String(localized: "delete_my_gps_data_success"), type: .success)
+                                                userTracks = loadUserTracks(context: context)
+                                                locationManager.fetchAllCoordinates()
+                                            } else {
+                                                bannerManager.showBanner(String(localized: "delete_my_gps_data_error"), type: .error)
+                                            }
+                                            showDeleteModal = false
+                                        },
+                                        onCancel: {
+                                            showDeleteModal = false
+                                        }
+                                    )
+                                    .presentationDetents([.height(300)]) // ➔ Höhe auf 300pt begrenzt
+                                    .presentationDragIndicator(.visible) // ➔ optional, Drag-Indikator oben anzeigen
+                                }
                                 .padding(.horizontal)
                                 .padding(.top, 20)
-                                
                                 
                                 Button(action: {
                                     

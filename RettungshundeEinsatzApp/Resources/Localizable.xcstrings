@@ -30,6 +30,9 @@
     "A" : {
       "shouldTranslate" : false
     },
+    "Abbrechen" : {
+
+    },
     "accuracy" : {
       "localizations" : {
         "de" : {
@@ -63,6 +66,7 @@
       }
     },
     "confirmation_logout" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -767,6 +771,7 @@
       }
     },
     "save_user_data_confirmation_text" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
