@@ -19,6 +19,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var accuracy: Double = 0.0
     @Published var time: Date = Date()
     @Published var coordinates: [CLLocationCoordinate2D] = []
+    @Published var isUpdating = false
+
 
     
     override init() {
@@ -38,13 +40,20 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     func startUpdating() {
         locationManager.startUpdatingLocation()
+        isUpdating = true
         print("🟢 Standort-Tracking gestartet")
+        
+        // Starte den Timer neu
+        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+            self?.processCurrentLocation()
+        }
     }
 
     func stopUpdating() {
         locationManager.stopUpdatingLocation()
         timer?.invalidate()
         timer = nil
+        isUpdating = false
         print("🔴 Standort-Tracking gestoppt")
     }
 

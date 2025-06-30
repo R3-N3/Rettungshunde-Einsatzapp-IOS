@@ -36,6 +36,12 @@ func uploadLocation(
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     
+    guard !token.isEmpty else {
+        print("❌ uploadLocation Failure: Token is missing.")
+        completion(false, "Missing token")
+        return
+    }
+    
     // Body Parameter
     let bodyParams = "latitude=\(latitude)&longitude=\(longitude)&accuracy=\(accuracy)&token=\(token)&timestamp=\(formattedTimestamp)"
     request.httpBody = bodyParams.data(using: .utf8)

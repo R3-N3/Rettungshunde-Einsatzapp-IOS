@@ -13,12 +13,13 @@ struct MapView: View {
     @Environment(\.managedObjectContext) var context
     @EnvironmentObject var router: AppRouter // Für die Logout Funktion notwendig
     @StateObject private var locationManager = LocationManager()
-    @State private var isTracking = false
     @EnvironmentObject var bannerManager: BannerManager
     let thinSpace = "\u{2009}"
     @State private var mapType: MKMapType = .standard
     @State private var userTracks: [UserTrack] = []
     @State private var selectedUser: AllUserData? = nil
+    @State private var refreshUserTracks = false
+
 
 
 
@@ -37,8 +38,10 @@ struct MapView: View {
                     coordinates: locationManager.coordinates,
                     userTracks: userTracks,
                     mapType: $mapType,
-                    selectedUser: $selectedUser // ✅ Binding übergeben
+                    refreshUserTracks: $refreshUserTracks, // ➔ moved up
+                    selectedUser: $selectedUser
                 )
+                .edgesIgnoringSafeArea(.all)
                 .onAppear {
                     locationManager.fetchAllCoordinates()
                     userTracks = loadUserTracks(context: context)
@@ -96,18 +99,17 @@ struct MapView: View {
                                 
                                 // Start Stop GPS Button
                                 Button(action: {
-                                    if isTracking {
+                                    if locationManager.isUpdating {
                                         locationManager.stopUpdating()
                                         bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
                                     } else {
                                         locationManager.startUpdating()
                                         bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
                                     }
-                                    isTracking.toggle()
                                 }) {
                                     HStack {
-                                        Image(systemName: isTracking ? "stop.fill" : "play.fill")
-                                        Text(isTracking ? String(localized: "stop_gps") : String(localized: "start_gps"))
+                                        Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
+                                        Text(locationManager.isUpdating ? String(localized: "stop_gps") : String(localized: "start_gps"))
                                             .fontWeight(.medium)
                                     }
                                 }
@@ -257,6 +259,7 @@ struct MapView: View {
                                 // Download alle GPS Locations aller Benutzer
                                 downloadAllGpsLocations(context: context) { success, message in
                                     bannerManager.showBanner("GPS-Daten erfolgreich heruntergeladen", type: .success)
+                                    refreshUserTracks = true
                                     userTracks = loadUserTracks(context: context)
                                 }
                             }
@@ -276,16 +279,15 @@ struct MapView: View {
                         Spacer()
                         
                         Button(action: {
-                            if isTracking {
+                            if locationManager.isUpdating {
                                 locationManager.stopUpdating()
                                 bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
                             } else {
                                 locationManager.startUpdating()
                                 bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
                             }
-                            isTracking.toggle()
                         }) {
-                            Image(systemName: isTracking ? "stop.fill" : "play.fill")
+                            Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
                                 .font(.title)
                                 .padding()
                                 .background(Color(.tertiarySystemBackground).opacity(0.8))
@@ -353,6 +355,7 @@ struct MapView: View {
                 // Download alle GPS Locations aller Benutzer
                 downloadAllGpsLocations(context: context) { success, message in
                     bannerManager.showBanner("GPS-Daten erfolgreich heruntergeladen", type: .success)
+                    refreshUserTracks = true
                     userTracks = loadUserTracks(context: context)
                 }
             }

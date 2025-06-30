@@ -18,7 +18,8 @@ struct KeychainHelper {
             let query: [String: Any] = [
                 kSecClass as String: kSecClassGenericPassword,
                 kSecAttrAccount as String: "token",
-                kSecValueData as String: data
+                kSecValueData as String: data,
+                kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock // ➔ hinzugefügt
             ]
             
             SecItemDelete(query as CFDictionary) // Vorher löschen
@@ -41,10 +42,11 @@ struct KeychainHelper {
             if let data = dataTypeRef as? Data {
                 return String(data: data, encoding: .utf8)
             }
+        } else {
+            print("❌ loadToken status: \(status)")
         }
         return nil
     }
-    
     static func deleteToken() {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

@@ -22,6 +22,7 @@ struct CustomMapView: UIViewRepresentable {
     let coordinates: [CLLocationCoordinate2D]
     let userTracks: [UserTrack]
     @Binding var mapType: MKMapType
+    @Binding var refreshUserTracks: Bool
     @Binding var selectedUser: AllUserData?
 
     func makeUIView(context: Context) -> MKMapView {
@@ -48,11 +49,63 @@ struct CustomMapView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: MKMapView, context: Context) {
+        print("update UI")
         uiView.mapType = mapType
-        uiView.removeOverlays(uiView.overlays)
-        uiView.removeAnnotations(uiView.annotations)
-        context.coordinator.overlayColors.removeAll()
-        addOverlaysAndAnnotations(to: uiView, context: context)
+
+        // 🔷 Hole hexString vorab
+        let hexString = UserDefaults.standard.string(forKey: "trackColor") ?? "#FF0000"
+        let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
+
+        // 🔴 Entferne und aktualisiere nur dein eigenes Overlay
+        let myOverlays = uiView.overlays.filter { overlay in
+            if let polyline = overlay as? MKPolyline {
+                return context.coordinator.overlayColors[polyline] == myColor
+            }
+            return false
+        }
+        uiView.removeOverlays(myOverlays)
+
+        // 🟢 Füge dein eigenes Overlay neu hinzu
+        if !coordinates.isEmpty {
+            let myPolyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+            context.coordinator.overlayColors[myPolyline] = myColor
+            uiView.addOverlay(myPolyline)
+        }
+
+        // 🔷 ➔ Fremde UserTracks Overlays und Annotations nur neu laden, wenn refreshUserTracks == true
+        if refreshUserTracks {
+            // Entferne alle fremden Overlays (außer deinem eigenen)
+            for overlay in uiView.overlays {
+                if let polyline = overlay as? MKPolyline {
+                    if context.coordinator.overlayColors[polyline] != myColor {
+                        uiView.removeOverlay(polyline)
+                    }
+                }
+            }
+
+            // Entferne alle UserAnnotations
+            let userAnnotations = uiView.annotations.filter { $0 is UserAnnotation }
+            uiView.removeAnnotations(userAnnotations)
+
+            // ➔ Füge fremde Tracks neu hinzu
+            for track in userTracks {
+                let polyline = MKPolyline(coordinates: track.coordinates, count: track.coordinates.count)
+                context.coordinator.overlayColors[polyline] = track.color
+                uiView.addOverlay(polyline)
+
+                if let user = track.user, let lastCoord = track.coordinates.last {
+                    let annotation = UserAnnotation()
+                    annotation.coordinate = lastCoord
+                    annotation.title = user.username ?? "User"
+                    annotation.user = user
+                    annotation.color = track.iconColor
+                    uiView.addAnnotation(annotation)
+                }
+            }
+            DispatchQueue.main.async {
+                self.refreshUserTracks = false
+            }
+        }
     }
 
     private func addOverlaysAndAnnotations(to mapView: MKMapView, context: Context) {
@@ -117,7 +170,6 @@ struct CustomMapView: UIViewRepresentable {
 
                 let btn = UIButton(type: .detailDisclosure)
                 view?.rightCalloutAccessoryView = btn
-                
             } else {
                 view?.annotation = annotation
 
