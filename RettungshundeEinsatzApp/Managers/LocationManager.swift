@@ -18,6 +18,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var longitude: Double = 0.0
     @Published var accuracy: Double = 0.0
     @Published var time: Date = Date()
+    @Published var coordinates: [CLLocationCoordinate2D] = []
+
     
     override init() {
         super.init()
@@ -116,6 +118,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         do {
             try context.save()
             print("✅ Standort lokal in Datenbank gespeichert")
+            
+            // ➔ Nach jedem Speichern die Koordinaten aktualisieren
+            DispatchQueue.main.async {
+                self.fetchAllCoordinates()
+            }
+
         } catch {
             print("❌ Fehler beim Speichern: \(error.localizedDescription)")
         }
@@ -123,7 +131,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     
     // Für Debug Zwecke zur Ausgabe aller Daten in der Datenbank
-    func fetchAllLocations() {
+    func fetchAllMyLocations() {
         let context = PersistenceController.shared.container.viewContext
         let fetchRequest: NSFetchRequest<MyGPSData> = MyGPSData.fetchRequest()
 
@@ -137,16 +145,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
-    func fetchAllCoordinates() -> [CLLocationCoordinate2D] {
+
+    func fetchAllCoordinates() {
         let context = PersistenceController.shared.container.viewContext
         let fetchRequest: NSFetchRequest<MyGPSData> = MyGPSData.fetchRequest()
         
         do {
             let results = try context.fetch(fetchRequest)
-            return results.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+            self.coordinates = results.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
         } catch {
             print("❌ Fehler beim Abrufen: \(error.localizedDescription)")
-            return []
         }
     }
 }

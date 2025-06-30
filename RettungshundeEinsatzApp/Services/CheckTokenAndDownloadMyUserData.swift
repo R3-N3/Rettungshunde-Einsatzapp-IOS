@@ -10,7 +10,7 @@ import Foundation
 func checkTokenAndDownloadMyUserData(router: AppRouter, completion: @escaping (Bool, String) -> Void) {
 
     
-    print("Starte CheckTokenAndGetMyUserData")
+    print("🟢 Starte CheckTokenAndGetMyUserData")
     
     let defaults = UserDefaults.standard
     

@@ -13,7 +13,7 @@ func editMyUserData(
     completion: @escaping (Bool, String) -> Void
 ) {
     
-    print("Starte EditMyUserData")
+    print("🟢 Starte EditMyUserData")
     
     let defaults = UserDefaults.standard
     

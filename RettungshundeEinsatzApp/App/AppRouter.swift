@@ -14,11 +14,14 @@ class AppRouter: ObservableObject {
 
 
     init() {
-        if KeychainHelper.loadToken() != nil {
-            print("🔑 Token gespeichert, starte MapView ")
+        let hasToken = KeychainHelper.loadToken() != nil
+        let username = UserDefaults.standard.string(forKey: "username")
+        
+        if hasToken, username != nil {
+            print("🔑 Token und Benutzername vorhanden, starte MapView ")
             isLoggedIn = true
         } else {
-            print("❌ Kein Token gespeichert, starte StartView")
+            print("❌ Kein Token oder Benutzername, starte StartView")
             isLoggedIn = false
         }
     }

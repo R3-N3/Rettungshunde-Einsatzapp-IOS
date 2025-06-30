@@ -22,7 +22,10 @@
       }
     },
     "%@" : {
-      "shouldTranslate" : false
+
+    },
+    "👤 %@" : {
+
     },
     "A" : {
       "shouldTranslate" : false
@@ -289,6 +292,9 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
+    "Funkrufname: %@" : {
+
+    },
     "geographical_coordinates" : {
       "localizations" : {
         "de" : {
@@ -304,6 +310,9 @@
           }
         }
       }
+    },
+    "Handynummer: %@" : {
+
     },
     "incorect_user_param" : {
       "localizations" : {
@@ -387,6 +396,9 @@
           }
         }
       }
+    },
+    "Kontakte" : {
+
     },
     "last_change" : {
       "localizations" : {
@@ -486,7 +498,7 @@
       }
     },
     "MGRS" : {
-      "shouldTranslate" : false
+
     },
     "my_position" : {
       "localizations" : {
@@ -903,6 +915,9 @@
           }
         }
       }
+    },
+    "TrackColor: %@" : {
+
     },
     "unknown_error" : {
       "extractionState" : "manual",

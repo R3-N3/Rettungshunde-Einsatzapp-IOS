@@ -10,7 +10,7 @@ import Foundation
 func checkLoginParam(username: String, password: String, org: String, completion: @escaping (Bool, String) -> Void
 ) {
     
-    print("Starte checkLoginParam mit Benutzername: \(username) Passwort: \(password) Organisation \(org)")
+    print("🟢 Starte checkLoginParam mit Benutzername: \(username) Passwort: \(password) Organisation \(org)")
     
     let defaults = UserDefaults.standard
     

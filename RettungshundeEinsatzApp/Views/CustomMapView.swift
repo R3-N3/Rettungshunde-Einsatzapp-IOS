@@ -2,15 +2,27 @@
 //  CustomMapView.swift
 //  RettungshundeEinsatzApp
 //
-//  Created by René Nettekoven on 27.06.25.
-//
 
 import SwiftUI
 import MapKit
 
+struct UserTrack {
+    var user: AllUserData?
+    var coordinates: [CLLocationCoordinate2D]
+    var color: UIColor
+    var iconColor: UIColor? // ➔ hinzugefügt
+}
+
+class UserAnnotation: MKPointAnnotation {
+    var user: AllUserData?
+    var color: UIColor?
+}
+
 struct CustomMapView: UIViewRepresentable {
     let coordinates: [CLLocationCoordinate2D]
+    let userTracks: [UserTrack]
     @Binding var mapType: MKMapType
+    @Binding var selectedUser: AllUserData?
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -21,12 +33,9 @@ struct CustomMapView: UIViewRepresentable {
         mapView.isRotateEnabled = true
         mapView.isPitchEnabled = false
         mapView.showsCompass = true
-
-        // ➔ Setze initialen mapType
         mapView.mapType = mapType
 
-        // Anfangsregion
-        if let first = coordinates.first {
+        if let first = coordinates.first ?? userTracks.first?.coordinates.first {
             let region = MKCoordinateRegion(
                 center: first,
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
@@ -34,21 +43,40 @@ struct CustomMapView: UIViewRepresentable {
             mapView.setRegion(region, animated: true)
         }
 
-        // Polyline hinzufügen
-        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-        mapView.addOverlay(polyline)
-
+        addOverlaysAndAnnotations(to: mapView, context: context)
         return mapView
     }
 
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        // ➔ Aktualisiere mapType bei jedem Update
         uiView.mapType = mapType
-
-        // Overlays aktualisieren
         uiView.removeOverlays(uiView.overlays)
-        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-        uiView.addOverlay(polyline)
+        uiView.removeAnnotations(uiView.annotations)
+        context.coordinator.overlayColors.removeAll()
+        addOverlaysAndAnnotations(to: uiView, context: context)
+    }
+
+    private func addOverlaysAndAnnotations(to mapView: MKMapView, context: Context) {
+        if !coordinates.isEmpty {
+            let myPolyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+            let hexString = UserDefaults.standard.string(forKey: "trackColor") ?? "#FF0000"
+            context.coordinator.overlayColors[myPolyline] = UIColor(hex: hexString) ?? UIColor.systemRed
+            mapView.addOverlay(myPolyline)
+        }
+
+        for track in userTracks {
+            let polyline = MKPolyline(coordinates: track.coordinates, count: track.coordinates.count)
+            context.coordinator.overlayColors[polyline] = track.color
+            mapView.addOverlay(polyline)
+
+            if let user = track.user, let lastCoord = track.coordinates.last {
+                let annotation = UserAnnotation()
+                annotation.coordinate = lastCoord
+                annotation.title = user.username ?? "User"
+                annotation.user = user
+                annotation.color = track.iconColor // ➔ Farbe für Marker
+                mapView.addAnnotation(annotation)
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -57,6 +85,7 @@ struct CustomMapView: UIViewRepresentable {
 
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: CustomMapView
+        var overlayColors: [MKPolyline: UIColor] = [:]
 
         init(_ parent: CustomMapView) {
             self.parent = parent
@@ -65,15 +94,46 @@ struct CustomMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let polyline = overlay as? MKPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
-
-                // ➔ Farbe aus UserDefaults laden
-                let hexString = UserDefaults.standard.string(forKey: "trackColor") ?? "#FF0000"
-                renderer.strokeColor = UIColor(hex: hexString) ?? UIColor.systemRed
+                renderer.strokeColor = overlayColors[polyline] ?? UIColor.systemYellow
                 renderer.lineWidth = 3
-
                 return renderer
             }
             return MKOverlayRenderer()
+        }
+
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            if annotation is MKUserLocation { return nil }
+
+            let identifier = "UserAnnotationView"
+            var view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+
+            if view == nil {
+                view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                view?.canShowCallout = true
+
+                if let userAnnotation = annotation as? UserAnnotation {
+                    view?.markerTintColor = userAnnotation.color ?? .systemOrange
+                }
+
+                let btn = UIButton(type: .detailDisclosure)
+                view?.rightCalloutAccessoryView = btn
+                
+            } else {
+                view?.annotation = annotation
+
+                if let userAnnotation = annotation as? UserAnnotation {
+                    view?.markerTintColor = userAnnotation.color ?? .systemOrange
+                }
+            }
+
+            return view
+        }
+
+        func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+            if let userAnnotation = view.annotation as? UserAnnotation, let user = userAnnotation.user {
+                print("👉 User tapped: \(user.username ?? "nil")")
+                parent.selectedUser = user
+            }
         }
     }
 }
