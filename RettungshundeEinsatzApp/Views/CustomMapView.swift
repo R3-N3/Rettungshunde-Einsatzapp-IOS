@@ -6,11 +6,14 @@
 import SwiftUI
 import MapKit
 
+import SwiftUI
+import MapKit
+
 struct UserTrack {
     var user: AllUserData?
     var coordinates: [CLLocationCoordinate2D]
     var color: UIColor
-    var iconColor: UIColor? // ➔ hinzugefügt
+    var iconColor: UIColor?
 }
 
 class UserAnnotation: MKPointAnnotation {
@@ -52,32 +55,31 @@ struct CustomMapView: UIViewRepresentable {
         print("🟢 Starte UpdateUI in CustomMapView")
         uiView.mapType = mapType
 
-        // 🔷 Hole hexString vorab
-        let hexString = UserDefaults.standard.string(forKey: "trackColor") ?? "#FF0000"
-        let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
-
-        // 🔴 Entferne und aktualisiere nur dein eigenes Overlay
-        let myOverlays = uiView.overlays.filter { overlay in
-            if let polyline = overlay as? MKPolyline {
-                return context.coordinator.overlayColors[polyline] == myColor
-            }
-            return false
+        // ➡️ Entferne vorhandene eigene Polyline
+        if let existing = context.coordinator.myPolyline {
+            uiView.removeOverlay(existing)
         }
-        uiView.removeOverlays(myOverlays)
 
-        // 🟢 Füge dein eigenes Overlay neu hinzu
+        // ➡️ Füge neue eigene Polyline hinzu
         if !coordinates.isEmpty {
-            let myPolyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-            context.coordinator.overlayColors[myPolyline] = myColor
-            uiView.addOverlay(myPolyline)
+            let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+            let hexString = UserDefaults.standard.string(forKey: "trackColor")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "#FF0000"
+            let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
+
+            context.coordinator.overlayColors[polyline] = myColor
+            uiView.addOverlay(polyline)
+
+            // ➡️ Speichere Referenz
+            context.coordinator.myPolyline = polyline
         }
 
-        // 🔷 ➔ Fremde UserTracks Overlays und Annotations nur neu laden, wenn refreshUserTracks == true
+        // ➡️ Aktualisiere fremde UserTracks nur wenn refreshUserTracks == true
         if refreshUserTracks {
-            // Entferne alle fremden Overlays (außer deinem eigenen)
+            print("refreshUserTracks == true")
+            // Entferne alle fremden Overlays (außer eigene Polyline)
             for overlay in uiView.overlays {
                 if let polyline = overlay as? MKPolyline {
-                    if context.coordinator.overlayColors[polyline] != myColor {
+                    if polyline != context.coordinator.myPolyline {
                         uiView.removeOverlay(polyline)
                     }
                 }
@@ -87,7 +89,7 @@ struct CustomMapView: UIViewRepresentable {
             let userAnnotations = uiView.annotations.filter { $0 is UserAnnotation }
             uiView.removeAnnotations(userAnnotations)
 
-            // ➔ Füge fremde Tracks neu hinzu
+            // ➡️ Füge fremde Tracks neu hinzu
             for track in userTracks {
                 let polyline = MKPolyline(coordinates: track.coordinates, count: track.coordinates.count)
                 context.coordinator.overlayColors[polyline] = track.color
@@ -110,10 +112,13 @@ struct CustomMapView: UIViewRepresentable {
 
     private func addOverlaysAndAnnotations(to mapView: MKMapView, context: Context) {
         if !coordinates.isEmpty {
-            let myPolyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-            let hexString = UserDefaults.standard.string(forKey: "trackColor") ?? "#FF0000"
-            context.coordinator.overlayColors[myPolyline] = UIColor(hex: hexString) ?? UIColor.systemRed
-            mapView.addOverlay(myPolyline)
+            let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+            let hexString = UserDefaults.standard.string(forKey: "trackColor")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "#FF0000"
+            let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
+
+            context.coordinator.overlayColors[polyline] = myColor
+            mapView.addOverlay(polyline)
+            context.coordinator.myPolyline = polyline
         }
 
         for track in userTracks {
@@ -126,7 +131,7 @@ struct CustomMapView: UIViewRepresentable {
                 annotation.coordinate = lastCoord
                 annotation.title = user.username ?? "User"
                 annotation.user = user
-                annotation.color = track.iconColor // ➔ Farbe für Marker
+                annotation.color = track.iconColor
                 mapView.addAnnotation(annotation)
             }
         }
@@ -139,6 +144,9 @@ struct CustomMapView: UIViewRepresentable {
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: CustomMapView
         var overlayColors: [MKPolyline: UIColor] = [:]
+
+        // ➡️ NEU: Eigene Polyline Referenz
+        var myPolyline: MKPolyline?
 
         init(_ parent: CustomMapView) {
             self.parent = parent

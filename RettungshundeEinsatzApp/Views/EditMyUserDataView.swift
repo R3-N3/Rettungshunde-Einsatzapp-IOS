@@ -123,9 +123,24 @@ struct EditMyUserDataView: View {
                     }
                     .buttonStyle(buttonStyleREAAnimated())
                     
-                    Button(String(localized: "save")) {
-                        focusedField = nil
+                    Button(action: {
+                        if !isValidEmail(email) {
+                            bannerManager.showBanner(String(localized: "banner_insert_valid_email"), type: .error)
+                            return
+                        }
+                        
+                        if !isValidPhoneNumber(phoneNumber) {
+                            bannerManager.showBanner(String(localized: "banner_insert_valid_phone_number"), type: .error)
+                            return
+                        }
+
                         showSaveModal = true
+                    }) {
+                        HStack {
+                            Image(systemName: "checkmark.circle")
+                            Text(String(localized: "save"))
+                                .fontWeight(.medium)
+                        }
                     }
                     .buttonStyle(buttonStyleREAAnimatedGreen())
                 }
@@ -151,11 +166,11 @@ struct EditMyUserDataView: View {
                         ) { success, message in
                             DispatchQueue.main.async {
                                 if success {
-                                    bannerManager.showBanner(String(localized: "input_saved_successfully"), type: .success)
+                                    bannerManager.showBanner(String(localized: "baner_input_saved_successfully"), type: .success)
                                     checkTokenAndDownloadMyUserData(router: router) { success, message in }
                                     dismiss()
                                 } else {
-                                    bannerManager.showBanner(String(localized: "input_saved_error"), type: .error)
+                                    bannerManager.showBanner(String(localized: "banner_input_saved_error"), type: .error)
                                 }
                                 isSubmitting = false
                                 showSaveModal = false
@@ -186,3 +201,7 @@ struct EditMyUserDataView: View {
         }
     }
 }
+
+
+
+

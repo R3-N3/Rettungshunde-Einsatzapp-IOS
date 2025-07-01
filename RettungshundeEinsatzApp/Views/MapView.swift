@@ -21,6 +21,8 @@ struct MapView: View {
     @State private var refreshUserTracks = false
     @State private var showDeleteModal = false
     @State private var showDeleteAllGPSDataModal = false
+    @State private var showDeleteAllAreasModal = false
+    @State private var isSubmitting = false
 
 
     var body: some View {
@@ -215,14 +217,40 @@ struct MapView: View {
                                 
                                 
                                 Button(action: {
-                                    
+                                    showDeleteAllAreasModal = true
                                 }) {
                                     HStack {
                                         Image(systemName: "trash.fill")
                                         Text(String(localized: "delete_all_areas")).fontWeight(.medium)
                                     }
                                 }
-                                .buttonStyle(buttonStyleREAAnimatedRed())
+                                .buttonStyle(buttonStyleREAAnimated())
+                                .sheet(isPresented: $showDeleteAllAreasModal) {
+                                    DeleteConfirmationModal(
+                                        title: String(localized: "confirm_delete_all_areas_titel"),
+                                        message: String(localized: "confirm_delete_all_areas_text"),
+                                        confirmButtonTitle: String(localized: "delete"),
+                                        onConfirm: {
+                                            isSubmitting = true
+                                            deleteAllAreas { success, message in
+                                                DispatchQueue.main.async {
+                                                    isSubmitting = false
+                                                    if success {
+                                                        bannerManager.showBanner(String(localized: "delete_all_areas_success"), type: .success)
+                                                    } else {
+                                                        bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
+                                                    }
+                                                    showDeleteAllAreasModal = false
+                                                }
+                                            }
+                                        },
+                                        onCancel: {
+                                            showDeleteAllAreasModal = false
+                                        }
+                                    )
+                                    .presentationDetents([.height(300)])
+                                    .presentationDragIndicator(.visible)
+                                }
                                 .padding(.horizontal)
                                 .padding(.top, 20)
                                 
@@ -389,19 +417,19 @@ struct MapView: View {
                             .padding(.top, 0)
                             .font(.footnote)
                         
-                        Text("   " + latLonToFormattedString(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
+                        Text(latLonToFormattedString(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
                         
-                        Text("MGRS Koordinaten")
+                        Text(String(localized: "MGRS"))
                             .padding(.top, 2)
                             .font(.footnote)
                         
-                        Text("   " + latLonToMGRS(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
+                        Text(latLonToMGRS(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
                         
                         Text(String(localized: "accuracy"))
                             .padding(.top, 2)
                             .font(.footnote)
                         
-                        Text("   ±" + "\(Int(lastLocation.accuracy))\(thinSpace)m")
+                        Text(String(Int(lastLocation.accuracy)) + "\(thinSpace)" + "m")
                             .padding(.horizontal)
                         
                         Text(String(localized: "last_change"))
@@ -410,20 +438,14 @@ struct MapView: View {
                         
                         Text(lastLocation.time ?? "Unknown")
                             .padding(.horizontal)
-                            .padding(.horizontal)
                         
                         
                             } else {
-                                Text("Keine Koordinaten verfügbar")
+                                Text(String(localized: "no_coordinates_available"))
                             }
-                    
-                    
-
-      
-                    // Weitere Infos oder Buttons
                 }
                 .padding()
-                .presentationDetents([.height(300)]) // ➔ Höhe auf z.B. 200pt begrenzt
+                .presentationDetents([.height(320), .large])
                 .presentationDragIndicator(.visible) // ➔ optional, Drag-Indikator anzeigen
             }
         }
@@ -447,6 +469,18 @@ struct MapView: View {
                 }
             }
             
+        }
+        .overlay {
+            if isSubmitting {
+                ZStack {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    ProgressView(String(localized: "processing"))
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                }
+            }
         }
     }
     
@@ -489,7 +523,6 @@ struct MapView: View {
             }
 
             let coords = sorted.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
-            print("🔍 Eigene Koordinaten: \(coords.count)")
 
             let hexString = UserDefaults.standard.string(forKey: "trackColor") ?? "#FF0000"
             let myTrack = UserTrack(user: nil, coordinates: coords, color: (UIColor(hex: hexString) ?? UIColor.systemRed))

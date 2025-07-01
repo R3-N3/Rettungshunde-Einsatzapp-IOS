@@ -10,34 +10,37 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var router: AppRouter // Für die Logout Funktion notwendig
     @EnvironmentObject var bannerManager: BannerManager
-
+    
     let defaults = UserDefaults.standard
     @State private var selectedColor: Color = .blue
     @State private var showLogoutModal = false
-
+    
     var body: some View {
-
+        
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Section-Titel
-                    Text(String(localized: "my_user_data"))
-                        .font(.headline)
-                        .padding(.top)
+            List{
+                Section(header: Text(String(localized: "my_user_data"))){
+                    NavigationLink(destination: EditMyUserDataView()) {
+                        VStack(alignment: .leading, spacing: 0){
+                            Text("👤 " + (defaults.string(forKey: "username") ?? ""))
+                                .font(.largeTitle)
+                            
+                            Text((defaults.string(forKey: "email") ?? String(localized: "unknown_email")))
+                            
+                            Text((defaults.string(forKey: "phoneNumber") ?? String(localized: "unknown_phonenumber")))
+                            
+                            Text((defaults.string(forKey: "radioCallName") ?? String(localized: "unknown_radiocallname")))
+                            
+                            Text(((defaults.string(forKey: "securityLevel") ?? String(localized: "unknown_securitylevel"))).securityLevelText)
+                        }
+                    }
                     
-                    Text(String(localized: "username") + ": " + (defaults.string(forKey: "username") ?? ""))
-                        .padding(.top)
-                    
-                    Text(String(localized: "email") + ": " + (defaults.string(forKey: "email") ?? ""))
-                    
-                    Text(String(localized: "phone_number") + ": " + (defaults.string(forKey: "phoneNumber") ?? ""))
-                    
-                    Text(String(localized: "radio_call_name") + ": " + (defaults.string(forKey: "radioCallName") ?? ""))
-                    
-                    Text(String(localized: "security_level") + ": " + ((defaults.string(forKey: "securityLevel") ?? "")).securityLevelText)
+                }
+                
+                Section(header: Text(String(localized: "my_local_track_color"))){
                     
                     HStack {
-                        Text(String(localized: "track_color") + ": ")
+                        Text(String(localized: "edit_local_track_color"))
                         
                         Rectangle()
                             .fill(selectedColor)
@@ -53,24 +56,10 @@ struct SettingsView: View {
                                 RoundedRectangle(cornerRadius: 4)
                                     .stroke(Color.gray, lineWidth: 1)
                             )
-                    }
-                    
-                    Divider()
-                        .padding(.top)
-                    
-                    // Benutzerdaten ändern
-                    HStack {
-                        NavigationLink(destination: EditMyUserDataView()) {
-                            Label(String(localized: "edit_user_data"), systemImage: "person.fill")
-                        }
-                        .buttonStyle(buttonStyleREAAnimated())
-                        .padding(.top, 16)
-                    }
-                    .frame(maxWidth: .infinity)
-                    
-                    // Farbe ändern Button
-                    HStack {
-                        ColorPicker(String(localized: "select_new_track_color") + ": ", selection: $selectedColor)
+                        
+                        Spacer()
+                        
+                        ColorPicker("", selection: $selectedColor)
                             .onChange(of: selectedColor) { _, newValue in
                                 if let uiColor = UIColor(newValue).cgColor.components {
                                     let r = Int((uiColor[0] * 255.0).rounded())
@@ -80,11 +69,12 @@ struct SettingsView: View {
                                     defaults.set(hexString, forKey: "trackColor")
                                 }
                             }
-                            .buttonStyle(buttonStyleREAAnimated())
-                            .padding(.top, 16)
+                            .frame(maxWidth: 50)
+                            .labelsHidden()
                     }
-                    .frame(maxWidth: .infinity)
-                    
+                }
+                
+                Section(header: Text(String(localized: "logout"))){
                     // Logout Button
                     HStack {
                         Button(role: .destructive) {
@@ -94,17 +84,10 @@ struct SettingsView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(buttonStyleREAAnimatedRed())
-                        .padding(.top, 50)
                     }
                     .frame(maxWidth: .infinity)
                 }
-                .padding()
-                .onAppear {
-                    if let hex = defaults.string(forKey: "trackColor"),
-                       let color = Color(hex: hex) {
-                        selectedColor = color
-                    }
-                }
+                
             }
             .navigationTitle(String(localized: "settings"))
             .sheet(isPresented: $showLogoutModal) {
@@ -126,3 +109,4 @@ struct SettingsView: View {
         }
     }
 }
+

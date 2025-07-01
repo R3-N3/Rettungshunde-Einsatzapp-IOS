@@ -22,24 +22,14 @@ struct UserListView: View {
                 // ➔ Section mit Button ganz oben
                 Section {
                     HStack{
-                        
-                        Spacer()
-                        
                         NavigationLink(destination: CreateUserView()) {
                             HStack {
-                                Spacer()
                                 Image(systemName: "plus.circle")
-                                Text("Neuen Benutzer anlegen")
+                                Text(String(localized: "create_new_user"))
                                     .fontWeight(.semibold)
-                                Spacer()
                             }
                             .padding()
-                            .foregroundColor(.white)
-                            .background(Color.blue)
-                            .cornerRadius(8)
                         }
-                        
-                        Spacer()
                         
                     }
                 }
@@ -48,19 +38,19 @@ struct UserListView: View {
                 ForEach(users, id: \.self) { user in
                     NavigationLink(destination: UserEditView(user: user)) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(user.username ?? "Unbekannt")
+                            Text(user.username ?? String(localized: "unknown"))
                                 .font(.headline)
-                            Text("E-Mail: \(user.email ?? "")")
+                            Text(String(localized: "email") + " \(user.email ?? "")")
                                 .font(.subheadline)
-                            Text("Handy: \(user.phonenumber ?? "")")
+                            Text(String(localized: "phone_number") + ": \(user.phonenumber ?? "")")
                                 .font(.subheadline)
-                            Text("Funkrufname: \(user.radiocallname ?? "")")
+                            Text(String(localized: "radio_call_name") + ": \(user.radiocallname ?? "")")
                                 .font(.subheadline)
-                            Text("Sicherheitslevel: " + user.securitylevel.securityLevelTextFromInt16)
+                            Text(String(localized: "security_level") + ": " + user.securitylevel.securityLevelTextFromInt16)
                                 .font(.subheadline)
                             
                             HStack {
-                                Text("Track-Farbe:")
+                                Text(String(localized: "track_color"))
                                     .font(.subheadline)
                                 if let hex = user.trackcolor, let color = Color(hex: hex) {
                                     ZStack {
@@ -78,7 +68,7 @@ struct UserListView: View {
                                             .shadow(radius: 1)
                                     }
                                 } else {
-                                    Text("-")
+                                    Text(String(localized: "unknown"))
                                         .font(.subheadline)
                                 }
                             }
@@ -87,7 +77,7 @@ struct UserListView: View {
                     }
                 }
             }
-            .navigationTitle("Alle Benutzer")
+            .navigationTitle(String(localized: "all_user"))
         }
     }
 }

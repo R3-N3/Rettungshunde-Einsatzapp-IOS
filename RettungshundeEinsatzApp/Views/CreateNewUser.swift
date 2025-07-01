@@ -33,40 +33,42 @@ struct CreateUserView: View {
         ("(3) Administrator", 3)
     ]
 
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section(header: Text("Benutzerdaten")) {
-                    TextField("Username", text: $username)
-                    TextField("E-Mail", text: $email)
-                        .keyboardType(.emailAddress)
-                    SecureField("Passwort", text: $password)
-                    TextField("Handynummer", text: $phoneNumber)
-                        .keyboardType(.phonePad)
-                    TextField("Funkrufname", text: $callSign)
-                }
+        var body: some View {
+            NavigationStack {
+                VStack {
+                    Form {
+                        Section(header: Text(String(localized: "user_data"))) {
+                            TextField(String(localized: "username"), text: $username)
+                            TextField(String(localized: "email"), text: $email)
+                                .keyboardType(.emailAddress)
+                            SecureField(String(localized: "password"), text: $password)
+                            TextField(String(localized: "phone_number"), text: $phoneNumber)
+                                .keyboardType(.phonePad)
+                            TextField(String(localized: "radio_call_name"), text: $callSign)
+                        }
 
-                Section(header: Text("Sicherheitslevel")) {
-                    Picker("Level", selection: $securityLevel) {
-                        ForEach(securityLevels, id: \.value) { level in
-                            Text(level.text).tag(level.value)
+                        Section(header: Text(String(localized: "security_level"))) {
+                            Picker(String(localized: "security_level"), selection: $securityLevel) {
+                                ForEach(securityLevels, id: \.value) { level in
+                                    Text(level.text).tag(level.value)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+
+                        Section(header: Text(String(localized: "track_color"))) {
+                            ColorPicker(String(localized: "choose_color"), selection: $selectedColor)
+                        }
+
+                        if showError {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
                         }
                     }
-                    .pickerStyle(.segmented)
-                }
 
-                Section(header: Text("Track-Farbe")) {
-                    ColorPicker("Farbe auswählen", selection: $selectedColor)
-                }
-
-                if showError {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                }
-
-                Section {
+                    // ➡️ Sticky Buttons außerhalb der Form
                     HStack {
-                        Button("Abbrechen") {
+                        Button(String(localized: "cancel")) {
                             dismiss()
                         }
                         .buttonStyle(buttonStyleREAAnimated())
@@ -80,45 +82,47 @@ struct CreateUserView: View {
                         }) {
                             HStack {
                                 Image(systemName: "plus.circle")
-                                Text("Erstellen")
+                                Text(String(localized: "create"))
                                     .fontWeight(.medium)
                             }
                         }
                         .buttonStyle(buttonStyleREAAnimatedGreen())
                     }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    //.shadow(radius: 2)
                 }
-            }
-            .navigationTitle("Neuen Benutzer erstellen")
-            .overlay {
-                if isSubmitting {
-                    ZStack {
-                        Color.black.opacity(0.3).ignoresSafeArea()
-                        ProgressView("Bitte warten...")
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
+                .navigationTitle(String(localized: "create_new_user"))
+                .overlay {
+                    if isSubmitting {
+                        ZStack {
+                            Color.black.opacity(0.3).ignoresSafeArea()
+                            ProgressView(String(localized: "processing"))
+                                .padding()
+                                .background(Color(.systemBackground))
+                                .cornerRadius(10)
+                        }
                     }
                 }
             }
         }
-    }
 
     // ✅ Eingabevalidierung
     func validateInputs() -> Bool {
         if username.isEmpty || email.isEmpty || password.isEmpty || phoneNumber.isEmpty || callSign.isEmpty {
-            errorMessage = "Bitte fülle alle Felder aus."
+            errorMessage = String(localized: "fill_in_al_fields") //"Bitte fülle alle Felder aus."
             showError = true
             return false
         }
 
         if !isValidEmail(email) {
-            errorMessage = "Bitte gib eine gültige E-Mail-Adresse ein."
+            errorMessage = String(localized: "enter_valid_email") //"Bitte gib eine gültige E-Mail-Adresse ein."
             showError = true
             return false
         }
 
         if !isValidPassword(password) {
-            errorMessage = "Passwort muss min. 8 Zeichen, Buchstaben, Zahlen und Sonderzeichen enthalten."
+            errorMessage = String(localized: "password_need_to_be")//"Passwort muss min. 8 Zeichen, Buchstaben, Zahlen und Sonderzeichen enthalten."
             showError = true
             return false
         }
@@ -142,7 +146,7 @@ struct CreateUserView: View {
         ) { success, message in
             DispatchQueue.main.async {
                 if success {
-                    bannerManager.showBanner("Benutzer erfolgreich erstellt.", type: .success)
+                    bannerManager.showBanner(String(localized: "banner_user_create_sucessfull"), type: .success)
                     // ➔ Lade alle Benutzerdaten neu
                     downloadAllUserData(context: context) { success, message in
                     }
@@ -151,7 +155,8 @@ struct CreateUserView: View {
                 } else {
                     errorMessage = message
                     showError = true
-                    bannerManager.showBanner("Fehler: \(message)", type: .error)
+                    bannerManager.showBanner(String(localized: "error") + ": \(message)", type: .error)
+                    isSubmitting = false
                 }
             }
         }

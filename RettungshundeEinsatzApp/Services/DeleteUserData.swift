@@ -1,77 +1,65 @@
 //
-//  Untitled.swift
+//  DeleteUser.swift
 //  RettungshundeEinsatzApp
 //
-//  Created by René Nettekoven on 28.06.25.
+//  Created by René Nettekoven on 01.07.25.
 //
 
 import Foundation
 
-func editMyUserData(
-    email: String,
-    phoneNumber: String,
+func deleteUserData(
+    username: String,
     completion: @escaping (Bool, String) -> Void
 ) {
-    
-    print("🟢 Starte EditMyUserData")
-    
+    print("🟢 Starte deleteUserData für \(username)")
+
     let defaults = UserDefaults.standard
-    
     let serverApiURL = defaults.string(forKey: "serverApiURL") ?? ""
     let token = KeychainHelper.loadToken() ?? ""
-    
-    // URL bauen
-    guard let url = URL(string: serverApiURL + "editmyuserdata") else {
+
+    guard let url = URL(string: serverApiURL + "deleteuser") else {
         completion(false, "Invalid URL")
         return
     }
-    
-    // 2. Request vorbereiten
+
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    
-    // 3. Body Parameter
-    var encodedPhoneNumber = phoneNumber.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? phoneNumber
-    encodedPhoneNumber = encodedPhoneNumber.replacingOccurrences(of: "+", with: "%2B")
-    let encodedEmail = email.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? email
-    let bodyParams = "token=\(token)&email=\(encodedEmail)&phoneNumber=\(encodedPhoneNumber)"
+    let bodyParams = "token=\(token)&username=\(username)"
     request.httpBody = bodyParams.data(using: .utf8)
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    
-    // 4. URLSession Task
+
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
-            print("❌ editMyUserData Error: \(error.localizedDescription)")
+            print("❌ deleteUserData Error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
             return
         }
-        
+
         guard let data = data else {
             completion(false, "No data received")
             return
         }
-        
+
         do {
-            // 5. JSON parsen
             if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 let status = json["status"] as? String ?? "error"
-                let message = json["message"] as? String ?? "Unknown error"
-                
+                let message = json["message"] as? String ?? "Unbekannter Fehler"
+
                 if status == "success" {
-                    print("✅ editMyUserData Success: \(message)")
+                    print("✅ deleteUserData Success: \(message)")
                     completion(true, message)
                 } else {
-                    print("⚠️ editMyUserData Failure: \(message)")
+                    print("❌ deleteUserData Server Error: \(message)")
                     completion(false, message)
                 }
             } else {
-                completion(false, "Invalid JSON format")
+                completion(false, "Invalid JSON")
             }
         } catch {
-            print("❌ editMyUserData JSON parse error: \(error.localizedDescription)")
+            print("❌ deleteUserData JSON parse error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
         }
     }
-    
+
     task.resume()
 }

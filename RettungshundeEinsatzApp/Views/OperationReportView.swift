@@ -105,11 +105,11 @@ struct OperationReportView: View {
                                         DispatchQueue.main.async {
                                             if success {
                                                 print("✅ Einsatzbericht erfolgreich gesendet.")
-                                                bannerManager.showBanner("Einsatzbericht erfolgreich gesendet.", type: .success)
+                                                bannerManager.showBanner(String(localized: "banner_send_operation_report_success"), type: .success)
                                                 dismiss()
                                             } else {
                                                 print("❌ Fehler beim Senden: \(message)")
-                                                bannerManager.showBanner("Fehler beim Senden des Berichts.", type: .error)
+                                                bannerManager.showBanner(String(localized: "banner_send_operation_report_error"), type: .error)
                                             }
                                         }
                                     }

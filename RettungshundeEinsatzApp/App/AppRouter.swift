@@ -8,6 +8,8 @@
 
 // Diese Datei ist notwendig, um zwischen bezüglich der RootView zwischen MapView und dem LoginView hin und her zu wechsel 
 import SwiftUI
+import CoreData
+
 
 class AppRouter: ObservableObject {
     @Published var isLoggedIn: Bool
@@ -38,6 +40,28 @@ class AppRouter: ObservableObject {
         defaults.removeObject(forKey: "serverApiURL")
         
         KeychainHelper.deleteToken()
+        
+        // ➔ CoreData Datenbanken leeren
+        let persistentContainer = PersistenceController.shared.container
+
+        persistentContainer.performBackgroundTask { context in
+            let entityNames = persistentContainer.managedObjectModel.entities.compactMap({ $0.name })
+            for entityName in entityNames {
+                let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+                let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetch)
+                do {
+                    try context.execute(deleteRequest)
+                    print("✅ Alle Daten in \(entityName) gelöscht.")
+                } catch {
+                    print("❌ Fehler beim Löschen von \(entityName): \(error.localizedDescription)")
+                }
+            }
+            do {
+                try context.save()
+            } catch {
+                print("❌ Fehler beim Speichern nach Delete: \(error.localizedDescription)")
+            }
+        }
         
         DispatchQueue.main.async {
             self.isLoggedIn = false

@@ -167,4 +167,5 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("❌ Fehler beim Abrufen: \(error.localizedDescription)")
         }
     }
+
 }

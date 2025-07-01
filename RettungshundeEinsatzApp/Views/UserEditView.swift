@@ -16,6 +16,8 @@ struct UserEditView: View {
     @State private var showSaveModal = false
     @EnvironmentObject var bannerManager: BannerManager
     @State private var isSubmitting = false
+    @State private var showDeleteModal = false
+
 
     @State private var selectedColor: Color = .blue
 
@@ -34,56 +36,57 @@ struct UserEditView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Benutzerdaten")) {
-                    TextField("Username", text: Binding(
+                Section(header: Text(String(localized: "user_data"))) {
+                    TextField(String(localized: "username"), text: Binding(
                         get: { user.username ?? "" },
                         set: { user.username = $0 }
                     ))
-                    TextField("E-Mail", text: Binding(
+                    TextField(String(localized: "email"), text: Binding(
                         get: { user.email ?? "" },
                         set: { user.email = $0 }
                     ))
-                    TextField("Handynummer", text: Binding(
+                    TextField(String(localized: "phone_number"), text: Binding(
                         get: { user.phonenumber ?? "" },
                         set: { user.phonenumber = $0 }
                     ))
-                    TextField("Funkrufname", text: Binding(
+                    .keyboardType(.phonePad)
+                    TextField(String(localized: "radio_call_name"), text: Binding(
                         get: { user.radiocallname ?? "" },
                         set: { user.radiocallname = $0 }
                     ))
                 }
-
-                Section(header: Text("Sicherheitslevel")) {
-                    Picker("Level", selection: $user.securitylevel) {
+                
+                Section(header: Text(String(localized: "security_level"))) {
+                    Picker(String(localized: "security_level"), selection: $user.securitylevel) {
                         ForEach(securityLevels, id: \.value) { level in
                             Text(level.text).tag(level.value)
                         }
                     }
                     .pickerStyle(.segmented)
                 }
-
-                Section(header: Text("Track-Farbe")) {
-                    ColorPicker("Farbe auswählen", selection: $selectedColor)
+                
+                Section(header: Text(String(localized: "track_color"))) {
+                    ColorPicker(String(localized: "choose_color"), selection: $selectedColor)
                         .onChange(of: selectedColor) {
                             user.trackcolor = selectedColor.toHex()
                         }
                 }
-
+                
                 if showError {
                     Text(errorMessage)
                         .foregroundColor(.red)
                 }
-
+                
                 Section {
                     HStack {
-                        Button("Abbrechen") {
+                        Button(String(localized: "cancel")) {
                             viewContext.rollback()
                             dismiss()
                         }
                         .buttonStyle(buttonStyleREAAnimated())
-
+                        
                         Spacer()
-
+                        
                         Button(action: {
                             if validateInputs() {
                                 showSaveModal = true
@@ -91,7 +94,7 @@ struct UserEditView: View {
                         }) {
                             HStack {
                                 Image(systemName: "checkmark.circle")
-                                Text("Speichern")
+                                Text(String(localized: "save"))
                                     .fontWeight(.medium)
                             }
                         }
@@ -151,15 +154,62 @@ struct UserEditView: View {
                             .presentationDragIndicator(.visible)
                         }
                     }
+                    
+                    HStack{
+                        Spacer()
+                        Button(action: {
+                            showDeleteModal = true
+                        }) {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text(String(localized: "delete_user"))
+                            }
+                        }
+                        .buttonStyle(buttonStyleREAAnimatedRed())
+                        .sheet(isPresented: $showDeleteModal) {
+                            DeleteConfirmationModal(
+                                title: "Benutzer löschen?",
+                                message: "Möchtest du diesen Benutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+                                confirmButtonTitle: "Löschen",
+                                onConfirm: {
+                                    isSubmitting = true
+                                    deleteUserData(username: user.username ?? "") { success, message in
+                                        DispatchQueue.main.async {
+                                            isSubmitting = false
+                                            if success {
+                                                viewContext.delete(user)
+                                                do {
+                                                    try viewContext.save()
+                                                    bannerManager.showBanner("Benutzer erfolgreich gelöscht", type: .success)
+                                                    dismiss()
+                                                } catch {
+                                                    bannerManager.showBanner("Fehler beim Löschen: \(error.localizedDescription)", type: .error)
+                                                }
+                                            } else {
+                                                bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
+                                            }
+                                            showDeleteModal = false
+                                        }
+                                    }
+                                },
+                                onCancel: {
+                                    showDeleteModal = false
+                                }
+                            )
+                            .presentationDetents([.height(300)])
+                            .presentationDragIndicator(.visible)
+                        }
+                        Spacer()
+                    }
                 }
             }
-            .navigationTitle("Benutzer bearbeiten")
+            .navigationTitle(String(localized: "edit_user"))
             .overlay {
                 if isSubmitting {
                     ZStack {
                         Color.black.opacity(0.3)
                             .ignoresSafeArea()
-                        ProgressView("Bitte warten...")
+                        ProgressView(String(localized: "processing"))
                             .padding()
                             .background(Color.white)
                             .cornerRadius(10)
