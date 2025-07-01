@@ -17,20 +17,11 @@ struct LocationDTO: Codable {
     let accuracy: Int16
 
     enum CodingKeys: String, CodingKey {
-        case id
-        case userId = "user_id"
-        case latitude
-        case longitude
-        case timestamp
-        case accuracy
+        case id, userId = "user_id", latitude, longitude, timestamp, accuracy
     }
 }
 
-
-func downloadAllGpsLocations(
-    context: NSManagedObjectContext,
-    completion: @escaping (Bool, String) -> Void
-) {
+func downloadAllGpsLocations(context: NSManagedObjectContext, completion: @escaping (Bool, String) -> Void) {
     print("🟢 Starte downloadAllGpsLocations")
     
     let defaults = UserDefaults.standard
@@ -44,13 +35,11 @@ func downloadAllGpsLocations(
     
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    let bodyParams = "token=\(token)"
-    request.httpBody = bodyParams.data(using: .utf8)
+    request.httpBody = "token=\(token)".data(using: .utf8)
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
     
-    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+    URLSession.shared.dataTask(with: request) { data, _, error in
         if let error = error {
-            print("❌ downloadAllGpsLocations Error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
             return
         }
@@ -61,67 +50,61 @@ func downloadAllGpsLocations(
         }
         
         do {
-            // 🔍 Debug: Server Response als String ausgeben
-            /*if let jsonString = String(data: data, encoding: .utf8) {
-                print("🔍 Server Response JSON: \(jsonString)")
-            } else {
-                print("⚠️ Server Response konnte nicht als String decodiert werden")
-            }*/
+            let decoded = try JSONDecoder().decode(ApiResponse<[LocationDTO]>.self, from: data)
+            let locations = decoded.data
             
-            let decodedResponse = try JSONDecoder().decode(ApiResponse<[LocationDTO]>.self, from: data)
-            let status = decodedResponse.status
-            let message = decodedResponse.message ?? ""
-            
-            if status == "success" {
-                let locationList = decodedResponse.data
-                
-                context.perform {
-                    // 🔴 Alte Locations löschen
-                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = AllUserGPSData.fetchRequest()
-                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-                    do {
-                        try context.execute(deleteRequest)
-                    } catch {
-                        print("❌ Fehler beim Löschen: \(error)")
+            context.perform {
+                do {
+                    let userFetch: NSFetchRequest<AllUserData> = AllUserData.fetchRequest()
+                    let allUsers = try context.fetch(userFetch)
+                    let userDict = Dictionary(uniqueKeysWithValues: allUsers.map { ($0.id, $0) })
+
+                    let fetchRequest: NSFetchRequest<AllUserGPSData> = AllUserGPSData.fetchRequest()
+                    let existingGPS = try context.fetch(fetchRequest)
+                    let serverIDs = Set(locations.map { $0.id })
+
+                    // 🔴 Delete lokale GPS Punkte, die nicht mehr auf dem Server existieren
+                    for gps in existingGPS {
+                        if !serverIDs.contains(gps.id) {
+                            context.delete(gps)
+                        }
                     }
-                    
-                    // 🔵 Neue Locations speichern
-                    for dto in locationList {
-                        let entity = AllUserGPSData(context: context)
-                        entity.id = dto.id
-                        entity.latitude = Double(dto.latitude) ?? 0.0
-                        entity.longitude = Double(dto.longitude) ?? 0.0
-                        entity.time = dto.timestamp
-                        entity.accuracy = dto.accuracy
-                        
-                        // Beziehung zu User setzen
-                        let userFetch: NSFetchRequest<AllUserData> = AllUserData.fetchRequest()
-                        userFetch.predicate = NSPredicate(format: "id == %d", dto.userId)
-                        if let user = try? context.fetch(userFetch).first {
-                            entity.user = user
+
+                    // 🔁 Update oder Insert
+                    for dto in locations {
+                        let gpsEntity: AllUserGPSData
+                        if let existing = existingGPS.first(where: { $0.id == dto.id }) {
+                            gpsEntity = existing
+                        } else {
+                            let newEntity = AllUserGPSData(context: context)
+                            newEntity.id = dto.id
+                            gpsEntity = newEntity
+                        }
+
+                        gpsEntity.latitude = Double(dto.latitude) ?? 0
+                        gpsEntity.longitude = Double(dto.longitude) ?? 0
+                        gpsEntity.time = dto.timestamp
+                        gpsEntity.accuracy = dto.accuracy
+
+                        // ➔ User Beziehung setzen aus Dictionary
+                        if let user = userDict[dto.userId] {
+                            gpsEntity.user = user
                         } else {
                             print("⚠️ Kein User mit ID \(dto.userId) gefunden")
                         }
                     }
-                    
-                    do {
-                        try context.save()
-                        print("✅ \(locationList.count) GPS Punkte erfolgreich gespeichert")
-                        completion(true, "Erfolg: \(locationList.count) GPS Punkte gespeichert")
-                    } catch {
-                        print("❌ Fehler beim Speichern: \(error.localizedDescription)")
-                        completion(false, "Fehler beim Speichern: \(error.localizedDescription)")
-                    }
+
+                    try context.save()
+                    context.refreshAllObjects()
+                    print("✅ \(locations.count) GPS Punkte erfolgreich synchronisiert")
+                    completion(true, "Erfolg: \(locations.count) GPS Punkte synchronisiert")
+
+                } catch {
+                    completion(false, "CoreData Fehler: \(error.localizedDescription)")
                 }
-            } else {
-                print("❌ Serverstatus: \(status), Nachricht: \(message)")
-                completion(false, "Serverstatus: \(status), Nachricht: \(message)")
             }
         } catch {
-            print("❌ JSON parse error: \(error.localizedDescription)")
             completion(false, "Fehler beim Decoding: \(error.localizedDescription)")
         }
-    }
-    
-    task.resume()
+    }.resume()
 }

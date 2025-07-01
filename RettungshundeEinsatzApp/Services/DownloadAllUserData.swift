@@ -5,6 +5,7 @@
 //  Created by René Nettekoven on 29.06.25.
 //
 
+
 import Foundation
 import CoreData
 
@@ -19,20 +20,11 @@ struct UserDataDTO: Codable {
 
     enum CodingKeys: String, CodingKey {
         case id = "ID"
-        case username
-        case email
-        case phonenumber
-        case securitylevel
-        case radiocallname
-        case trackcolor = "track_color"
+        case username, email, phonenumber, securitylevel, radiocallname, trackcolor = "track_color"
     }
 }
 
-
-func downloadAllUserData(
-    context: NSManagedObjectContext,
-    completion: @escaping (Bool, String) -> Void
-) {
+func downloadAllUserData(context: NSManagedObjectContext, completion: @escaping (Bool, String) -> Void) {
     print("🟢 Starte downloadAllUserData")
     
     let defaults = UserDefaults.standard
@@ -46,13 +38,11 @@ func downloadAllUserData(
     
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    let bodyParams = "token=\(token)"
-    request.httpBody = bodyParams.data(using: .utf8)
+    request.httpBody = "token=\(token)".data(using: .utf8)
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
     
-    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+    URLSession.shared.dataTask(with: request) { data, _, error in
         if let error = error {
-            print("❌ downloadAllUserData Error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
             return
         }
@@ -63,58 +53,52 @@ func downloadAllUserData(
         }
         
         do {
-            // 🔍 Debug: Server Response als String ausgeben
-            /*if let jsonString = String(data: data, encoding: .utf8) {
-                print("🔍 Server Response JSON: \(jsonString)")
-            } else {
-                print("⚠️ Server Response konnte nicht als String decodiert werden")
-            }*/
+            let decoded = try JSONDecoder().decode(ApiResponse<[UserDataDTO]>.self, from: data)
+            let userList = decoded.data
             
-            let decodedResponse = try JSONDecoder().decode(ApiResponse<[UserDataDTO]>.self, from: data)
-            let status = decodedResponse.status
-            let message = decodedResponse.message ?? ""
-            
-            if status == "success" {
-                let userList = decodedResponse.data
-                
-                context.perform {
-                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = AllUserData.fetchRequest()
-                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-                    do {
-                        try context.execute(deleteRequest)
-                    } catch {
-                        print("❌ Fehler beim Löschen: \(error)")
+            context.perform {
+                do {
+                    let fetchRequest: NSFetchRequest<AllUserData> = AllUserData.fetchRequest()
+                    let localUsers = try context.fetch(fetchRequest)
+                    
+                    // Update oder Delete
+                    for user in localUsers {
+                        if let serverUser = userList.first(where: { $0.id == user.id }) {
+                            user.username = serverUser.username
+                            user.email = serverUser.email ?? ""
+                            user.phonenumber = serverUser.phonenumber ?? ""
+                            user.securitylevel = serverUser.securitylevel ?? 0
+                            user.radiocallname = serverUser.radiocallname ?? ""
+                            user.trackcolor = serverUser.trackcolor
+                        } else {
+                            context.delete(user)
+                        }
                     }
                     
-                    for dto in userList {
-                        let entity = AllUserData(context: context)
-                        entity.id = dto.id
-                        entity.username = dto.username
-                        entity.email = dto.email ?? ""
-                        entity.phonenumber = dto.phonenumber ?? ""
-                        entity.securitylevel = dto.securitylevel ?? 0
-                        entity.radiocallname = dto.radiocallname ?? ""
-                        entity.trackcolor = dto.trackcolor
+                    // Insert neue
+                    let localIDs = Set(localUsers.map { $0.id })
+                    for serverUser in userList where !localIDs.contains(serverUser.id) {
+                        let newUser = AllUserData(context: context)
+                        newUser.id = serverUser.id
+                        newUser.username = serverUser.username
+                        newUser.email = serverUser.email ?? ""
+                        newUser.phonenumber = serverUser.phonenumber ?? ""
+                        newUser.securitylevel = serverUser.securitylevel ?? 0
+                        newUser.radiocallname = serverUser.radiocallname ?? ""
+                        newUser.trackcolor = serverUser.trackcolor
                     }
                     
-                    do {
-                        try context.save()
-                        print("✅ \(userList.count) Benutzer erfolgreich gespeichert")
-                        completion(true, "Erfolg: \(userList.count) Benutzer gespeichert")
-                    } catch {
-                        print("❌ Fehler beim Speichern: \(error.localizedDescription)")
-                        completion(false, "Fehler beim Speichern: \(error.localizedDescription)")
-                    }
+                    try context.save()
+                    context.refreshAllObjects() // 🔧 Kontext aktualisieren
+                    print("✅ \(userList.count) Benutzer erfolgreich synchronisiert")
+                    completion(true, "Erfolg: \(userList.count) Benutzer synchronisiert")
+                    
+                } catch {
+                    completion(false, "CoreData Fehler: \(error.localizedDescription)")
                 }
-            } else {
-                print("❌ Serverstatus: \(status), Nachricht: \(message)")
-                completion(false, "Serverstatus: \(status), Nachricht: \(message)")
             }
         } catch {
-            print("❌ JSON parse error: \(error.localizedDescription)")
             completion(false, "Fehler beim Decoding: \(error.localizedDescription)")
         }
-    }
-    
-    task.resume()
+    }.resume()
 }
