@@ -138,6 +138,9 @@
     "Benutzerdaten" : {
 
     },
+    "Bitte warten..." : {
+
+    },
     "cancel" : {
       "localizations" : {
         "de" : {
@@ -563,6 +566,9 @@
         }
       }
     },
+    "Erstellen" : {
+
+    },
     "ettungshunde" : {
       "shouldTranslate" : false
     },
@@ -699,6 +705,9 @@
         }
       }
     },
+    "Level" : {
+
+    },
     "login" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -817,6 +826,12 @@
           }
         }
       }
+    },
+    "Neuen Benutzer anlegen" : {
+
+    },
+    "Neuen Benutzer erstellen" : {
+
     },
     "no_data_received" : {
       "extractionState" : "manual",
@@ -946,6 +961,9 @@
           }
         }
       }
+    },
+    "Passwort" : {
+
     },
     "phone_number" : {
       "localizations" : {

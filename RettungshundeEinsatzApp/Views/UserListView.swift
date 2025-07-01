@@ -19,43 +19,67 @@ struct UserListView: View {
     var body: some View {
         NavigationStack {
             List {
+                // ➔ Section mit Button ganz oben
+                Section {
+                    HStack{
+                        
+                        Spacer()
+                        
+                        NavigationLink(destination: CreateUserView()) {
+                            HStack {
+                                Spacer()
+                                Image(systemName: "plus.circle")
+                                Text("Neuen Benutzer anlegen")
+                                    .fontWeight(.semibold)
+                                Spacer()
+                            }
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                        }
+                        
+                        Spacer()
+                        
+                    }
+                }
+
+                // ➔ Users anzeigen
                 ForEach(users, id: \.self) { user in
                     NavigationLink(destination: UserEditView(user: user)) {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(user.username ?? "Unbekannt")
-                                    .font(.headline)
-                                Text("E-Mail: \(user.email ?? "")")
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(user.username ?? "Unbekannt")
+                                .font(.headline)
+                            Text("E-Mail: \(user.email ?? "")")
+                                .font(.subheadline)
+                            Text("Handy: \(user.phonenumber ?? "")")
+                                .font(.subheadline)
+                            Text("Funkrufname: \(user.radiocallname ?? "")")
+                                .font(.subheadline)
+                            Text("Sicherheitslevel: " + user.securitylevel.securityLevelTextFromInt16)
+                                .font(.subheadline)
+                            
+                            HStack {
+                                Text("Track-Farbe:")
                                     .font(.subheadline)
-                                Text("Handy: \(user.phonenumber ?? "")")
-                                    .font(.subheadline)
-                                Text("Funkrufname: \(user.radiocallname ?? "")")
-                                    .font(.subheadline)
-                                Text("Sicherheitslevel: " + user.securitylevel.securityLevelTextFromInt16)
-                                    .font(.subheadline)
-                                
-                                HStack {
-                                    Text("Track-Farbe:")
-                                        .font(.subheadline)
-                                    if let hex = user.trackcolor, let color = Color(hex: hex) {
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(color)
-                                                .frame(width: 80, height: 30)
-                                                .cornerRadius(4)
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 4)
-                                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                                )
-                                            Text(hex)
-                                                .font(.caption)
-                                                .foregroundColor(.white)
-                                                .shadow(radius: 1)
-                                        }
-                                    } else {
-                                        Text("-")
-                                            .font(.subheadline)
+                                if let hex = user.trackcolor, let color = Color(hex: hex) {
+                                    ZStack {
+                                        Rectangle()
+                                            .fill(color)
+                                            .frame(width: 80, height: 30)
+                                            .cornerRadius(4)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 4)
+                                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                            )
+                                        Text(hex)
+                                            .font(.caption)
+                                            .foregroundColor(.white)
+                                            .shadow(radius: 1)
                                     }
+                                } else {
+                                    Text("-")
+                                        .font(.subheadline)
                                 }
                             }
                         }
