@@ -23,6 +23,15 @@ struct MapView: View {
     @State private var showDeleteAllGPSDataModal = false
     @State private var showDeleteAllAreasModal = false
     @State private var isSubmitting = false
+    @State private var selectedArea: Areas? = nil
+    @State private var refreshAreas = false
+
+
+    
+    @FetchRequest(
+        entity: Areas.entity(),
+        sortDescriptors: []
+    ) var areas: FetchedResults<Areas>
 
 
     var body: some View {
@@ -33,8 +42,11 @@ struct MapView: View {
                     coordinates: locationManager.coordinates,
                     userTracks: userTracks,
                     mapType: $mapType,
-                    refreshUserTracks: $refreshUserTracks, // ➔ moved up
-                    selectedUser: $selectedUser
+                    refreshUserTracks: $refreshUserTracks,
+                    selectedUser: $selectedUser,
+                    selectedArea: $selectedArea,
+                    areas: areas,
+                    refreshAreas: $refreshAreas // ➡️ NEU
                 )
                 .edgesIgnoringSafeArea(.all)
                 .onAppear {
@@ -237,6 +249,7 @@ struct MapView: View {
                                                     isSubmitting = false
                                                     if success {
                                                         bannerManager.showBanner(String(localized: "delete_all_areas_success"), type: .success)
+                                                        refreshAreas = true
                                                     } else {
                                                         bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
                                                     }
@@ -326,13 +339,21 @@ struct MapView: View {
                                 downloadAllGpsLocations(context: context) { success, message in
                                     if success {
                                         bannerManager.showBanner(String(localized: "banner_download_all_gps_data_success"), type: .success)
-                                        refreshUserTracks = true
-                                        userTracks = loadUserTracks(context: context)
+                                        downloadAreas(context: context) { success, message in
+                                            if success {
+                                                bannerManager.showBanner(String(localized: "banner_download_all_areas_success"), type: .success)
+                                                refreshUserTracks = true
+                                                userTracks = loadUserTracks(context: context)
+                                            } else {
+                                                bannerManager.showBanner(String(localized: "banner_download_all_areas_error"), type: .error)
+                                            }
+                                        }
                                     } else {
                                         bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
                                     }
                                 }
                             }
+
                         }) {
                             Image(systemName: "arrow.clockwise")
                                 .font(.title)
@@ -403,6 +424,25 @@ struct MapView: View {
                     }
                 }
                 
+            }
+            .sheet(item: $selectedArea) { area in
+                VStack {
+                    Text("🗺️ Fläche: \(area.name ?? "Unknown")")
+                        .font(.title)
+                    
+                    Text("Farbe: \(area.color ?? "Unknown")")
+                        .padding(.top)
+                    
+                    Text("Punkte:")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text(area.points ?? "Keine Punkte")
+                        .font(.footnote)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .padding()
             }
             .sheet(item: $selectedUser) { user in
                 VStack {

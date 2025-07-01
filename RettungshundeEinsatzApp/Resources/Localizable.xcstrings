@@ -11,6 +11,9 @@
         }
       }
     },
+    "🗺️ Fläche: %@" : {
+
+    },
     "A" : {
       "shouldTranslate" : false
     },
@@ -61,6 +64,12 @@
           }
         }
       }
+    },
+    "banner_download_all_areas_error" : {
+
+    },
+    "banner_download_all_areas_success" : {
+
     },
     "banner_download_all_gps_data_error" : {
       "localizations" : {
@@ -852,6 +861,9 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
+    "Farbe: %@" : {
+
+    },
     "fill_in_al_fields" : {
       "localizations" : {
         "de" : {
@@ -1033,7 +1045,7 @@
       }
     },
     "MGRS" : {
-      "shouldTranslate" : false
+
     },
     "my_local_track_color" : {
       "localizations" : {
@@ -1296,6 +1308,9 @@
           }
         }
       }
+    },
+    "Punkte:" : {
+
     },
     "R" : {
       "shouldTranslate" : false
