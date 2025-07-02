@@ -54,12 +54,30 @@ struct CustomMapView: UIViewRepresentable {
 
         // Füge neue Areas als Overlay und Annotation hinzu
         for area in areas {
-            if let polygon = createPolygonOverlayNew(area: area) {
-                mapView.addOverlay(polygon)
+            if let overlay = createPolygonOverlayNew(area: area) {
+                mapView.addOverlay(overlay)
+                
                 let annotation = AreaAnnotation()
-                annotation.coordinate = polygon.centerCoordinate
+                
+                if let polygon = overlay as? MKPolygon {
+                    annotation.coordinate = polygon.centerCoordinate
+                } else if let polyline = overlay as? MKPolyline {
+                    // Linie → setze Mitte der Linie
+                    let coords = polyline.coordinates
+                    if let first = coords.first, let last = coords.last {
+                        annotation.coordinate = CLLocationCoordinate2D(
+                            latitude: (first.latitude + last.latitude) / 2,
+                            longitude: (first.longitude + last.longitude) / 2
+                        )
+                    } else {
+                        annotation.coordinate = coords.first ?? CLLocationCoordinate2D()
+                    }
+                } else if let circle = overlay as? MKCircle {
+                    annotation.coordinate = circle.coordinate
+                }
+                
                 annotation.title = area.title
-                annotation.area = area // ➔ Referenz zur Area
+                annotation.area = area
                 annotation.color = UIColor.red
                 mapView.addAnnotation(annotation)
             }
@@ -249,7 +267,7 @@ struct CustomMapView: UIViewRepresentable {
 
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
 
-            // ➡️ Zuerst prüfen, ob DrawingPolygon
+            // ➡️ DrawingPolygon prüfen
             if overlay.title == "DrawingPolygon" {
                 if let polygon = overlay as? MKPolygon {
                     let renderer = MKPolygonRenderer(polygon: polygon)
@@ -271,14 +289,23 @@ struct CustomMapView: UIViewRepresentable {
                 }
             }
 
-            // ➡️ Standard Polyline Renderer (für UserTracks etc.)
-            if let polyline = overlay as? MKPolyline {
+            // ➡️ ColoredPolyline Renderer
+            if let polyline = overlay as? ColoredPolyline {
+                let renderer = MKPolylineRenderer(polyline: polyline)
+                renderer.strokeColor = (polyline.color ?? UIColor.green).withAlphaComponent(0.5)
+                renderer.lineWidth = 3
+                return renderer
+            }
+
+            // ➡️ Standard Polyline Renderer (für UserTracks)
+            else if let polyline = overlay as? MKPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
                 renderer.strokeColor = overlayColors[polyline] ?? UIColor.systemYellow
                 renderer.lineWidth = 3
                 return renderer
             }
 
+            // ➡️ ColoredPolygon Renderer
             if let polygon = overlay as? ColoredPolygon {
                 let renderer = MKPolygonRenderer(polygon: polygon)
                 renderer.fillColor = polygon.color?.withAlphaComponent(0.1) ?? UIColor.red.withAlphaComponent(0.1)
@@ -394,22 +421,39 @@ struct CustomMapView: UIViewRepresentable {
 
 
 
-func createPolygonOverlayNew(area: Area) -> ColoredPolygon? {
+func createPolygonOverlayNew(area: Area) -> MKOverlay? {
     guard let coordinatesSet = area.coordinates as? Set<AreaCoordinate> else { return nil }
     let sortedCoords = coordinatesSet.sorted { $0.orderIndex < $1.orderIndex }
-
     let coords = sortedCoords.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
 
-    let polygon = ColoredPolygon(coordinates: coords, count: coords.count)
+    if coords.count == 1 {
+        // ➡️ Einzelpunkt → MKCircle
+        let circle = MKCircle(center: coords[0], radius: 5)
+        return circle
 
-    if let colorHex = area.color, let uiColor = UIColor(hex: colorHex) {
-        polygon.color = uiColor.withAlphaComponent(0.5)
+    } else if coords.count == 2 {
+        // ➡️ Linie → ColoredPolyline
+        let polyline = ColoredPolyline(coordinates: coords, count: coords.count)
+        if let colorHex = area.color, let uiColor = UIColor(hex: colorHex) {
+            polyline.color = uiColor.withAlphaComponent(0.8)
+        } else {
+            polyline.color = UIColor.red.withAlphaComponent(0.8)
+        }
+        return polyline
+
     } else {
-        polygon.color = UIColor.red.withAlphaComponent(0.5) // Fallback
-    }
+        // ➡️ Polygon → ColoredPolygon
+        let polygon = ColoredPolygon(coordinates: coords, count: coords.count)
 
-    polygon.name = area.title
-    return polygon
+        if let colorHex = area.color, let uiColor = UIColor(hex: colorHex) {
+            polygon.color = uiColor.withAlphaComponent(0.5)
+        } else {
+            polygon.color = UIColor.red.withAlphaComponent(0.5)
+        }
+
+        polygon.name = area.title
+        return polygon
+    }
 }
 
 
@@ -438,3 +482,16 @@ extension Array where Element == CLLocationCoordinate2D {
         return true
     }
 }
+
+extension MKPolyline {
+    var coordinates: [CLLocationCoordinate2D] {
+        var coords = [CLLocationCoordinate2D](repeating: kCLLocationCoordinate2DInvalid, count: self.pointCount)
+        self.getCoordinates(&coords, range: NSRange(location: 0, length: self.pointCount))
+        return coords
+    }
+}
+
+class ColoredPolyline: MKPolyline {
+    var color: UIColor?
+}
+

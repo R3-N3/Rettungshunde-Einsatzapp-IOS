@@ -25,7 +25,6 @@ struct MapView: View {
     @State private var refreshUserTracks = false
     @State private var showDeleteModal = false
     @State private var showDeleteAllGPSDataModal = false
-    @State private var showDeleteAllAreasModal = false
     @State private var isSubmitting = false
     @State private var selectedArea: Area? = nil
     @State private var refreshAreas = false
@@ -62,7 +61,11 @@ struct MapView: View {
             .sheet(item: $selectedUser) { user in
                 userDetailSheet(user: user)
             }
-            .sheet(isPresented: $showAreaInputSheet) {
+            .sheet(isPresented: $showAreaInputSheet, onDismiss: {
+                drawingAreaCoordinates = []
+                refreshMapView = true
+                isDrawingArea = false
+            }) {
                 areaInputSheetView()
             }
             .sheet(item: $selectedArea) { area in
@@ -228,35 +231,17 @@ struct MapView: View {
                     }
                     
                     
-                    // Zeige Button Lösche Alle Areas für Admin und FK
-                    if router.isLevelFuehrungskraft || router.isLevelAdmin {
-                        Button(action: {
-                            showDeleteAllAreasModal = true
-                        }) {
-                            HStack {
-                                Image(systemName: "trash.fill")
-                                Text(String(localized: "delete_all_areas")).fontWeight(.medium)
-                            }
+
+                    NavigationLink(destination: AreasListView()) {
+                        HStack {
+                            Image(systemName: "square.3.stack.3d.top.fill")
+                            Text("Flächenverwaltung").fontWeight(.medium)
                         }
-                        .buttonStyle(buttonStyleREAAnimatedRed())
-                        .sheet(isPresented: $showDeleteAllAreasModal) {
-                            deleteAllAreasSheet()
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 20)
                     }
-                    
-                    // Zeige Button Benutzerverwaltung für Admin
-                    if router.isLevelAdmin || router.isLevelFuehrungskraft {
-                        NavigationLink(destination: AreasListView()) {
-                            HStack {
-                                Image(systemName: "square.3.stack.3d.top.fill")
-                                Text("Flächenverwaltung").fontWeight(.medium)
-                            }
-                        }.buttonStyle(buttonStyleREAAnimated())
-                            .padding(.horizontal)
-                            .padding(.top, 20)
-                    }
+                    .buttonStyle(buttonStyleREAAnimated())
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+
                     
                     // Zeige Button Benutzerverwaltung für Admin
                     if router.isLevelAdmin {
@@ -297,164 +282,184 @@ struct MapView: View {
     private var buttonsOverlay: some View {
         VStack {
             
+            if isDrawingArea {
+                Text(String(format: "Fläche: %.2f m²", drawingAreaCoordinates.calculateArea()))
+                    .font(.headline)
+                    .padding(8)
+                    .background(Color(.systemBackground).opacity(0.8))
+                    .cornerRadius(8)
+                    .padding(.top, 50)
+            }
+            
             Spacer()
             
             HStack {
-
-                Spacer()
-                
-                Button(action: {
-                    if isDrawingArea {
-                        finishDrawingArea()
-                    } else {
-                        drawingAreaCoordinates = []
-                        isDrawingArea = true
-                        refreshMapView.toggle()
-                        print("🟢 refreshMapView toggled ON, drawing started \(String(refreshMapView))")
+                VStack{
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        withAnimation {
+                            showMenu.toggle()
+                        }
+                    }) {
+                        Image(systemName: showMenu ? "xmark" : "line.3.horizontal")
+                            .font(.title)
+                            .frame(width: 30, height: 30)
+                            .padding()
+                            .background(Color(.tertiarySystemBackground).opacity(0.8))
+                            .clipShape(Circle())
                     }
-                }) {
-                    Image(systemName: isDrawingArea ? "square.and.arrow.down" : "plus")
-                        .font(.title)
-                        .padding()
-                        .background(Color(.tertiarySystemBackground).opacity(0.8))
-                        .clipShape(Circle())
+                    .padding(.leading, 20)
+                    .padding(.bottom, 40)
+                    .disabled(isDrawingArea)
+                    
                 }
-                .padding(.trailing, 20)
-                .padding(.bottom, 5)
-            }
-            
-            HStack {
-
+                
                 Spacer()
                 
-                Button(action: {
+                VStack{
+                    Spacer()
                     
-
-                    downloadAllUserData(context: context) { success, message in
+                    Button(action: {
+                        if isDrawingArea {
+                            finishDrawingArea()
+                        } else {
+                            drawingAreaCoordinates = []
+                            isDrawingArea = true
+                            refreshMapView = false
+                        }
+                    }) {
+                        Image(systemName: isDrawingArea ? "square.and.arrow.down" : "plus.square.dashed")
+                            .font(.title)
+                            .frame(width: 30, height: 30)
+                            .padding()
+                            .background(Color(.tertiarySystemBackground).opacity(0.8))
+                            .clipShape(Circle())
+                            .foregroundColor(isDrawingArea ? Color(.systemGreen) : Color(.systemBlue))
                     }
-
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 5)
                     
-                    if router.isLevelAdmin || router.isLevelFuehrungskraft {
-                        downloadAllGpsLocations(context: context) { success, _ in
-                            refreshUserTracks = success
+                    Button(action: {
+                        downloadAllUserData(context: context) { success, message in
                         }
                         
-                        uploadAreasToServer(context: context) { success, message in
-                            if success {
-                                downloadAreas(context: context) { success, message in
-                                    print("Download Areas: \(message)")
-                                    if success {
-                                        context.perform {
-                                            do {
-                                                try context.save()
-                                                context.refreshAllObjects()                                            } catch {
-                                                print("❌ Fehler beim CoreData Save nach downloadAreas: \(error.localizedDescription)")
-                                            }
-                                        }
-                                        DispatchQueue.main.async {
-                                            refreshAreas = true
-                                        }
-                                    } else {
-                                        bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
-                                    }
-                                }                            } else {
-                                print("❌ Upload fehlgeschlagen: \(message)")
+                        
+                        if router.isLevelAdmin || router.isLevelFuehrungskraft {
+                            downloadAllGpsLocations(context: context) { success, _ in
+                                refreshUserTracks = success
                             }
                             
-                        }
-                    }else{
-                        downloadAreas(context: context) { success, message in
-                            print("Download Areas: \(message)")
-                            if success {
-                                // ggf. deine State-Variablen aktualisieren
-                                refreshAreas = true
-                            } else {
-                                bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                            uploadAreasToServer(context: context) { success, message in
+                                if success {
+                                    downloadAreas(context: context) { success, message in
+                                        print("Download Areas: \(message)")
+                                        if success {
+                                            context.perform {
+                                                do {
+                                                    try context.save()
+                                                    context.refreshAllObjects()                                            } catch {
+                                                        print("❌ Fehler beim CoreData Save nach downloadAreas: \(error.localizedDescription)")
+                                                    }
+                                            }
+                                            DispatchQueue.main.async {
+                                                refreshAreas = true
+                                            }
+                                        } else {
+                                            bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                                        }
+                                    }                            } else {
+                                        print("❌ Upload fehlgeschlagen: \(message)")
+                                    }
+                                
+                            }
+                        }else{
+                            downloadAreas(context: context) { success, message in
+                                print("Download Areas: \(message)")
+                                if success {
+                                    // ggf. deine State-Variablen aktualisieren
+                                    refreshAreas = true
+                                } else {
+                                    bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                                }
                             }
                         }
-                    }
-                    
-                    if router.isLevelAdmin || router.isLevelFuehrungskraft{
-                        downloadAllGpsLocations(context: context) { success, message in
-                            if success {
-                                refreshUserTracks = true
-                            } else {
-                                bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
+                        
+                        if router.isLevelAdmin || router.isLevelFuehrungskraft{
+                            downloadAllGpsLocations(context: context) { success, message in
+                                if success {
+                                    refreshUserTracks = true
+                                } else {
+                                    bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
+                                }
                             }
                         }
+                        
+                        
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.title)
+                            .frame(width: 30, height: 30)
+                            .padding()
+                            .background(Color(.tertiarySystemBackground).opacity(0.8))
+                            .clipShape(Circle())
                     }
+                    .disabled(isDrawingArea)
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 5)
                     
-
-                }) {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.title)
-                        .padding()
-                        .background(Color(.tertiarySystemBackground).opacity(0.8))
-                        .clipShape(Circle())
-                }
-                .padding(.trailing, 20)
-                .padding(.bottom, 5)
-            }
-            
-
-
-            HStack {
-
-                Spacer()
-                
-                Button(action: {
-                    if locationManager.isUpdating {
-                        locationManager.stopUpdating()
-                        bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
-                    } else {
-                        locationManager.startUpdating()
-                        bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
-                    }
-                }) {
-                    Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
-                        .font(.title)
-                        .padding()
-                        .background(Color(.tertiarySystemBackground).opacity(0.8))
-                        .clipShape(Circle())
-                }
-                .padding(.trailing, 20)
-                .padding(.bottom, 5)
-            }
-            
-            
-            HStack {
-                Button(action: {
-                    withAnimation {
-                        showMenu.toggle()
-                    }
-                }) {
-                    Image(systemName: showMenu ? "xmark" : "line.3.horizontal")
-                        .font(.title)
-                        .padding()
-                        .background(Color(.tertiarySystemBackground).opacity(0.8))
-                        .clipShape(Circle())
-                }
-                .padding(.leading, 20)
-                .padding(.bottom, 40)
-                
-                Spacer()
-                  
-                Button(action: {
-                    if mapType == .standard {
-                        mapType = .satellite
+                    Button(action: {
+                        if locationManager.isUpdating {
+                            locationManager.stopUpdating()
+                            bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
                         } else {
-                            mapType = .standard
+                            locationManager.startUpdating()
+                            bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
                         }
-                }) {
-                    Image(systemName: "map.fill")
-                        .font(.title)
-                        .padding()
-                        .background(Color(.tertiarySystemBackground).opacity(0.8))
-                        .clipShape(Circle())
+                    }) {
+                        Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
+                            .font(.title)
+                            .frame(width: 30, height: 30)
+                            .padding()
+                            .background(Color(.tertiarySystemBackground).opacity(0.8))
+                            .clipShape(Circle())
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 5)
+                    .disabled(isDrawingArea)
+                    
+                    Button(action: {
+                        if mapType == .standard {
+                            mapType = .satellite
+                            } else {
+                                mapType = .standard
+                            }
+                    }) {
+                        Image(systemName: "map.fill")
+                            .font(.title)
+                            .frame(width: 30, height: 30)
+                            .padding()
+                            .background(Color(.tertiarySystemBackground).opacity(0.8))
+                            .clipShape(Circle())
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 40)
+                    .disabled(isDrawingArea)
+                    
                 }
-                .padding(.trailing, 20)
-                .padding(.bottom, 40)
             }
+                
+
+            
+  
+            
+
+
+
+            
+            
+
         }
     }
 
@@ -553,43 +558,6 @@ struct MapView: View {
         .presentationDragIndicator(.visible)
     }
     
-    @ViewBuilder
-    func deleteAllAreasSheet() -> some View {
-        DeleteConfirmationModal(
-            title: String(localized: "confirm_delete_all_areas_titel"),
-            message: String(localized: "confirm_delete_all_areas_text"),
-            confirmButtonTitle: String(localized: "delete"),
-            onConfirm: {
-                isSubmitting = true
-                deleteAllAreas { success, message in
-                    DispatchQueue.main.async {
-                        isSubmitting = false
-                        if success {
-                            downloadAreas(context: context) { success, message in
-                                print("Download Areas: \(message)")
-                                if success {
-                                    // ggf. deine State-Variablen aktualisieren
-                                    refreshAreas = true
-                                } else {
-                                    bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
-                                }
-                            }
-                        } else {
-                            bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
-                        }
-                        showDeleteAllAreasModal = false
-                    }
-                }
-            },
-            onCancel: {
-                showDeleteAllAreasModal = false
-            }
-        )
-        .presentationDetents([.height(300)])
-        .presentationDragIndicator(.visible)
-    }
-    
-    
 
     @ViewBuilder
     func userDetailSheet(user: AllUserData) -> some View {
@@ -603,19 +571,13 @@ struct MapView: View {
     }
 
     @ViewBuilder
-    func areaInputSheetView() -> some View {
-        VStack(spacing: 20) {
-            Text("Neue Fläche erstellen")
-                .font(.headline)
-
+    func areaInputSheetView() -> some View {Form {
+        Section(header: Text("Fläche erstellen")) {
             TextField("Titel", text: $newAreaTitle)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
-
             TextField("Beschreibung", text: $newAreaDescription)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
+        }
 
+        Section(header: Text("Farbe und Größe")) {
             ColorPicker("Flächenfarbe auswählen", selection: Binding(
                 get: {
                     Color(hex: newAreaColor) ?? .red
@@ -624,42 +586,42 @@ struct MapView: View {
                     newAreaColor = newValue.toHex()
                 }
             ))
-            .padding(.horizontal)
-
             let areaSize = drawingAreaCoordinates.calculateArea()
             Text(String(format: "Fläche: %.2f m²", areaSize))
-                .padding(.top)
-            
-
-            Button("Speichern") {
-                saveArea(
-                    coordinates: drawingAreaCoordinates,
-                    title: newAreaTitle,
-                    description: newAreaDescription,
-                    colorHex: newAreaColor
-                )
-                newAreaTitle = ""
-                newAreaDescription = ""
-                newAreaColor = "#FF0000"
-                drawingAreaCoordinates = []
-                refreshMapView = true
-                isDrawingArea = false
-                showAreaInputSheet = false
-            }
-            .padding()
-            .buttonStyle(buttonStyleREAAnimatedGreen())
-
-            Button("Abbrechen") {
-                drawingAreaCoordinates = []
-                refreshMapView = true
-                isDrawingArea = false
-                showAreaInputSheet = false
-            }
-            .buttonStyle(buttonStyleREAAnimated())
-            .padding()
-
-            Spacer()
         }
+
+
+        Section {
+            HStack{
+                
+                Button("Abbrechen") {
+                    drawingAreaCoordinates = []
+                    refreshMapView = true
+                    isDrawingArea = false
+                    showAreaInputSheet = false
+                }
+                .buttonStyle(buttonStyleREAAnimated())
+                
+                Button("Speichern") {
+                    saveArea(
+                        coordinates: drawingAreaCoordinates,
+                        title: newAreaTitle,
+                        description: newAreaDescription,
+                        colorHex: newAreaColor
+                    )
+                    newAreaTitle = ""
+                    newAreaDescription = ""
+                    newAreaColor = "#FF0000"
+                    drawingAreaCoordinates = []
+                    refreshMapView = true
+                    isDrawingArea = false
+                    showAreaInputSheet = false
+                }
+                .buttonStyle(buttonStyleREAAnimatedGreen())
+
+            }
+        }
+    }
         .presentationDetents([.height(400)])
         .presentationDragIndicator(.visible)
     }

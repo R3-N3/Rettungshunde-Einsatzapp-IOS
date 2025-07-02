@@ -869,6 +869,9 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
+    "Farbe und Größe" : {
+
+    },
     "Farbe: %@" : {
 
     },
@@ -887,6 +890,9 @@
           }
         }
       }
+    },
+    "Fläche erstellen" : {
+
     },
     "Fläche: n/a" : {
 
@@ -1114,9 +1120,6 @@
           }
         }
       }
-    },
-    "Neue Fläche erstellen" : {
-
     },
     "no_coordinates_available" : {
       "extractionState" : "stale",
