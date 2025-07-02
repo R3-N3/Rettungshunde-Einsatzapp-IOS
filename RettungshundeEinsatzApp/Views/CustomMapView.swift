@@ -20,40 +20,46 @@ class UserAnnotation: MKPointAnnotation {
     var color: UIColor?
 }
 
+class AreaAnnotation: MKPointAnnotation {
+    var area: Area?
+    var color: UIColor?
+}
+
+
 struct CustomMapView: UIViewRepresentable {
     let coordinates: [CLLocationCoordinate2D]
     let userTracks: [UserTrack]
     @Binding var mapType: MKMapType
     @Binding var refreshUserTracks: Bool
     @Binding var selectedUser: AllUserData?
-    @Binding var selectedArea: Areas?
-    var areas: FetchedResults<Areas>
+    @Binding var selectedArea: Area?
+    var newAreas: [Area] 
     @Binding var refreshAreas: Bool
-
+    @Binding var isDrawingArea: Bool
+    @Binding var drawingAreaCoordinates: [CLLocationCoordinate2D]
+    @Binding var refreshMapView: Bool
     
-    private func addAreaOverlaysAndAnnotations(to mapView: MKMapView) {
-        
-        // Entferne alte Area Layouts
+    
+    private func addNewAreasOverlaysAndAnnotations(to mapView: MKMapView, areas: [Area]) {
+        // Entferne alte Overlays der neuen Areas
         let areaOverlays = mapView.overlays.filter { $0 is ColoredPolygon }
         mapView.removeOverlays(areaOverlays)
-        
-        // Entferne alte Area Annotations
-        let areaAnnotations = mapView.annotations.filter { $0 is AreaAnnotation }
-        mapView.removeAnnotations(areaAnnotations)
 
-        // Füge neue Areas und Annotationen hinzu
+        // Füge neue Areas als Overlay und Annotation hinzu
         for area in areas {
-            if let polygon = createPolygonOverlay(area: area) {
+            if let polygon = createPolygonOverlayNew(area: area) {
                 mapView.addOverlay(polygon)
                 let annotation = AreaAnnotation()
                 annotation.coordinate = polygon.centerCoordinate
-                annotation.title = area.name
-                annotation.color = UIColor(hex: area.color ?? "#FF0000")
-                annotation.area = area
+                annotation.title = area.title
+                annotation.area = area // ➔ Referenz zur Area
+                annotation.color = UIColor.red
                 mapView.addAnnotation(annotation)
             }
         }
     }
+
+
     
     private func addAllUserLocationAndAnnotations(to mapView: MKMapView, context: Context) {
         
@@ -138,7 +144,7 @@ struct CustomMapView: UIViewRepresentable {
 
 
     func makeUIView(context: Context) -> MKMapView {
-        print("🟢 Start makeUIView")
+        print("🟢🟢 Starte makeUIView")
         let mapView = MKMapView()
         mapView.delegate = context.coordinator
 
@@ -157,9 +163,11 @@ struct CustomMapView: UIViewRepresentable {
             mapView.setRegion(region, animated: true)
         }
 
-        addAreaOverlaysAndAnnotations(to: mapView)
         addAllUserLocationAndAnnotations(to: mapView, context: context)
         addMyTrack(to: mapView, context: context)
+        
+        let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleMapTap(_:)))
+        mapView.addGestureRecognizer(tapGesture)
 
         return mapView
     }
@@ -169,11 +177,9 @@ struct CustomMapView: UIViewRepresentable {
         
         uiView.mapType = mapType
         
-        // ➡️ Lade neue Areas
         if refreshAreas {
-            print("➡️ Reload Areas in UI")
-            addAreaOverlaysAndAnnotations(to: uiView)
-            refreshAreas = false
+            print("➡️ Add new Areas in UI")
+            addNewAreasOverlaysAndAnnotations(to: uiView, areas: newAreas)
         }
 
         // ➡️ Aktualisiere fremde UserTracks nur wenn refreshUserTracks == true
@@ -186,6 +192,12 @@ struct CustomMapView: UIViewRepresentable {
         
         // Aktualisier eigene Polyline (Funktion prüft, ob sich diese geädnert hat)
         addMyTrack(to: uiView, context: context)
+        
+        
+        if refreshMapView {
+            let existingDrawingOverlays = uiView.overlays.filter { $0.title == "DrawingPolygon" }
+            existingDrawingOverlays.forEach { uiView.removeOverlay($0) }
+        }
 
         
     }
@@ -205,7 +217,7 @@ struct CustomMapView: UIViewRepresentable {
             self.parent = parent
         }
         
-        func showAreaInfoSheet(area: Areas) {
+        func showAreaInfoSheet(area: Area) {
             DispatchQueue.main.async {
                 self.parent.selectedArea = area
             }
@@ -214,19 +226,47 @@ struct CustomMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             if let areaAnnotation = view.annotation as? AreaAnnotation {
                 if let area = areaAnnotation.area {
-                    showAreaInfoSheet(area: area)
+                    DispatchQueue.main.async {
+                        self.parent.selectedArea = area
+                    }
                 }
             }
         }
+        
 
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+
+            // ➡️ Zuerst prüfen, ob DrawingPolygon
+            if overlay.title == "DrawingPolygon" {
+                if let polygon = overlay as? MKPolygon {
+                    let renderer = MKPolygonRenderer(polygon: polygon)
+                    renderer.fillColor = UIColor.blue.withAlphaComponent(0.2)
+                    renderer.strokeColor = UIColor.blue
+                    renderer.lineWidth = 2
+                    return renderer
+
+                } else if let polyline = overlay as? MKPolyline {
+                    let renderer = MKPolylineRenderer(polyline: polyline)
+                    renderer.strokeColor = UIColor.blue
+                    renderer.lineWidth = 2
+                    return renderer
+
+                } else if let circle = overlay as? MKCircle {
+                    let renderer = MKCircleRenderer(circle: circle)
+                    renderer.fillColor = UIColor.blue
+                    return renderer
+                }
+            }
+
+            // ➡️ Standard Polyline Renderer (für UserTracks etc.)
             if let polyline = overlay as? MKPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
                 renderer.strokeColor = overlayColors[polyline] ?? UIColor.systemYellow
                 renderer.lineWidth = 3
                 return renderer
+            }
 
-            } else if let polygon = overlay as? ColoredPolygon {
+            if let polygon = overlay as? ColoredPolygon {
                 let renderer = MKPolygonRenderer(polygon: polygon)
                 renderer.fillColor = polygon.color?.withAlphaComponent(0.1) ?? UIColor.red.withAlphaComponent(0.1)
                 renderer.strokeColor = polygon.color?.withAlphaComponent(0.5) ?? UIColor.red.withAlphaComponent(0.5)
@@ -292,27 +332,70 @@ struct CustomMapView: UIViewRepresentable {
                 parent.selectedUser = user
             }
         }
+        
+        @objc func handleMapTap(_ gestureRecognizer: UITapGestureRecognizer) {
+            guard parent.isDrawingArea else { return }
+
+            let mapView = gestureRecognizer.view as! MKMapView
+            let point = gestureRecognizer.location(in: mapView)
+            let coordinate = mapView.convert(point, toCoordinateFrom: mapView)
+
+            parent.drawingAreaCoordinates.append(coordinate)
+
+            // Optional: sofort Fläche aktualisieren
+            updateDrawingPolygon(on: mapView)
+        }
+
+        func updateDrawingPolygon(on mapView: MKMapView) {
+            // Entferne bestehendes DrawingOverlay
+            let existingOverlays = mapView.overlays.filter { $0.title == "DrawingPolygon" }
+            existingOverlays.forEach { mapView.removeOverlay($0) }
+
+            let coords = parent.drawingAreaCoordinates
+            let count = coords.count
+
+            guard count > 0 else { return }
+
+            if count == 1 {
+                // ➡️ Erster Punkt: füge kleinen Kreis als MKCircle hinzu
+                let circle = MKCircle(center: coords[0], radius: 10) // Beispiel: 10 Meter Radius
+                circle.title = "DrawingPolygon"
+                mapView.addOverlay(circle)
+
+            } else if count == 2 {
+                // ➡️ Zwei Punkte: zeige Linie
+                let polyline = MKPolyline(coordinates: coords, count: count)
+                polyline.title = "DrawingPolygon"
+                mapView.addOverlay(polyline)
+
+            } else {
+                // ➡️ Ab drei Punkten: zeige Polygon
+                let polygon = MKPolygon(coordinates: coords, count: count)
+                polygon.title = "DrawingPolygon"
+                mapView.addOverlay(polygon)
+            }
+        }
+        
     }
 }
 
 
-func createPolygonOverlay(area: Areas) -> ColoredPolygon? {
-    guard let pointsString = area.points else { return nil }
 
-    let pointPairs = pointsString.split(separator: ";")
-    let coordinates = pointPairs.compactMap { pair -> CLLocationCoordinate2D? in
-        let latLon = pair.split(separator: ",")
-        if latLon.count == 2,
-           let lat = Double(latLon[0]),
-           let lon = Double(latLon[1]) {
-            return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-        }
-        return nil
+func createPolygonOverlayNew(area: Area) -> ColoredPolygon? {
+    guard let coordinatesSet = area.coordinates as? Set<AreaCoordinate> else { return nil }
+    let sortedCoords = coordinatesSet.sorted { $0.orderIndex < $1.orderIndex }
+
+    let coords = sortedCoords.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+
+    let polygon = ColoredPolygon(coordinates: coords, count: coords.count)
+
+    if let colorHex = area.color, let uiColor = UIColor(hex: colorHex) {
+        polygon.color = uiColor.withAlphaComponent(0.5)
+    } else {
+        polygon.color = UIColor.red.withAlphaComponent(0.5) // Fallback
     }
 
-    let polygon = ColoredPolygon(coordinates: coordinates, count: coordinates.count)
-    polygon.color = UIColor(hex: area.color ?? "#FF0000")
-    polygon.name = area.name
+    polygon.name = area.title
     return polygon
 }
 

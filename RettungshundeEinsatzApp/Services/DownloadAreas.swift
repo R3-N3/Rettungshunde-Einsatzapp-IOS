@@ -8,31 +8,22 @@
 import Foundation
 import CoreData
 
-// MARK: - DTOs
-
-struct AreaDTO: Codable {
-    let name: String
-    let color: String
-    let time: Int64
-    let points: [PointDTO]
-
-    enum CodingKeys: String, CodingKey {
-        case name
-        case color
-        case time = "timestamp"
-        case points
-    }
+struct DownloadArea: Codable {
+    var id: Int
+    var title: String
+    var description: String
+    var color: String
+    var points: [DownloadAreaPoint]
 }
 
-struct PointDTO: Codable {
-    let lat: Double
-    let lon: Double
+struct DownloadAreaPoint: Codable {
+    var lat: Double
+    var lon: Double
+    var order_index: Int
 }
-
-// MARK: - Download Function
 
 func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool, String) -> Void) {
-    print("🟢 Starte downloadAreas")
+    print("🟢 Starte downloadAreasFromServer")
     
     let defaults = UserDefaults.standard
     let serverApiURL = defaults.string(forKey: "serverApiURL") ?? ""
@@ -43,77 +34,88 @@ func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool,
         return
     }
     
+    guard !token.isEmpty else {
+        completion(false, "Missing token")
+        return
+    }
+    
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    request.httpBody = "token=\(token)".data(using: .utf8)
-    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     
-    URLSession.shared.dataTask(with: request) { data, _, error in
+    let payload: [String: Any] = ["token": token]
+    request.httpBody = try? JSONSerialization.data(withJSONObject: payload, options: [])
+    
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
-            print("❌ Fehler \(error.localizedDescription)")
+            print("❌ downloadAreasFromServer Error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
             return
         }
         
         guard let data = data else {
-            print("❌ No data received")
             completion(false, "No data received")
             return
         }
         
         do {
-            let decoded = try JSONDecoder().decode(ApiResponse<[AreaDTO]>.self, from: data)
-            let areaList = decoded.data
-            
-            context.perform {
-                do {
-                    // 🔵 1. IDs der heruntergeladenen Flächen sammeln
-                    let downloadedKeys = Set(areaList.map { "\($0.name)|\($0.time)" })
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let status = json["status"] as? String,
+               let message = json["message"] as? String {
+                
+                if status == "success", let areasData = json["data"] as? [[String: Any]] {
                     
-                    // 🔴 2. Alle lokalen Flächen abrufen
-                    let fetchAllRequest: NSFetchRequest<Areas> = Areas.fetchRequest()
-                    let localAreas = try context.fetch(fetchAllRequest)
+                    // ➡️ CoreData löschen
+                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Area.fetchRequest()
+                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                    try context.execute(deleteRequest)
                     
-                    // 🔴 3. Lösche alle lokalen Flächen, die nicht mehr heruntergeladen wurden
-                    for area in localAreas {
-                        let key = "\(area.name ?? "")|\(area.time)"
-                        if !downloadedKeys.contains(key) {
-                            context.delete(area)
+                    context.perform {
+                        // ➡️ Alle Inserts und Relationship Zuweisungen hier
+                        for areaDict in areasData {
+                            let area = Area(context: context)
+                            area.title = areaDict["title"] as? String ?? "Unbenannt"
+                            area.desc = areaDict["description"] as? String ?? ""
+                            area.color = areaDict["color"] as? String ?? "#FF0000"
+                            area.uploadedToServer = true
+
+                            if let pointsArray = areaDict["points"] as? [[String: Any]] {
+                                for (index, pointDict) in pointsArray.enumerated() {
+                                    let coord = AreaCoordinate(context: context)
+                                    coord.latitude = pointDict["lat"] as? Double ?? 0.0
+                                    coord.longitude = pointDict["lon"] as? Double ?? 0.0
+                                    coord.orderIndex = Int32(pointDict["order_index"] as? Int ?? index)
+                                    coord.area = area
+                                }
+                            }
+                        }
+
+                        do {
+                            try context.save()
+                            DispatchQueue.main.async {
+                                completion(true, "Areas erfolgreich synchronisiert")
+                            }
+                        } catch {
+                            print("❌ CoreData Save Error: \(error.localizedDescription)")
+                            DispatchQueue.main.async {
+                                completion(false, "CoreData Save Error: \(error.localizedDescription)")
+                            }
                         }
                     }
                     
-                    // 🟢 4. Danach wie bisher updaten oder einfügen
-                    for dto in areaList {
-                        let fetchRequest: NSFetchRequest<Areas> = Areas.fetchRequest()
-                        fetchRequest.predicate = NSPredicate(format: "name == %@ AND time == %lld", dto.name, dto.time)
-                        
-                        let existingAreas = try context.fetch(fetchRequest)
-                        let area = existingAreas.first ?? Areas(context: context)
-                        
-                        if existingAreas.isEmpty {
-                            area.id = Int64(UUID().uuidString.hashValue)
-                        }
-                        
-                        area.name = dto.name
-                        area.color = dto.color
-                        area.time = dto.time
-                        area.points = dto.points.map { "\($0.lat),\($0.lon)" }.joined(separator: ";")
-                        area.uploadStatus = false
-                    }
+                    print("✅ Flächen erfolgreich synchronisiert")
+                    completion(true, message)
                     
-                    try context.save()
-                    context.refreshAllObjects()
-                    print("✅ \(areaList.count) Areas erfolgreich synchronisiert")
-                    completion(true, "Erfolg: \(areaList.count) Areas synchronisiert")
-                    
-                } catch {
-                    print("❌ CoreData Fehler: \(error.localizedDescription)")
-                    completion(false, "CoreData Fehler: \(error.localizedDescription)")
+                } else {
+                    completion(false, message)
                 }
+            } else {
+                completion(false, "Invalid JSON format")
             }
         } catch {
-            print("❌ Fehler beim Decoding: \(error.localizedDescription)")
-            completion(false, "Fehler beim Decoding: \(error.localizedDescription)")
+            print("❌ downloadAreasFromServer JSON parse error: \(error.localizedDescription)")
+            completion(false, error.localizedDescription)
         }
-    }.resume()
+    }
+    task.resume()
 }

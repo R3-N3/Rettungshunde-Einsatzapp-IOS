@@ -61,8 +61,11 @@ func downloadAllUserData(context: NSManagedObjectContext, completion: @escaping 
                     let fetchRequest: NSFetchRequest<AllUserData> = AllUserData.fetchRequest()
                     let localUsers = try context.fetch(fetchRequest)
                     
-                    // Update oder Delete
-                    for user in localUsers {
+                    // ➡️ IDs der Serverdaten
+                    let serverIDs = Set(userList.map { $0.id })
+                    
+                    // ➡️ Update bestehender Benutzer
+                    for user in localUsers where serverIDs.contains(user.id) {
                         if let serverUser = userList.first(where: { $0.id == user.id }) {
                             user.username = serverUser.username
                             user.email = serverUser.email ?? ""
@@ -70,12 +73,15 @@ func downloadAllUserData(context: NSManagedObjectContext, completion: @escaping 
                             user.securitylevel = serverUser.securitylevel ?? 0
                             user.radiocallname = serverUser.radiocallname ?? ""
                             user.trackcolor = serverUser.trackcolor
-                        } else {
-                            context.delete(user)
                         }
                     }
                     
-                    // Insert neue
+                    // ➡️ Lösche Benutzer, die nicht mehr existieren
+                    for user in localUsers where !serverIDs.contains(user.id) {
+                        context.delete(user)
+                    }
+                    
+                    // ➡️ Insert neue Benutzer
                     let localIDs = Set(localUsers.map { $0.id })
                     for serverUser in userList where !localIDs.contains(serverUser.id) {
                         let newUser = AllUserData(context: context)
@@ -89,7 +95,7 @@ func downloadAllUserData(context: NSManagedObjectContext, completion: @escaping 
                     }
                     
                     try context.save()
-                    context.refreshAllObjects() // 🔧 Kontext aktualisieren
+                    context.refreshAllObjects()
                     print("✅ \(userList.count) Benutzer erfolgreich synchronisiert")
                     completion(true, "Erfolg: \(userList.count) Benutzer synchronisiert")
                     

@@ -12,7 +12,4 @@ class ColoredPolygon: MKPolygon {
     var name: String?
 }
 
-class AreaAnnotation: MKPointAnnotation {
-    var color: UIColor?
-    var area: Areas? // ➡️ Referenz zur CoreData Area Entity
-}
+

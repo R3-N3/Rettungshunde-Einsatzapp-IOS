@@ -4,6 +4,8 @@
 //
 //  Created by René Nettekoven on 24.06.25.
 //
+
+
 import SwiftUI
 import CoreData
 import MapKit
@@ -11,10 +13,12 @@ import MapKit
 struct MapView: View {
     @State private var showMenu = false
     @Environment(\.managedObjectContext) var context
-    @EnvironmentObject var router: AppRouter // Für die Logout Funktion notwendig
+    @EnvironmentObject var router: AppRouter
     @StateObject private var locationManager = LocationManager()
     @EnvironmentObject var bannerManager: BannerManager
+
     let thinSpace = "\u{2009}"
+
     @State private var mapType: MKMapType = .standard
     @State private var userTracks: [UserTrack] = []
     @State private var selectedUser: AllUserData? = nil
@@ -23,525 +27,699 @@ struct MapView: View {
     @State private var showDeleteAllGPSDataModal = false
     @State private var showDeleteAllAreasModal = false
     @State private var isSubmitting = false
-    @State private var selectedArea: Areas? = nil
+    @State private var selectedArea: Area? = nil
     @State private var refreshAreas = false
+    @State private var isDrawingArea = false
+    @State private var drawingAreaCoordinates: [CLLocationCoordinate2D] = []
+    @State private var showAreaInputSheet = false
+    @State private var newAreaTitle = ""
+    @State private var newAreaDescription = ""
+    @State private var newAreaColor = "#FF0000"
+    @State private var refreshMapView = false
 
-    
-    @FetchRequest(
-        entity: Areas.entity(),
-        sortDescriptors: []
-    ) var areas: FetchedResults<Areas>
-
+    @FetchRequest(entity: Area.entity(), sortDescriptors: []) var newAreas: FetchedResults<Area>
 
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
-                
-                CustomMapView(
-                    coordinates: locationManager.coordinates,
-                    userTracks: userTracks,
-                    mapType: $mapType,
-                    refreshUserTracks: $refreshUserTracks,
-                    selectedUser: $selectedUser,
-                    selectedArea: $selectedArea,
-                    areas: areas,
-                    refreshAreas: $refreshAreas // ➡️ NEU
-                )
-                .edgesIgnoringSafeArea(.all)
-                .onAppear {
-                    locationManager.fetchAllCoordinates()
-                    userTracks = loadUserTracks(context: context)
-                }
-                
-                // Menü
+                mapViewContent
+
                 if showMenu {
-                    HStack(spacing: 0) {
-                        ScrollView {
-                            VStack(alignment: .leading, spacing: 0) {
-                                
-                                Text(String(localized: "my_position"))
-                                    .padding(.horizontal)
-                                    .padding(.top, 5)
-                                    .font(.headline)
-                                
-                                Text(String(localized: "geographical_coordinates"))
-                                    .padding(.horizontal)
-                                    .padding(.top, 5)
-                                    .font(.footnote)
-                                
-                                Text("   " + latLonToFormattedString(latitude: locationManager.latitude, longitude: locationManager.longitude))
-                                    .padding(.horizontal)
-                                    //.padding(.top, 0)
-                                
-                                Text("MGRS")
-                                    .padding(.horizontal)
-                                    .padding(.top, 5)
-                                    .font(.footnote)
-                                
-                                Text("   " + latLonToMGRS(latitude: locationManager.latitude, longitude: locationManager.longitude))
-                                    .padding(.horizontal)
-                                
-                                Text(String(localized: "accuracy"))
-                                    .padding(.horizontal)
-                                    .padding(.top, 5)
-                                    .font(.footnote)
-                                
-                                Text("   ±" + "\(Int(locationManager.accuracy))\(thinSpace)m")
-                                    .padding(.horizontal)
-                                
-                                Text(String(localized: "last_change"))
-                                    .padding(.horizontal)
-                                    .padding(.top, 5)
-                                    .font(.footnote)
-                                
-                                Text(locationManager.time.formatted(date: .numeric, time: .standard))
-                                    .padding(.horizontal)
-                                    .padding(.horizontal)
-                                
-                                Text(String(localized: "menu"))
-                                    .padding(.horizontal)
-                                    .padding(.top, 20)
-                                    .font(.headline)
-                                
-                                // Start Stop GPS Button
-                                Button(action: {
-                                    if locationManager.isUpdating {
-                                        locationManager.stopUpdating()
-                                        bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
-                                    } else {
-                                        locationManager.startUpdating()
-                                        bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
-                                    }
-                                }) {
-                                    HStack {
-                                        Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
-                                        Text(locationManager.isUpdating ? String(localized: "stop_gps") : String(localized: "start_gps"))
-                                            .fontWeight(.medium)
-                                    }
-                                }
-                                .buttonStyle(buttonStyleREAAnimated())
-                                .padding(.horizontal)
-                                .padding(.top, 5)
-                                
-                                // Contacts Button
-                                NavigationLink(destination: ContactsView()) {
-                                    HStack {
-                                        Image(systemName: "square.fill")
-                                        Text(String(localized: "contacts")).fontWeight(.medium)
-                                    }
-                                }
-                                .buttonStyle(buttonStyleREAAnimated())
-                                .padding(.horizontal)
-                                .padding(.top, 20)
-                                
-                                
-                                Button(action: {
-                                    showDeleteModal = true
-                                }) {
-                                    HStack {
-                                        Image(systemName: "trash")
-                                        Text(String(localized: "delete_my_gps_data"))
-                                            .fontWeight(.medium)
-                                    }
-                                }
-                                .buttonStyle(buttonStyleREAAnimated())
-                                .sheet(isPresented: $showDeleteModal) {
-                                    DeleteConfirmationModal(
-                                        title: String(localized: "confirm_delete_my_gps_titel"), //"⚠️ Wirklich löschen?",
-                                        message: String(localized: "confirm_delete_my_gps_text"), //"Möchtest du wirklich alle deine GPS-Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
-                                        confirmButtonTitle: String(localized: "delete"),
-                                        onConfirm: {
-                                            let success = deleteLokalGPSData()
-                                            if success {
-                                                bannerManager.showBanner(String(localized: "delete_my_gps_data_success"), type: .success)
-                                                userTracks = loadUserTracks(context: context)
-                                                locationManager.fetchAllCoordinates()
-                                            } else {
-                                                bannerManager.showBanner(String(localized: "delete_my_gps_data_error"), type: .error)
-                                            }
-                                            showDeleteModal = false
-                                        },
-                                        onCancel: {
-                                            showDeleteModal = false
-                                        }
-                                    )
-                                    .presentationDetents([.height(300)]) // ➔ Höhe auf 300pt begrenzt
-                                    .presentationDragIndicator(.visible) // ➔ optional, Drag-Indikator oben anzeigen
-                                }
-                                .padding(.horizontal)
-                                .padding(.top, 20)
-                                
-                                NavigationLink(destination: OperationReportView()) {
-                                    HStack {
-                                        Image(systemName: "pencil")
-                                        Text(String(localized: "write_operation_report")).fontWeight(.medium)
-                                    }
-                                }
-                                .buttonStyle(buttonStyleREAAnimated())
-                                .padding(.horizontal)
-                                .padding(.top, 20)
-                                
-                                
-                                // Zeige Button Lösche Alle GPS Daten für Admin und FK
-                                if router.isLevelFuehrungskraft || router.isLevelAdmin {
-                                    Button(action: {
-                                        showDeleteAllGPSDataModal = true
-                                    }) {
-                                        HStack {
-                                            Image(systemName: "trash.fill")
-                                            Text(String(localized: "delete_all_gps_data")).fontWeight(.medium)
-                                        }
-                                    }
-                                    .buttonStyle(buttonStyleREAAnimated())
-                                    .sheet(isPresented: $showDeleteAllGPSDataModal) {
-                                        DeleteConfirmationModal(
-                                            title: String(localized: "confirm_delete_all_user_gps_titel"),
-                                            message: String(localized: "confirm_delete_all_user_gps_text"),
-                                            confirmButtonTitle: String(localized: "delete"),
-                                            onConfirm: {
-                                                showDeleteAllGPSDataModal = false
-                                                deleteAllGPSData { success, message in
-                                                    DispatchQueue.main.async {
-                                                        if success {
-                                                            
-                                                            
-                                                            // Download alle GPS Locations aller Benutzer und trigger update der UI
-                                                            downloadAllGpsLocations(context: context) { success, message in
-                                                                refreshUserTracks = true
-                                                                userTracks = loadUserTracks(context: context)
-                                                            }
-                                                            
-                                                        } else {
-                                                            bannerManager.showBanner(String(localized: "delete_all_gps_data_error"), type: .error)
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            onCancel: {
-                                                showDeleteAllGPSDataModal = false
-                                            }
-                                        )
-                                        .presentationDetents([.height(300)])
-                                        .presentationDragIndicator(.visible)
-                                    }
-                                    .padding(.horizontal)
-                                    .padding(.top, 20)
-                                }
-                                
-                                
-                                // Zeige Button Lösche Alle Areas für Admin und FK
-                                if router.isLevelFuehrungskraft || router.isLevelAdmin {
-                                    Button(action: {
-                                        showDeleteAllAreasModal = true
-                                    }) {
-                                        HStack {
-                                            Image(systemName: "trash.fill")
-                                            Text(String(localized: "delete_all_areas")).fontWeight(.medium)
-                                        }
-                                    }
-                                    .buttonStyle(buttonStyleREAAnimated())
-                                    .sheet(isPresented: $showDeleteAllAreasModal) {
-                                        DeleteConfirmationModal(
-                                            title: String(localized: "confirm_delete_all_areas_titel"),
-                                            message: String(localized: "confirm_delete_all_areas_text"),
-                                            confirmButtonTitle: String(localized: "delete"),
-                                            onConfirm: {
-                                                isSubmitting = true
-                                                deleteAllAreas { success, message in
-                                                    DispatchQueue.main.async {
-                                                        isSubmitting = false
-                                                        if success {
-                                                            bannerManager.showBanner(String(localized: "delete_all_areas_success"), type: .success)
-                                                        } else {
-                                                            bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
-                                                        }
-                                                        showDeleteAllAreasModal = false
-                                                    }
-                                                }
-                                            },
-                                            onCancel: {
-                                                showDeleteAllAreasModal = false
-                                            }
-                                        )
-                                        .presentationDetents([.height(300)])
-                                        .presentationDragIndicator(.visible)
-                                    }
-                                    .padding(.horizontal)
-                                    .padding(.top, 20)
-                                }
-                                
-                                
-                                // Zeige Button Benutzerverwaltung für Admin
-                                if router.isLevelAdmin {
-                                    NavigationLink(destination: UserListView()) {
-                                        HStack {
-                                            Image(systemName: "person.crop.circle.badge.xmark")
-                                            Text(String(localized: "manage_users")).fontWeight(.medium)
-                                        }
-                                    }.buttonStyle(buttonStyleREAAnimated())
-                                        .padding(.horizontal)
-                                        .padding(.top, 20)
-                                }
-                                
-                                
-                                // Settings Button
-                                NavigationLink(destination: SettingsView()) {
-                                    HStack {
-                                        Image(systemName: "gear")
-                                        Text(String(localized: "settings")).fontWeight(.medium)
-                                    }
-                                }
-                                .buttonStyle(buttonStyleREAAnimated())
-                                .padding(.horizontal)
-                                .padding(.top, 20)
-                                .padding(.bottom, 150)
-                                
-                            }
-                            .padding()
-                            
-                        }
-                        .frame(maxWidth: 280, maxHeight: .infinity)
-                        .background(Color(.secondarySystemBackground))
-                        .shadow(radius: 4)
-                        
-                    }
-                    .edgesIgnoringSafeArea(.bottom)
-                    
+                    menuView
                 }
-                
-                // Bttons auf der Karte
-                VStack {
-                    
-                    Spacer()
-                    
-                    HStack {
-    
-                        Spacer()
-                        
-                        Button(action: {
-                            
-       
-                            downloadAllUserData(context: context) { success, message in
-                                bannerManager.showBanner(String(localized: "banner_user_data_update_success"), type: .success)
-                            }
 
-                            
-                            downloadAreas(context: context) { success, message in
-                                if success {
-                                    refreshAreas = true
-                                    userTracks = loadUserTracks(context: context)
-                                } else {
-                                    bannerManager.showBanner(String(localized: "banner_download_all_areas_error"), type: .error)
-                                }
-                            }
-                            
-                            if router.isLevelAdmin || router.isLevelFuehrungskraft{
-                                downloadAllGpsLocations(context: context) { success, message in
-                                    if success {
-                                        refreshUserTracks = true
-                                    } else {
-                                        bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
-                                    }
-                                }
-                            }
-                            
-
-                        }) {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.title)
-                                .padding()
-                                .background(Color(.tertiarySystemBackground).opacity(0.8))
-                                .clipShape(Circle())
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 5)
-                    }
-  
-                    HStack {
-    
-                        Spacer()
-                        
-                        Button(action: {
-                            if locationManager.isUpdating {
-                                locationManager.stopUpdating()
-                                bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
-                            } else {
-                                locationManager.startUpdating()
-                                bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
-                            }
-                        }) {
-                            Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
-                                .font(.title)
-                                .padding()
-                                .background(Color(.tertiarySystemBackground).opacity(0.8))
-                                .clipShape(Circle())
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 5)
-                    }
-                    
-                    
-                    HStack {
-                        Button(action: {
-                            withAnimation {
-                                showMenu.toggle()
-                            }
-                        }) {
-                            Image(systemName: showMenu ? "xmark" : "line.3.horizontal")
-                                .font(.title)
-                                .padding()
-                                .background(Color(.tertiarySystemBackground).opacity(0.8))
-                                .clipShape(Circle())
-                        }
-                        .padding(.leading, 20)
-                        .padding(.bottom, 40)
-                        
-                        Spacer()
-                          
-                        Button(action: {
-                            if mapType == .standard {
-                                mapType = .satellite
-                                } else {
-                                    mapType = .standard
-                                }
-                        }) {
-                            Image(systemName: "map.fill")
-                                .font(.title)
-                                .padding()
-                                .background(Color(.tertiarySystemBackground).opacity(0.8))
-                                .clipShape(Circle())
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 40)
-                    }
+                buttonsOverlay
+            }
+            .onAppear {
+                onAppearActions()
+            }
+            .overlay {
+                if isSubmitting {
+                    loadingOverlay
                 }
-                
+            }
+            .sheet(item: $selectedUser) { user in
+                userDetailSheet(user: user)
+            }
+            .sheet(isPresented: $showAreaInputSheet) {
+                areaInputSheetView()
             }
             .sheet(item: $selectedArea) { area in
-                VStack {
-                    HStack{
-                        Image(systemName: "mappin.and.ellipse")
-                        Text((area.name ?? "Unknown"))
-                            .font(.title)
-                    }
-                    
-                    Text("Farbe: \(area.color ?? "Unknown")")
-                        .padding(.top)
-                    
-
-                    
-                    if let pointsString = area.points {
-                        let pointPairs = pointsString.split(separator: ";")
-                        let coordinates = pointPairs.compactMap { pair -> CLLocationCoordinate2D? in
-                            let latLon = pair.split(separator: ",")
-                            if latLon.count == 2,
-                               let lat = Double(latLon[0]),
-                               let lon = Double(latLon[1]) {
-                                return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                            }
-                            return nil
-                        }
-                        let areaValue = coordinates.calculateArea()
-                        Text(String(format: "Fläche: %.2f m²", areaValue))
-                            .padding(.top)
-                    }
-                }
-                .padding()
-                .presentationDetents([.height(150), .large])
-                .presentationDragIndicator(.visible)            }
-            
-            .sheet(item: $selectedUser) { user in
-                VStack {
-                    Text("👤 " + (user.username ?? String(localized: "unknown")))
-                        .font(.title)
-                    
-                    if let locationsSet = user.locations,
-                               let locations = locationsSet.allObjects as? [AllUserGPSData],
-                               let lastLocation = locations.sorted(by: { ($0.time ?? "") > ($1.time ?? "") }).first {
-                        
-                        Text(String(localized: "geographical_coordinates"))
-                            .padding(.top, 0)
-                            .font(.footnote)
-                        
-                        Text(latLonToFormattedString(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
-                        
-                        Text(String(localized: "MGRS"))
-                            .padding(.top, 2)
-                            .font(.footnote)
-                        
-                        Text(latLonToMGRS(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
-                        
-                        Text(String(localized: "accuracy"))
-                            .padding(.top, 2)
-                            .font(.footnote)
-                        
-                        Text(String(Int(lastLocation.accuracy)) + "\(thinSpace)" + "m")
-                            .padding(.horizontal)
-                        
-                        Text(String(localized: "last_change"))
-                            .padding(.top, 2)
-                            .font(.footnote)
-                        
-                        Text(lastLocation.time ?? "Unknown")
-                            .padding(.horizontal)
-                        
-                        
-                            } else {
-                                Text(String(localized: "no_coordinates_available"))
-                            }
-                }
-                .padding()
-                .presentationDetents([.height(320), .large])
-                .presentationDragIndicator(.visible) // ➔ optional, Drag-Indikator anzeigen
+                areaDetailSheet(area: area)
             }
         }
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    // MARK: - Subviews
+
+    private var mapViewContent: some View {
+        CustomMapView(
+            coordinates: locationManager.coordinates,
+            userTracks: userTracks,
+            mapType: $mapType,
+            refreshUserTracks: $refreshUserTracks,
+            selectedUser: $selectedUser,
+            selectedArea: $selectedArea,
+            newAreas: Array(newAreas),
+            refreshAreas: $refreshAreas,
+            isDrawingArea: $isDrawingArea,
+            drawingAreaCoordinates: $drawingAreaCoordinates,
+            refreshMapView: $refreshMapView
+        )
+        .edgesIgnoringSafeArea(.all)
         .onAppear {
-            
-            // Checke token, wenn keiner vorhanden wird Logout ausgeführt
-            checkTokenAndDownloadMyUserData(router: router) { success, message in }
+            locationManager.fetchAllCoordinates()
+            userTracks = loadUserTracks(context: context)
+        }
+    }
 
-            // Download Alle User Daten
-            downloadAllUserData(context: context) { success, message in
-                bannerManager.showBanner(String(localized: "banner_user_data_update_success"), type: .success)
-            }
-            
-            
-            // Download Alle Areas
-            downloadAreas(context: context) { success, message in
-                if success {
-                    refreshAreas = true
-                    userTracks = loadUserTracks(context: context)
-                } else {
-                    bannerManager.showBanner(String(localized: "banner_download_all_areas_error"), type: .error)
+    private var menuView: some View {
+        HStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    
+                    Text(String(localized: "my_position"))
+                        .padding(.horizontal)
+                        .padding(.top, 5)
+                        .font(.headline)
+                    
+                    Text(String(localized: "geographical_coordinates"))
+                        .padding(.horizontal)
+                        .padding(.top, 5)
+                        .font(.footnote)
+                    
+                    Text("   " + latLonToFormattedString(latitude: locationManager.latitude, longitude: locationManager.longitude))
+                        .padding(.horizontal)
+                        //.padding(.top, 0)
+                    
+                    Text("MGRS")
+                        .padding(.horizontal)
+                        .padding(.top, 5)
+                        .font(.footnote)
+                    
+                    Text("   " + latLonToMGRS(latitude: locationManager.latitude, longitude: locationManager.longitude))
+                        .padding(.horizontal)
+                    
+                    Text(String(localized: "accuracy"))
+                        .padding(.horizontal)
+                        .padding(.top, 5)
+                        .font(.footnote)
+                    
+                    Text("   ±" + "\(Int(locationManager.accuracy))\(thinSpace)m")
+                        .padding(.horizontal)
+                    
+                    Text(String(localized: "last_change"))
+                        .padding(.horizontal)
+                        .padding(.top, 5)
+                        .font(.footnote)
+                    
+                    Text(locationManager.time.formatted(date: .numeric, time: .standard))
+                        .padding(.horizontal)
+                        .padding(.horizontal)
+                    
+                    Text(String(localized: "menu"))
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        .font(.headline)
+                    
+                    // Start Stop GPS Button
+                    Button(action: {
+                        if locationManager.isUpdating {
+                            locationManager.stopUpdating()
+                            bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
+                        } else {
+                            locationManager.startUpdating()
+                            bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
+                            Text(locationManager.isUpdating ? String(localized: "stop_gps") : String(localized: "start_gps"))
+                                .fontWeight(.medium)
+                        }
+                    }
+                    .buttonStyle(buttonStyleREAAnimated())
+                    .padding(.horizontal)
+                    .padding(.top, 5)
+                    
+                    // Contacts Button
+                    NavigationLink(destination: ContactsView()) {
+                        HStack {
+                            Image(systemName: "square.fill")
+                            Text(String(localized: "contacts")).fontWeight(.medium)
+                        }
+                    }
+                    .buttonStyle(buttonStyleREAAnimated())
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    
+                    
+                    Button(action: {
+                        showDeleteModal = true
+                    }) {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text(String(localized: "delete_my_gps_data"))
+                                .fontWeight(.medium)
+                        }
+                    }
+                    .buttonStyle(buttonStyleREAAnimated())
+                    .sheet(isPresented: $showDeleteModal) {
+                        deleteMyGPSDataSheet()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    
+                    NavigationLink(destination: OperationReportView()) {
+                        HStack {
+                            Image(systemName: "pencil")
+                            Text(String(localized: "write_operation_report")).fontWeight(.medium)
+                        }
+                    }
+                    .buttonStyle(buttonStyleREAAnimated())
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    
+                    
+                    // Zeige Button Lösche Alle GPS Daten für Admin und FK
+                    if router.isLevelFuehrungskraft || router.isLevelAdmin {
+                        Button(action: {
+                            showDeleteAllGPSDataModal = true
+                        }) {
+                            HStack {
+                                Image(systemName: "trash.fill")
+                                Text(String(localized: "delete_all_gps_data")).fontWeight(.medium)
+                            }
+                        }
+                        .buttonStyle(buttonStyleREAAnimated())
+                        .sheet(isPresented: $showDeleteAllGPSDataModal) {
+                            deleteAllGPSDataSheet()
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                    }
+                    
+                    
+                    // Zeige Button Lösche Alle Areas für Admin und FK
+                    if router.isLevelFuehrungskraft || router.isLevelAdmin {
+                        Button(action: {
+                            showDeleteAllAreasModal = true
+                        }) {
+                            HStack {
+                                Image(systemName: "trash.fill")
+                                Text(String(localized: "delete_all_areas")).fontWeight(.medium)
+                            }
+                        }
+                        .buttonStyle(buttonStyleREAAnimatedRed())
+                        .sheet(isPresented: $showDeleteAllAreasModal) {
+                            deleteAllAreasSheet()
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                    }
+                    
+                    // Zeige Button Benutzerverwaltung für Admin
+                    if router.isLevelAdmin || router.isLevelFuehrungskraft {
+                        NavigationLink(destination: AreasListView()) {
+                            HStack {
+                                Image(systemName: "square.3.stack.3d.top.fill")
+                                Text("Flächenverwaltung").fontWeight(.medium)
+                            }
+                        }.buttonStyle(buttonStyleREAAnimated())
+                            .padding(.horizontal)
+                            .padding(.top, 20)
+                    }
+                    
+                    // Zeige Button Benutzerverwaltung für Admin
+                    if router.isLevelAdmin {
+                        NavigationLink(destination: UserListView()) {
+                            HStack {
+                                Image(systemName: "person.crop.circle.badge.xmark")
+                                Text(String(localized: "manage_users")).fontWeight(.medium)
+                            }
+                        }.buttonStyle(buttonStyleREAAnimated())
+                            .padding(.horizontal)
+                            .padding(.top, 20)
+                    }
+                    
+                    
+                    // Settings Button
+                    NavigationLink(destination: SettingsView()) {
+                        HStack {
+                            Image(systemName: "gear")
+                            Text(String(localized: "settings")).fontWeight(.medium)
+                        }
+                    }
+                    .buttonStyle(buttonStyleREAAnimated())
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    .padding(.bottom, 150)
+                    
                 }
+                .padding()
+                
+            }
+            .frame(maxWidth: 280, maxHeight: .infinity)
+            .background(Color(.secondarySystemBackground))
+            .shadow(radius: 4)
+        }
+        .edgesIgnoringSafeArea(.bottom)
+    }
+
+    private var buttonsOverlay: some View {
+        VStack {
+            
+            Spacer()
+            
+            HStack {
+
+                Spacer()
+                
+                Button(action: {
+                    if isDrawingArea {
+                        finishDrawingArea()
+                    } else {
+                        drawingAreaCoordinates = []
+                        isDrawingArea = true
+                        refreshMapView.toggle()
+                        print("🟢 refreshMapView toggled ON, drawing started \(String(refreshMapView))")
+                    }
+                }) {
+                    Image(systemName: isDrawingArea ? "square.and.arrow.down" : "plus")
+                        .font(.title)
+                        .padding()
+                        .background(Color(.tertiarySystemBackground).opacity(0.8))
+                        .clipShape(Circle())
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 5)
             }
             
-            //Download Alle GPS Daten wenn entsprechender Sicherheitslevel
-            if router.isLevelAdmin || router.isLevelFuehrungskraft {
-                downloadAllGpsLocations(context: context) { success, message in
-                    if success {
-                        refreshUserTracks = true
+            HStack {
+
+                Spacer()
+                
+                Button(action: {
+                    
+
+                    downloadAllUserData(context: context) { success, message in
+                    }
+
+                    
+                    if router.isLevelAdmin || router.isLevelFuehrungskraft {
+                        downloadAllGpsLocations(context: context) { success, _ in
+                            refreshUserTracks = success
+                        }
+                        
+                        uploadAreasToServer(context: context) { success, message in
+                            if success {
+                                downloadAreas(context: context) { success, message in
+                                    print("Download Areas: \(message)")
+                                    if success {
+                                        // ggf. deine State-Variablen aktualisieren
+                                        refreshAreas = true
+                                    } else {
+                                        bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                                    }
+                                }
+                            } else {
+                                print("❌ Upload fehlgeschlagen: \(message)")
+                            }
+                            
+                        }
+                    }else{
+                        downloadAreas(context: context) { success, message in
+                            print("Download Areas: \(message)")
+                            if success {
+                                // ggf. deine State-Variablen aktualisieren
+                                refreshAreas = true
+                            } else {
+                                bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                            }
+                        }
+                    }
+                    
+                    if router.isLevelAdmin || router.isLevelFuehrungskraft{
+                        downloadAllGpsLocations(context: context) { success, message in
+                            if success {
+                                refreshUserTracks = true
+                            } else {
+                                bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
+                            }
+                        }
+                    }
+                    
+
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.title)
+                        .padding()
+                        .background(Color(.tertiarySystemBackground).opacity(0.8))
+                        .clipShape(Circle())
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 5)
+            }
+            
+
+
+            HStack {
+
+                Spacer()
+                
+                Button(action: {
+                    if locationManager.isUpdating {
+                        locationManager.stopUpdating()
+                        bannerManager.showBanner(String(localized: "stop_gps_done"), type: .success)
                     } else {
-                        bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
+                        locationManager.startUpdating()
+                        bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
+                    }
+                }) {
+                    Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
+                        .font(.title)
+                        .padding()
+                        .background(Color(.tertiarySystemBackground).opacity(0.8))
+                        .clipShape(Circle())
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 5)
+            }
+            
+            
+            HStack {
+                Button(action: {
+                    withAnimation {
+                        showMenu.toggle()
+                    }
+                }) {
+                    Image(systemName: showMenu ? "xmark" : "line.3.horizontal")
+                        .font(.title)
+                        .padding()
+                        .background(Color(.tertiarySystemBackground).opacity(0.8))
+                        .clipShape(Circle())
+                }
+                .padding(.leading, 20)
+                .padding(.bottom, 40)
+                
+                Spacer()
+                  
+                Button(action: {
+                    if mapType == .standard {
+                        mapType = .satellite
+                        } else {
+                            mapType = .standard
+                        }
+                }) {
+                    Image(systemName: "map.fill")
+                        .font(.title)
+                        .padding()
+                        .background(Color(.tertiarySystemBackground).opacity(0.8))
+                        .clipShape(Circle())
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 40)
+            }
+        }
+    }
+
+    private var loadingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.3).ignoresSafeArea()
+            ProgressView("Processing")
+                .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+        }
+    }
+
+    // MARK: - Sheets
+    
+    @ViewBuilder
+    func areaDetailSheet(area: Area) -> some View {
+        VStack {
+            Text("Titel " + (area.title ?? "Unknown"))
+                .font(.title)
+            Text("Beschreibung: \(area.desc ?? "Keine Beschreibung")")
+                .padding(.top)
+            if let coordsSet = area.coordinates as? Set<AreaCoordinate> {
+                let sortedCoords = coordsSet.sorted { $0.orderIndex < $1.orderIndex }
+                let coords = sortedCoords.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+                let areaSize = coords.calculateArea()
+                
+                Text(String(format: "Fläche: %.2f m²", areaSize))
+                    .padding(.top)
+            } else {
+                Text("Fläche: n/a")
+                    .padding(.top)
+            }
+            Text("Farbe: \(area.color ?? "#FF0000")")
+                .padding(.top)
+            Text("Hochgeladen: \(area.uploadedToServer ? "Ja" : "Nein")")
+                        .padding(.top)
+        }
+        .padding()
+        .presentationDetents([.height(300), .large])
+        .presentationDragIndicator(.visible)
+    }
+    
+    @ViewBuilder
+    func deleteAllGPSDataSheet() -> some View {
+        DeleteConfirmationModal(
+            title: String(localized: "confirm_delete_all_user_gps_titel"),
+            message: String(localized: "confirm_delete_all_user_gps_text"),
+            confirmButtonTitle: String(localized: "delete"),
+            onConfirm: {
+                showDeleteAllGPSDataModal = false
+                deleteAllGPSData { success, message in
+                    DispatchQueue.main.async {
+                        if success {
+                            // Download alle GPS Locations aller Benutzer und trigger update der UI
+                            downloadAllGpsLocations(context: context) { success, message in
+                                refreshUserTracks = true
+                                userTracks = loadUserTracks(context: context)
+                            }
+                        } else {
+                            bannerManager.showBanner(String(localized: "delete_all_gps_data_error"), type: .error)
+                        }
                     }
                 }
+            },
+            onCancel: {
+                showDeleteAllGPSDataModal = false
+            }
+        )
+        .presentationDetents([.height(300)])
+        .presentationDragIndicator(.visible)
+    }
+    
+    @ViewBuilder
+    func deleteMyGPSDataSheet() -> some View {
+        DeleteConfirmationModal(
+            title: String(localized: "confirm_delete_my_gps_titel"),
+            message: String(localized: "confirm_delete_my_gps_text"),
+            confirmButtonTitle: String(localized: "delete"),
+            onConfirm: {
+                let success = deleteLokalGPSData()
+                if success {
+                    bannerManager.showBanner(String(localized: "delete_my_gps_data_success"), type: .success)
+                    userTracks = loadUserTracks(context: context)
+                    locationManager.fetchAllCoordinates()
+                } else {
+                    bannerManager.showBanner(String(localized: "delete_my_gps_data_error"), type: .error)
+                }
+                showDeleteModal = false
+            },
+            onCancel: {
+                showDeleteModal = false
+            }
+        )
+        .presentationDetents([.height(300)])
+        .presentationDragIndicator(.visible)
+    }
+    
+    @ViewBuilder
+    func deleteAllAreasSheet() -> some View {
+        DeleteConfirmationModal(
+            title: String(localized: "confirm_delete_all_areas_titel"),
+            message: String(localized: "confirm_delete_all_areas_text"),
+            confirmButtonTitle: String(localized: "delete"),
+            onConfirm: {
+                isSubmitting = true
+                deleteAllAreas { success, message in
+                    DispatchQueue.main.async {
+                        isSubmitting = false
+                        if success {
+                            bannerManager.showBanner(String(localized: "delete_all_areas_success"), type: .success)
+                        } else {
+                            bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
+                        }
+                        showDeleteAllAreasModal = false
+                    }
+                }
+            },
+            onCancel: {
+                showDeleteAllAreasModal = false
+            }
+        )
+        .presentationDetents([.height(300)])
+        .presentationDragIndicator(.visible)
+    }
+    
+    
+
+    @ViewBuilder
+    func userDetailSheet(user: AllUserData) -> some View {
+        VStack {
+            Text(user.username ?? "Unknown")
+                .font(.title)
+        }
+        .padding()
+        .presentationDetents([.height(320), .large])
+        .presentationDragIndicator(.visible)
+    }
+
+    @ViewBuilder
+    func areaInputSheetView() -> some View {
+        VStack(spacing: 20) {
+            Text("Neue Fläche erstellen")
+                .font(.headline)
+
+            TextField("Titel", text: $newAreaTitle)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+
+            TextField("Beschreibung", text: $newAreaDescription)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+
+            ColorPicker("Flächenfarbe auswählen", selection: Binding(
+                get: {
+                    Color(hex: newAreaColor) ?? .red
+                },
+                set: { newValue in
+                    newAreaColor = newValue.toHex()
+                }
+            ))
+            .padding(.horizontal)
+
+            let areaSize = drawingAreaCoordinates.calculateArea()
+            Text(String(format: "Fläche: %.2f m²", areaSize))
+                .padding(.top)
+            
+
+            Button("Speichern") {
+                saveArea(
+                    coordinates: drawingAreaCoordinates,
+                    title: newAreaTitle,
+                    description: newAreaDescription,
+                    colorHex: newAreaColor
+                )
+                newAreaTitle = ""
+                newAreaDescription = ""
+                newAreaColor = "#FF0000"
+                drawingAreaCoordinates = []
+                refreshMapView = true
+                isDrawingArea = false
+                showAreaInputSheet = false
+            }
+            .padding()
+            .buttonStyle(buttonStyleREAAnimatedGreen())
+
+            Button("Abbrechen") {
+                drawingAreaCoordinates = []
+                refreshMapView = true
+                isDrawingArea = false
+                showAreaInputSheet = false
+            }
+            .buttonStyle(buttonStyleREAAnimated())
+            .padding()
+
+            Spacer()
+        }
+        .presentationDetents([.height(400)])
+        .presentationDragIndicator(.visible)
+    }
+
+    // MARK: - Functions
+
+    func onAppearActions() {
+        print("🟢🟢 Starte Abschnitt onAppearActions")
+        
+        checkTokenAndDownloadMyUserData(router: router) { _, _ in }
+        
+        downloadAllUserData(context: context) { success, _ in
+        }
+
+        if router.isLevelAdmin || router.isLevelFuehrungskraft {
+            downloadAllGpsLocations(context: context) { success, _ in
+                refreshUserTracks = success
             }
             
-        }
-        .overlay {
-            if isSubmitting {
-                ZStack {
-                    Color.black.opacity(0.3)
-                        .ignoresSafeArea()
-                    ProgressView(String(localized: "processing"))
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
+            uploadAreasToServer(context: context) { success, message in
+                if success {
+                    downloadAreas(context: context) { success, message in
+                        print("Download Areas: \(message)")
+                        if success {
+                            // ggf. deine State-Variablen aktualisieren
+                            refreshAreas = true
+                        } else {
+                            bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                        }
+                    }
+                } else {
+                    print("❌ Upload fehlgeschlagen: \(message)")
+                }
+                
+            }
+        }else{
+            downloadAreas(context: context) { success, message in
+                print("Download Areas: \(message)")
+                if success {
+                    // ggf. deine State-Variablen aktualisieren
+                    refreshAreas = true
+                } else {
+                    bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
                 }
             }
         }
     }
-    
+
+    func finishDrawingArea() {
+        isDrawingArea = false
+        showAreaInputSheet = true
+    }
+
+    func saveArea(coordinates: [CLLocationCoordinate2D], title: String, description: String, colorHex: String) {
+        addAreaToLocalDataModel(context: context, title: title, description: description, colorHex: colorHex, coordinates: coordinates)
+
+        uploadAreasToServer(context: context) { success, message in
+            if success {
+                downloadAreas(context: context) { success, message in
+                    print("Download Areas: \(message)")
+                    if success {
+                        bannerManager.showBanner("Fläche gespeichert", type: .success)
+                        refreshAreas = true
+                    } else {
+                        bannerManager.showBanner("Fehler beim Hochladen der Fläche: \(message)", type: .error)
+                    }
+                }
+            } else {
+                print("❌ Upload fehlgeschlagen: \(message)")
+            }
+            
+        }
+        
+        
+    }
+
     func loadUserTracks(context: NSManagedObjectContext) -> [UserTrack] {
         let fetch: NSFetchRequest<AllUserData> = AllUserData.fetchRequest()
         var tracks: [UserTrack] = []
@@ -590,9 +768,7 @@ struct MapView: View {
         
         return tracks
     }
-    
 }
-
 
 #Preview {
     MapView()
