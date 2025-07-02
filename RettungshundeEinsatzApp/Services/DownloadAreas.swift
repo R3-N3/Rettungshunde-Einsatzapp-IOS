@@ -15,11 +15,11 @@ struct AreaDTO: Codable {
     let color: String
     let time: Int64
     let points: [PointDTO]
-    
+
     enum CodingKeys: String, CodingKey {
         case name
         case color
-        case time = "timestamp" // mapping timestamp -> time
+        case time = "timestamp"
         case points
     }
 }
@@ -67,24 +67,26 @@ func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool,
             
             context.perform {
                 do {
-                    // Delete all existing Areas
-                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Areas.fetchRequest()
-                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-                    try context.execute(deleteRequest)
-                    
-                    // Insert new Areas
                     for dto in areaList {
-                        let newArea = Areas(context: context)
-                        newArea.id = Int64(UUID().uuidString.hashValue) // oder deine eigene ID Logik
-                        newArea.name = dto.name
-                        newArea.color = dto.color
-                        newArea.time = dto.time
+                        let fetchRequest: NSFetchRequest<Areas> = Areas.fetchRequest()
+                        fetchRequest.predicate = NSPredicate(format: "name == %@ AND time == %lld", dto.name, dto.time)
                         
-                        // Convert points to string "lat,lon;lat,lon"
+                        let existingAreas = try context.fetch(fetchRequest)
+                        let area = existingAreas.first ?? Areas(context: context)
+                        
+                        // Falls neu, setze eine neue ID
+                        if existingAreas.isEmpty {
+                            area.id = Int64(UUID().uuidString.hashValue)
+                        }
+                        
+                        area.name = dto.name
+                        area.color = dto.color
+                        area.time = dto.time
+                        
+                        // Punkte als String speichern
                         let pointString = dto.points.map { "\($0.lat),\($0.lon)" }.joined(separator: ";")
-                        newArea.points = pointString
-                        
-                        newArea.uploadStatus = false // received = not uploaded
+                        area.points = pointString
+                        area.uploadStatus = false // received = not uploaded
                     }
                     
                     try context.save()

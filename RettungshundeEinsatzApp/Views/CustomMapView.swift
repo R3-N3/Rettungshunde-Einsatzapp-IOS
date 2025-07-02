@@ -32,13 +32,16 @@ struct CustomMapView: UIViewRepresentable {
 
     
     private func addAreaOverlaysAndAnnotations(to mapView: MKMapView) {
-        // Entferne alte Area Overlays + Annotations
+        
+        // Entferne alte Area Layouts
         let areaOverlays = mapView.overlays.filter { $0 is ColoredPolygon }
         mapView.removeOverlays(areaOverlays)
+        
+        // Entferne alte Area Annotations
         let areaAnnotations = mapView.annotations.filter { $0 is AreaAnnotation }
         mapView.removeAnnotations(areaAnnotations)
 
-        // Füge neue Areas hinzu
+        // Füge neue Areas und Annotationen hinzu
         for area in areas {
             if let polygon = createPolygonOverlay(area: area) {
                 mapView.addOverlay(polygon)
@@ -51,9 +54,72 @@ struct CustomMapView: UIViewRepresentable {
             }
         }
     }
+    
+    private func addAllUserLocationAndAnnotations(to mapView: MKMapView, context: Context) {
+        
+        // Entferne alle fremden Overlays (außer eigene Polyline)
+        for overlay in mapView.overlays {
+            if let polyline = overlay as? MKPolyline {
+                if polyline != context.coordinator.myPolyline {
+                    mapView.removeOverlay(polyline)
+                }
+            }
+        }
+        
+        // Entferne alle UserAnnotations (Da der eigene Standort keine Annotation hat, muss dieser nicht vom löschen ausgeschlossen werden)
+        let userAnnotations = mapView.annotations.filter { $0 is UserAnnotation }
+        mapView.removeAnnotations(userAnnotations)
+        
+        // Füge Tracks und User hinzu
+        for track in userTracks {
+            let polyline = MKPolyline(coordinates: track.coordinates, count: track.coordinates.count)
+            context.coordinator.overlayColors[polyline] = track.color
+            mapView.addOverlay(polyline)
+
+            if let user = track.user, let lastCoord = track.coordinates.last {
+                let annotation = UserAnnotation()
+                annotation.coordinate = lastCoord
+                annotation.title = user.username ?? "User"
+                annotation.user = user
+                annotation.color = track.iconColor
+                mapView.addAnnotation(annotation)
+            }
+        }
+    }
+    
+    private func addMyTrack(to mapView: MKMapView, context: Context) {
+        
+        if let lastCoords = context.coordinator.lastMyCoordinates, lastCoords.isEqualTo(coordinates) {
+            // Keine Änderung ➔ Return
+            return
+        }
+        print("➡️ Reload MyTrack in UI")
+        
+        // ➡️ Speichere neue Coordinates Referenz
+            context.coordinator.lastMyCoordinates = coordinates
+        
+        // ➡️ Entferne vorhandene eigene Polyline
+        if let existing = context.coordinator.myPolyline {
+            mapView.removeOverlay(existing)
+        }
+
+        // ➡️ Füge neue eigene Polyline hinzu
+        if !coordinates.isEmpty {
+            let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+            let hexString = UserDefaults.standard.string(forKey: "trackColor")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "#FF0000"
+            let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
+
+            context.coordinator.overlayColors[polyline] = myColor
+            mapView.addOverlay(polyline)
+
+            // ➡️ Speichere Referenz
+            context.coordinator.myPolyline = polyline
+        }
+    }
 
 
     func makeUIView(context: Context) -> MKMapView {
+        print("🟢 Start makeUIView")
         let mapView = MKMapView()
         mapView.delegate = context.coordinator
 
@@ -72,127 +138,37 @@ struct CustomMapView: UIViewRepresentable {
             mapView.setRegion(region, animated: true)
         }
 
-        addOverlaysAndAnnotations(to: mapView, context: context)
-        
         addAreaOverlaysAndAnnotations(to: mapView)
+        addAllUserLocationAndAnnotations(to: mapView, context: context)
+        addMyTrack(to: mapView, context: context)
 
         return mapView
     }
 
     func updateUIView(_ uiView: MKMapView, context: Context) {
         print("🟢 Starte UpdateUI in CustomMapView")
+        
         uiView.mapType = mapType
-
-        // ➡️ Entferne vorhandene eigene Polyline
-        if let existing = context.coordinator.myPolyline {
-            uiView.removeOverlay(existing)
-        }
         
-        addAreaOverlaysAndAnnotations(to: uiView)
-        DispatchQueue.main.async {
-            self.refreshAreas = false
-        }
-        
+        // ➡️ Lade neue Areas
         if refreshAreas {
-            // Entferne alte Area Overlays + Annotations
-            let areaOverlays = uiView.overlays.filter { $0 is ColoredPolygon }
-            uiView.removeOverlays(areaOverlays)
-            let areaAnnotations = uiView.annotations.filter { $0 is AreaAnnotation }
-            uiView.removeAnnotations(areaAnnotations)
-
-            // Füge neue Areas hinzu
-            for area in areas {
-                if let polygon = createPolygonOverlay(area: area) {
-                    uiView.addOverlay(polygon)
-                    let annotation = AreaAnnotation()
-                    annotation.coordinate = polygon.centerCoordinate
-                    annotation.title = area.name
-                    annotation.color = UIColor(hex: area.color ?? "#FF0000")
-                    annotation.area = area
-                    uiView.addAnnotation(annotation)
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.refreshAreas = false
-            }
-        }
-
-        // ➡️ Füge neue eigene Polyline hinzu
-        if !coordinates.isEmpty {
-            let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-            let hexString = UserDefaults.standard.string(forKey: "trackColor")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "#FF0000"
-            let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
-
-            context.coordinator.overlayColors[polyline] = myColor
-            uiView.addOverlay(polyline)
-
-            // ➡️ Speichere Referenz
-            context.coordinator.myPolyline = polyline
+            print("➡️ Reload Areas in UI")
+            addAreaOverlaysAndAnnotations(to: uiView)
+            refreshAreas = false
         }
 
         // ➡️ Aktualisiere fremde UserTracks nur wenn refreshUserTracks == true
         if refreshUserTracks {
-            print("refreshUserTracks == true")
-            // Entferne alle fremden Overlays (außer eigene Polyline)
-            for overlay in uiView.overlays {
-                if let polyline = overlay as? MKPolyline {
-                    if polyline != context.coordinator.myPolyline {
-                        uiView.removeOverlay(polyline)
-                    }
-                }
-            }
-
-            // Entferne alle UserAnnotations
-            let userAnnotations = uiView.annotations.filter { $0 is UserAnnotation }
-            uiView.removeAnnotations(userAnnotations)
-
-            // ➡️ Füge fremde Tracks neu hinzu
-            for track in userTracks {
-                let polyline = MKPolyline(coordinates: track.coordinates, count: track.coordinates.count)
-                context.coordinator.overlayColors[polyline] = track.color
-                uiView.addOverlay(polyline)
-
-                if let user = track.user, let lastCoord = track.coordinates.last {
-                    let annotation = UserAnnotation()
-                    annotation.coordinate = lastCoord
-                    annotation.title = user.username ?? "User"
-                    annotation.user = user
-                    annotation.color = track.iconColor
-                    uiView.addAnnotation(annotation)
-                }
-            }
-            DispatchQueue.main.async {
-                self.refreshUserTracks = false
-            }
+            print("➡️ Reload AllUserTracks in UI")
+            addAllUserLocationAndAnnotations(to: uiView, context: context)
+            refreshUserTracks = false
         }
-    }
+        
+        
+        // Aktualisier eigene Polyline (Funktion prüft, ob sich diese geädnert hat)
+        addMyTrack(to: uiView, context: context)
 
-    private func addOverlaysAndAnnotations(to mapView: MKMapView, context: Context) {
-        if !coordinates.isEmpty {
-            let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-            let hexString = UserDefaults.standard.string(forKey: "trackColor")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "#FF0000"
-            let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
-
-            context.coordinator.overlayColors[polyline] = myColor
-            mapView.addOverlay(polyline)
-            context.coordinator.myPolyline = polyline
-        }
-
-        for track in userTracks {
-            let polyline = MKPolyline(coordinates: track.coordinates, count: track.coordinates.count)
-            context.coordinator.overlayColors[polyline] = track.color
-            mapView.addOverlay(polyline)
-
-            if let user = track.user, let lastCoord = track.coordinates.last {
-                let annotation = UserAnnotation()
-                annotation.coordinate = lastCoord
-                annotation.title = user.username ?? "User"
-                annotation.user = user
-                annotation.color = track.iconColor
-                mapView.addAnnotation(annotation)
-            }
-        }
+        
     }
 
     func makeCoordinator() -> Coordinator {
@@ -203,8 +179,8 @@ struct CustomMapView: UIViewRepresentable {
         var parent: CustomMapView
         var overlayColors: [MKPolyline: UIColor] = [:]
 
-        // ➡️ NEU: Eigene Polyline Referenz
         var myPolyline: MKPolyline?
+        var lastMyCoordinates: [CLLocationCoordinate2D]?
 
         init(_ parent: CustomMapView) {
             self.parent = parent
@@ -218,9 +194,6 @@ struct CustomMapView: UIViewRepresentable {
         
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             if let areaAnnotation = view.annotation as? AreaAnnotation {
-                print("Area tapped: \(areaAnnotation.title ?? "Unknown")")
-                
-                // ➡️ Zeige hier dein Sheet oder Banner
                 if let area = areaAnnotation.area {
                     showAreaInfoSheet(area: area)
                 }
@@ -238,7 +211,7 @@ struct CustomMapView: UIViewRepresentable {
                 let renderer = MKPolygonRenderer(polygon: polygon)
                 renderer.fillColor = polygon.color?.withAlphaComponent(0.1) ?? UIColor.red.withAlphaComponent(0.1)
                 renderer.strokeColor = polygon.color?.withAlphaComponent(0.5) ?? UIColor.red.withAlphaComponent(0.5)
-                renderer.lineWidth = 2
+                renderer.lineWidth = 1
                 return renderer
             }
 
@@ -256,14 +229,18 @@ struct CustomMapView: UIViewRepresentable {
                 if view == nil {
                     view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                     view?.canShowCallout = true
+                    view?.glyphImage = UIImage(systemName: "person.fill")
                     view?.markerTintColor = userAnnotation.color ?? .systemOrange
                     view?.displayPriority = .defaultHigh
+                    view?.zPriority = .max
                     let btn = UIButton(type: .detailDisclosure)
                     view?.rightCalloutAccessoryView = btn
                 } else {
                     view?.annotation = annotation
+                    view?.glyphImage = UIImage(systemName: "person.fill")
                     view?.markerTintColor = userAnnotation.color ?? .systemOrange
                     view?.displayPriority = .defaultHigh
+                    view?.zPriority = .max
                 }
                 return view
             }
@@ -274,13 +251,13 @@ struct CustomMapView: UIViewRepresentable {
                 if view == nil {
                     view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "AreaAnnotationView")
                     view?.canShowCallout = true
-                    view?.glyphImage = UIImage(systemName: "info.circle.fill")
+                    view?.glyphImage = UIImage(systemName: "info.circle")
                     view?.markerTintColor = areaAnnotation.color ?? .green
                     view?.displayPriority = .defaultLow
                     view?.alpha = 0.5
                 } else {
                     view?.annotation = annotation
-                    view?.glyphImage = UIImage(systemName: "info.circle.fill")
+                    view?.glyphImage = UIImage(systemName: "info.circle")
                     view?.markerTintColor = areaAnnotation.color ?? .green
                     view?.displayPriority = .defaultLow
                 }
@@ -335,3 +312,14 @@ extension MKPolygon {
 }
 
 
+extension Array where Element == CLLocationCoordinate2D {
+    func isEqualTo(_ other: [CLLocationCoordinate2D]) -> Bool {
+        if self.count != other.count { return false }
+        for (a, b) in zip(self, other) {
+            if a.latitude != b.latitude || a.longitude != b.longitude {
+                return false
+            }
+        }
+        return true
+    }
+}

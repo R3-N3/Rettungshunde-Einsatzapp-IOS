@@ -249,7 +249,6 @@ struct MapView: View {
                                                     isSubmitting = false
                                                     if success {
                                                         bannerManager.showBanner(String(localized: "delete_all_areas_success"), type: .success)
-                                                        refreshAreas = true
                                                     } else {
                                                         bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
                                                     }
@@ -343,6 +342,7 @@ struct MapView: View {
                                             if success {
                                                 bannerManager.showBanner(String(localized: "banner_download_all_areas_success"), type: .success)
                                                 refreshUserTracks = true
+                                                refreshAreas.toggle()
                                                 userTracks = loadUserTracks(context: context)
                                             } else {
                                                 bannerManager.showBanner(String(localized: "banner_download_all_areas_error"), type: .error)
