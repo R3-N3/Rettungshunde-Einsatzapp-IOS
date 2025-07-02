@@ -11,9 +11,6 @@
         }
       }
     },
-    "🗺️ Fläche: %@" : {
-
-    },
     "A" : {
       "shouldTranslate" : false
     },
@@ -68,10 +65,8 @@
     "banner_download_all_areas_error" : {
 
     },
-    "banner_download_all_areas_success" : {
-
-    },
     "banner_download_all_gps_data_error" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -88,6 +83,7 @@
       }
     },
     "banner_download_all_gps_data_success" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -552,6 +548,7 @@
       }
     },
     "debug_button" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1308,9 +1305,6 @@
           }
         }
       }
-    },
-    "Punkte:" : {
-
     },
     "R" : {
       "shouldTranslate" : false

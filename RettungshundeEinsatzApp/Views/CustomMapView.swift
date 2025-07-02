@@ -87,6 +87,25 @@ struct CustomMapView: UIViewRepresentable {
         }
     }
     
+    private func DeleteAllUserData(to mapView: MKMapView, context: Context) {
+        
+        // Entferne alle fremden Overlays (außer eigene Polyline)
+        for overlay in mapView.overlays {
+            if let polyline = overlay as? MKPolyline {
+                if polyline != context.coordinator.myPolyline {
+                    mapView.removeOverlay(polyline)
+                }
+            }
+        }
+        
+        // Entferne alle UserAnnotations (Da der eigene Standort keine Annotation hat, muss dieser nicht vom löschen ausgeschlossen werden)
+        let userAnnotations = mapView.annotations.filter { $0 is UserAnnotation }
+        mapView.removeAnnotations(userAnnotations)
+        
+    }
+    
+    
+    
     private func addMyTrack(to mapView: MKMapView, context: Context) {
         
         if let lastCoords = context.coordinator.lastMyCoordinates, lastCoords.isEqualTo(coordinates) {
@@ -251,13 +270,13 @@ struct CustomMapView: UIViewRepresentable {
                 if view == nil {
                     view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "AreaAnnotationView")
                     view?.canShowCallout = true
-                    view?.glyphImage = UIImage(systemName: "info.circle")
+                    view?.glyphImage = UIImage(systemName: "mappin.and.ellipse")
                     view?.markerTintColor = areaAnnotation.color ?? .green
                     view?.displayPriority = .defaultLow
                     view?.alpha = 0.5
                 } else {
                     view?.annotation = annotation
-                    view?.glyphImage = UIImage(systemName: "info.circle")
+                    view?.glyphImage = UIImage(systemName: "mappin.and.ellipse")
                     view?.markerTintColor = areaAnnotation.color ?? .green
                     view?.displayPriority = .defaultLow
                 }

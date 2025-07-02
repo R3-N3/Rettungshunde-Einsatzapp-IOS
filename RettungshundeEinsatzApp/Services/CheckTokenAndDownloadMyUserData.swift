@@ -8,7 +8,6 @@
 import Foundation
 
 func checkTokenAndDownloadMyUserData(router: AppRouter, completion: @escaping (Bool, String) -> Void) {
-
     
     print("🟢 Starte CheckTokenAndGetMyUserData")
     
@@ -17,21 +16,17 @@ func checkTokenAndDownloadMyUserData(router: AppRouter, completion: @escaping (B
     let serverApiURL = defaults.string(forKey: "serverApiURL") ?? ""
     let token = KeychainHelper.loadToken() ?? ""
     
-    // URL bauen
     guard let url = URL(string: serverApiURL + "downloadmyuserdata") else {
         completion(false, "Invalid URL")
         return
     }
     
-    // Request Body
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    let bodyParams = "token=\(token)"
-    request.httpBody = bodyParams.data(using: .utf8)
+    request.httpBody = "token=\(token)".data(using: .utf8)
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
     
-    // URLSession task
-    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+    URLSession.shared.dataTask(with: request) { data, _, error in
         if let error = error {
             print("Error: \(error.localizedDescription)")
             completion(false, "Error 003: \(error.localizedDescription)")
@@ -52,8 +47,11 @@ func checkTokenAndDownloadMyUserData(router: AppRouter, completion: @escaping (B
                     let username = json["username"] as? String ?? ""
                     let email = json["email"] as? String ?? ""
                     let phoneNumber = json["phoneNumber"] as? String ?? ""
-                    let securityLevel = json["securityLevel"] as? String ?? ""
+                    let securityLevelString = json["securityLevel"] as? String ?? "1"
                     let radioCallName = json["radioCallName"] as? String ?? ""
+                    
+                    // Wandeln securityLevel in Int
+                    let securityLevel = Int(securityLevelString) ?? 1
                     
                     // Speichern der Benutzerdaten
                     defaults.set(username, forKey: "username")
@@ -63,27 +61,30 @@ func checkTokenAndDownloadMyUserData(router: AppRouter, completion: @escaping (B
                     defaults.set(radioCallName, forKey: "radioCallName")
                     defaults.set("#0c8ef7", forKey: "trackColor")
                     
+                    // Setze securityLevel im Router (UI Update)
+                    DispatchQueue.main.async {
+                        router.securityLevel = securityLevel
+                        print("🛡️ Sicherheitslevel Einsatzkraft: " + String(router.isLevelEinsatzkraft))
+                        print("🛡️ Sicherheitslevel Führungskraft: " + String(router.isLevelFuehrungskraft))
+                        print("🛡️ Sicherheitslevel Administrator: " + String(router.isLevelAdmin))
+                    }
+                    
                     // Erfolg
                     print("✅ Token gültig, Nachricht: \(message)")
-                    let result = [status, message, username, email, phoneNumber, securityLevel, radioCallName].joined(separator: ",")
+                    let result = [status, message, username, email, phoneNumber, securityLevelString, radioCallName].joined(separator: ",")
                     completion(true, result)
                 } else {
                     if message == "No token found."{
                         print("❌ Kein Token gefunden, Nachricht: \(message)")
-                        router.logout() // Startet Logout Funktion in AppRouter.swift
+                        router.logout()
                     }
                     else if message == "Token expired." {
-                            print("❌ Token abgelaufen, Nachricht: \(message)")
-                        router.logout() // Startet Logout Funktion in AppRouter.swift
-                        
+                        print("❌ Token abgelaufen, Nachricht: \(message)")
+                        router.logout()
                     }
-                    else{
+                    else {
                         print("❌ Fehler in CheckTokenAndGetMyUserData, Nachricht: \(message)")
-                        let errorMsg = [status, message].joined(separator: ",")
-                        completion(false, errorMsg)
                     }
-                    
-                    
                     
                     let errorMsg = [status, message].joined(separator: ",")
                     completion(false, errorMsg)
@@ -95,7 +96,5 @@ func checkTokenAndDownloadMyUserData(router: AppRouter, completion: @escaping (B
             print("Error: \(error.localizedDescription)")
             completion(false, "Error 003: \(error.localizedDescription)")
         }
-    }
-    
-    task.resume()
+    }.resume()
 }

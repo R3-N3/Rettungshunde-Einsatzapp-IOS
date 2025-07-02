@@ -67,6 +67,22 @@ func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool,
             
             context.perform {
                 do {
+                    // 🔵 1. IDs der heruntergeladenen Flächen sammeln
+                    let downloadedKeys = Set(areaList.map { "\($0.name)|\($0.time)" })
+                    
+                    // 🔴 2. Alle lokalen Flächen abrufen
+                    let fetchAllRequest: NSFetchRequest<Areas> = Areas.fetchRequest()
+                    let localAreas = try context.fetch(fetchAllRequest)
+                    
+                    // 🔴 3. Lösche alle lokalen Flächen, die nicht mehr heruntergeladen wurden
+                    for area in localAreas {
+                        let key = "\(area.name ?? "")|\(area.time)"
+                        if !downloadedKeys.contains(key) {
+                            context.delete(area)
+                        }
+                    }
+                    
+                    // 🟢 4. Danach wie bisher updaten oder einfügen
                     for dto in areaList {
                         let fetchRequest: NSFetchRequest<Areas> = Areas.fetchRequest()
                         fetchRequest.predicate = NSPredicate(format: "name == %@ AND time == %lld", dto.name, dto.time)
@@ -74,7 +90,6 @@ func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool,
                         let existingAreas = try context.fetch(fetchRequest)
                         let area = existingAreas.first ?? Areas(context: context)
                         
-                        // Falls neu, setze eine neue ID
                         if existingAreas.isEmpty {
                             area.id = Int64(UUID().uuidString.hashValue)
                         }
@@ -82,11 +97,8 @@ func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool,
                         area.name = dto.name
                         area.color = dto.color
                         area.time = dto.time
-                        
-                        // Punkte als String speichern
-                        let pointString = dto.points.map { "\($0.lat),\($0.lon)" }.joined(separator: ";")
-                        area.points = pointString
-                        area.uploadStatus = false // received = not uploaded
+                        area.points = dto.points.map { "\($0.lat),\($0.lon)" }.joined(separator: ";")
+                        area.uploadStatus = false
                     }
                     
                     try context.save()

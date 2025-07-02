@@ -13,11 +13,25 @@ import CoreData
 
 class AppRouter: ObservableObject {
     @Published var isLoggedIn: Bool
+    @Published var securityLevel: Int {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+        
+    var isLevelEinsatzkraft: Bool { securityLevel == 1 }
+    var isLevelFuehrungskraft: Bool { securityLevel == 2 }
+    var isLevelAdmin: Bool { securityLevel == 3 }
 
 
     init() {
+        let defaults = UserDefaults.standard
         let hasToken = KeychainHelper.loadToken() != nil
-        let username = UserDefaults.standard.string(forKey: "username")
+        let username = defaults.string(forKey: "username")
+                
+        // Lade Security Level, default = 1 falls nicht vorhanden oder 0
+        let level = defaults.integer(forKey: "securityLevel")
+        self.securityLevel = level == 0 ? 1 : level
         
         if hasToken, username != nil {
             print("🔑 Token und Benutzername vorhanden, starte MapView ")
