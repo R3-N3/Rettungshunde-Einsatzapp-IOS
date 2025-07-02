@@ -41,9 +41,16 @@ struct CustomMapView: UIViewRepresentable {
     
     
     private func addNewAreasOverlaysAndAnnotations(to mapView: MKMapView, areas: [Area]) {
+        
+        print("➡️ Add new Areas in UI")
         // Entferne alte Overlays der neuen Areas
-        let areaOverlays = mapView.overlays.filter { $0 is ColoredPolygon }
+        let areaOverlays = mapView.overlays.filter {
+            ($0 is ColoredPolygon) || ($0 is MKPolygon)
+        }
         mapView.removeOverlays(areaOverlays)
+        
+        let areaAnnotations = mapView.annotations.filter { $0 is AreaAnnotation }
+        mapView.removeAnnotations(areaAnnotations)
 
         // Füge neue Areas als Overlay und Annotation hinzu
         for area in areas {
@@ -57,12 +64,14 @@ struct CustomMapView: UIViewRepresentable {
                 mapView.addAnnotation(annotation)
             }
         }
+        print("⬅️ Add new Areas in UI - abgeschlossen")
     }
 
 
     
     private func addAllUserLocationAndAnnotations(to mapView: MKMapView, context: Context) {
         
+        print("➡️ Starte Alle User Location zur UI hinzufügen")
         // Entferne alle fremden Overlays (außer eigene Polyline)
         for overlay in mapView.overlays {
             if let polyline = overlay as? MKPolyline {
@@ -91,6 +100,8 @@ struct CustomMapView: UIViewRepresentable {
                 mapView.addAnnotation(annotation)
             }
         }
+        
+        print("⬅️ Starte Alle User Location zur UI hinzufügen - abgeschlossen")
     }
     
     private func DeleteAllUserData(to mapView: MKMapView, context: Context) {
@@ -118,12 +129,13 @@ struct CustomMapView: UIViewRepresentable {
             // Keine Änderung ➔ Return
             return
         }
-        print("➡️ Reload MyTrack in UI")
         
-        // ➡️ Speichere neue Coordinates Referenz
-            context.coordinator.lastMyCoordinates = coordinates
+        print("➡️ Load/Reload MyTrack in UI")
         
-        // ➡️ Entferne vorhandene eigene Polyline
+        // Speichere neue Coordinates Referenz
+        context.coordinator.lastMyCoordinates = coordinates
+        
+        // Entferne vorhandene eigene Polyline
         if let existing = context.coordinator.myPolyline {
             mapView.removeOverlay(existing)
         }
@@ -137,9 +149,10 @@ struct CustomMapView: UIViewRepresentable {
             context.coordinator.overlayColors[polyline] = myColor
             mapView.addOverlay(polyline)
 
-            // ➡️ Speichere Referenz
+            // Speichere Referenz
             context.coordinator.myPolyline = polyline
         }
+        print("⬅️ Load/Reload MyTrack in UI - abgeschlossen")
     }
 
 
@@ -162,7 +175,6 @@ struct CustomMapView: UIViewRepresentable {
             )
             mapView.setRegion(region, animated: true)
         }
-
         addAllUserLocationAndAnnotations(to: mapView, context: context)
         addMyTrack(to: mapView, context: context)
         
@@ -178,8 +190,9 @@ struct CustomMapView: UIViewRepresentable {
         uiView.mapType = mapType
         
         if refreshAreas {
-            print("➡️ Add new Areas in UI")
+            
             addNewAreasOverlaysAndAnnotations(to: uiView, areas: newAreas)
+            refreshAreas = false
         }
 
         // ➡️ Aktualisiere fremde UserTracks nur wenn refreshUserTracks == true

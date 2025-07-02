@@ -8,6 +8,10 @@
 import Foundation
 import CoreData
 
+class AreaDownloadManager {
+    static var isDownloadingAreas = false
+}
+
 struct DownloadArea: Codable {
     var id: Int
     var title: String
@@ -23,7 +27,14 @@ struct DownloadAreaPoint: Codable {
 }
 
 func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool, String) -> Void) {
-    print("🟢 Starte downloadAreasFromServer")
+    if AreaDownloadManager.isDownloadingAreas {
+            print("⚠️ downloadAreas already running")
+            completion(false, "Bereits in Bearbeitung")
+            return
+        }
+        
+        AreaDownloadManager.isDownloadingAreas = true
+        print("🟢 Starte downloadAreasFromServer")
     
     let defaults = UserDefaults.standard
     let serverApiURL = defaults.string(forKey: "serverApiURL") ?? ""
@@ -47,6 +58,8 @@ func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool,
     request.httpBody = try? JSONSerialization.data(withJSONObject: payload, options: [])
     
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        defer { AreaDownloadManager.isDownloadingAreas = false } // ← setzt Lock immer zurück
+  
         if let error = error {
             print("❌ downloadAreasFromServer Error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
@@ -68,7 +81,13 @@ func downloadAreas(context: NSManagedObjectContext, completion: @escaping (Bool,
                     // ➡️ CoreData löschen
                     let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Area.fetchRequest()
                     let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-                    try context.execute(deleteRequest)
+                    deleteRequest.resultType = .resultTypeObjectIDs
+
+                    let result = try context.execute(deleteRequest) as? NSBatchDeleteResult
+                    if let objectIDs = result?.result as? [NSManagedObjectID] {
+                        let changes = [NSDeletedObjectsKey: objectIDs]
+                        NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [context])
+                    }
                     
                     context.perform {
                         // ➡️ Alle Inserts und Relationship Zuweisungen hier

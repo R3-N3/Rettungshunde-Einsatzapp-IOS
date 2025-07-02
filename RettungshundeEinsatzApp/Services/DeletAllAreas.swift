@@ -8,45 +8,58 @@
 import Foundation
 
 func deleteAllAreas(completion: @escaping (Bool, String) -> Void) {
-    print("🟢 Starte deleteAllAreas (nur Server)")
-
+    print("🟢 Starte deleteAllAreasFromServer")
+    
     let defaults = UserDefaults.standard
     let serverApiURL = defaults.string(forKey: "serverApiURL") ?? ""
     let token = KeychainHelper.loadToken() ?? ""
-    let deleteUrl = serverApiURL + "deleteareas"
-
-    guard let url = URL(string: deleteUrl) else {
+    
+    guard let url = URL(string: serverApiURL + "deleteareas") else {
         completion(false, "Invalid URL")
         return
     }
-
-    // ➔ Request Body
+    
+    guard !token.isEmpty else {
+        completion(false, "Missing token")
+        return
+    }
+    
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    let bodyParams = "token=\(token)"
-    request.httpBody = bodyParams.data(using: .utf8)
-    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-
-    // ➔ URLSession Task
-    URLSession.shared.dataTask(with: request) { data, response, error in
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    let payload: [String: Any] = ["token": token]
+    request.httpBody = try? JSONSerialization.data(withJSONObject: payload, options: [])
+    
+    let task = URLSession.shared.dataTask(with: request) { data, _, error in
         if let error = error {
-            print("❌ deleteAllAreas Error: \(error.localizedDescription)")
             completion(false, error.localizedDescription)
             return
         }
-
-        guard let data = data, let responseBody = String(data: data, encoding: .utf8) else {
+        
+        guard let data = data else {
             completion(false, "No data received")
             return
         }
-
-        // ➔ Prüfe Server Response
-        if responseBody.lowercased().contains("success") {
-            print("✅ Alle Areas erfolgreich auf dem Server gelöscht")
-            completion(true, "success, Server emptied.")
-        } else {
-            print("❌ deleteAllAreas Server Error: \(responseBody)")
-            completion(false, "error, Server response: \(responseBody)")
+        
+        do {
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let status = json["status"] as? String,
+               let message = json["message"] as? String {
+                
+                if status == "success" {
+                    print("✅ Alle Flächen auf Server gelöscht")
+                    completion(true, message)
+                } else {
+                    completion(false, message)
+                }
+            } else {
+                completion(false, "Invalid JSON format")
+            }
+        } catch {
+            completion(false, "Fehler beim Decoding: \(error.localizedDescription)")
         }
-    }.resume()
+    }
+    
+    task.resume()
 }

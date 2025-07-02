@@ -607,6 +607,7 @@
       }
     },
     "delete_all_areas_success" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -36,6 +36,7 @@ struct MapView: View {
     @State private var newAreaDescription = ""
     @State private var newAreaColor = "#FF0000"
     @State private var refreshMapView = false
+    
 
     @FetchRequest(entity: Area.entity(), sortDescriptors: []) var newAreas: FetchedResults<Area>
 
@@ -343,13 +344,20 @@ struct MapView: View {
                                 downloadAreas(context: context) { success, message in
                                     print("Download Areas: \(message)")
                                     if success {
-                                        // ggf. deine State-Variablen aktualisieren
-                                        refreshAreas = true
+                                        context.perform {
+                                            do {
+                                                try context.save()
+                                                context.refreshAllObjects()                                            } catch {
+                                                print("❌ Fehler beim CoreData Save nach downloadAreas: \(error.localizedDescription)")
+                                            }
+                                        }
+                                        DispatchQueue.main.async {
+                                            refreshAreas = true
+                                        }
                                     } else {
                                         bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
                                     }
-                                }
-                            } else {
+                                }                            } else {
                                 print("❌ Upload fehlgeschlagen: \(message)")
                             }
                             
@@ -557,7 +565,15 @@ struct MapView: View {
                     DispatchQueue.main.async {
                         isSubmitting = false
                         if success {
-                            bannerManager.showBanner(String(localized: "delete_all_areas_success"), type: .success)
+                            downloadAreas(context: context) { success, message in
+                                print("Download Areas: \(message)")
+                                if success {
+                                    // ggf. deine State-Variablen aktualisieren
+                                    refreshAreas = true
+                                } else {
+                                    bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                                }
+                            }
                         } else {
                             bannerManager.showBanner("Fehler beim Löschen: \(message)", type: .error)
                         }
@@ -702,6 +718,10 @@ struct MapView: View {
 
         uploadAreasToServer(context: context) { success, message in
             if success {
+                for area in newAreas {
+                    context.delete(area)
+                }
+                try? context.save()
                 downloadAreas(context: context) { success, message in
                     print("Download Areas: \(message)")
                     if success {
