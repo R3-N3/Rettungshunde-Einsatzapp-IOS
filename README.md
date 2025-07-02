@@ -1,7 +1,7 @@
 # 🐕‍🦺 Rettungshunde Einsatzapp
 
 **Die App zur Organisation und Dokumentation von Einsätzen mit Rettungshundestaffeln.**  
-Diese Android-App unterstützt Einsatzleitungen bei der effizienten Planung und Überwachung von Suchaktionen.
+Diese App unterstützt Einsatzleitungen bei der effizienten Planung und Überwachung von Suchaktionen – für **Android und iOS**.
 
 ---
 
@@ -16,16 +16,22 @@ Diese Android-App unterstützt Einsatzleitungen bei der effizienten Planung und 
 
 ## 📦 Installation
 
+### Android
+
 1. Besuche die [Releases-Seite](https://github.com/R3-N3/Rettungshunde-Einsatzapp-IOS/releases)
 2. Lade die aktuelle `.apk`-Datei herunter
 3. Installiere die Datei auf deinem Android-Gerät *(„Installation aus unbekannten Quellen“ muss evtl. aktiviert werden)*
+
+### iOS
+
+Die iOS-Version ist im [Apple App Store](https://apps.apple.com/) verfügbar (Link wird hier ergänzt, sobald veröffentlicht).
 
 ---
 
 ## ⚙️ Systemvoraussetzungen
 
-- Android 8.0 (Oreo) oder höher
-- GPS-fähiges Gerät
+- **Android:** Version 8.0 (Oreo) oder höher, GPS-fähiges Gerät  
+- **iOS:** iOS 15 oder höher, GPS-fähiges Gerät
 
 ---
 
@@ -33,17 +39,15 @@ Diese Android-App unterstützt Einsatzleitungen bei der effizienten Planung und 
 
 Diese App wurde entwickelt mit:
 
-- Kotlin
-- Android SDK
-- Jetpack (Location, ViewModel, LiveData)
-- Material Design
+- **Android:** Kotlin, Android SDK, Jetpack (Location, ViewModel, LiveData), Material Design
+- **iOS:** Swift, Xcode, SwiftUI, CoreLocation
 
 ---
 
 ## 📃 Lizenz
 
-Dieses Projekt steht unter der **GNU General Public License v3.0**.  
-Weitere Infos findest du in der Datei [`LICENSE`](LICENSE).
+Dieses Projekt steht unter der **MIT License**.  
+Weitere Informationen findest du in der Datei [`LICENSE`](LICENSE).
 
 ---
 
@@ -51,5 +55,11 @@ Weitere Infos findest du in der Datei [`LICENSE`](LICENSE).
 
 Beiträge und Ideen zur Weiterentwicklung sind willkommen!  
 Bitte erstelle ein Issue oder einen Pull Request.
+
+---
+
+## ℹ️ Hinweis
+
+Diese App wird unabhängig entwickelt und dient ausschließlich zur Unterstützung von Rettungshundestaffeln bei Einsätzen. Sie ersetzt keine behördlich vorgeschriebenen Systeme oder Einsatzdokumentationen.
 
 ---
