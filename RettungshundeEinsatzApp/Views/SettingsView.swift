@@ -12,7 +12,16 @@ struct SettingsView: View {
     @EnvironmentObject var bannerManager: BannerManager
     
     let defaults = UserDefaults.standard
-    @State private var selectedColor: Color = .blue
+    @AppStorage("trackColor") private var trackColor: String = "#FF0000"
+    @State private var selectedColor: Color
+
+    init() {
+        if let color = Color(hex: UserDefaults.standard.string(forKey: "trackColor") ?? "#FF0000") {
+            _selectedColor = State(initialValue: color)
+        } else {
+            _selectedColor = State(initialValue: .blue)
+        }
+    }
     @State private var showLogoutModal = false
     
     var body: some View {

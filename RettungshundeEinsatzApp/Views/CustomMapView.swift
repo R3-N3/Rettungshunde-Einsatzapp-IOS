@@ -90,6 +90,7 @@ struct CustomMapView: UIViewRepresentable {
     private func addAllUserLocationAndAnnotations(to mapView: MKMapView, context: Context) {
         
         print("➡️ Starte Alle User Location zur UI hinzufügen")
+        
         // Entferne alle fremden Overlays (außer eigene Polyline)
         for overlay in mapView.overlays {
             if let polyline = overlay as? MKPolyline {
@@ -292,7 +293,7 @@ struct CustomMapView: UIViewRepresentable {
             // ➡️ ColoredPolyline Renderer
             if let polyline = overlay as? ColoredPolyline {
                 let renderer = MKPolylineRenderer(polyline: polyline)
-                renderer.strokeColor = (polyline.color ?? UIColor.green).withAlphaComponent(0.5)
+                renderer.strokeColor = (polyline.color ?? UIColor.green).withAlphaComponent(0.2)
                 renderer.lineWidth = 3
                 return renderer
             }

@@ -59,7 +59,6 @@ func checkTokenAndDownloadMyUserData(router: AppRouter, completion: @escaping (B
                     defaults.set(phoneNumber, forKey: "phoneNumber")
                     defaults.set(securityLevel, forKey: "securityLevel")
                     defaults.set(radioCallName, forKey: "radioCallName")
-                    defaults.set("#0c8ef7", forKey: "trackColor")
                     
                     // Setze securityLevel im Router (UI Update)
                     DispatchQueue.main.async {

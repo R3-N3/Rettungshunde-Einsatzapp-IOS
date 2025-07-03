@@ -11,24 +11,11 @@
         }
       }
     },
-    "%@: %lld Punkte" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@: %2$lld Punkte"
-          }
-        }
-      }
-    },
-    "%lld Punkte" : {
-
+    "%@" : {
+      "shouldTranslate" : false
     },
     "A" : {
       "shouldTranslate" : false
-    },
-    "Abbrechen" : {
-
     },
     "accuracy" : {
       "localizations" : {
@@ -42,6 +29,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accuracy"
+          }
+        }
+      }
+    },
+    "add_area" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fläche hinzufügen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Area"
+          }
+        }
+      }
+    },
+    "all_area" : {
+
+    },
+    "all_areas" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ale Flächen"
+          }
+        }
+      }
+    },
+    "all_tracks" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Tracks"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Tracks"
           }
         }
       }
@@ -62,17 +95,21 @@
         }
       }
     },
-    "Alle Benutzer" : {
-
-    },
-    "Alle Flächen" : {
-
-    },
-    "Alle Tracks" : {
-
-    },
-    "Alle Tracks als GPX exportieren" : {
-
+    "area" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fläche"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Area"
+          }
+        }
+      }
     },
     "baner_input_saved_successfully" : {
       "localizations" : {
@@ -86,40 +123,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The input has been saved."
-          }
-        }
-      }
-    },
-    "banner_download_all_gps_data_error" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fehler beim Herunterladen der GPS-Tracks."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error downloading GPS tracks."
-          }
-        }
-      }
-    },
-    "banner_download_all_gps_data_success" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Herunterladen der GPS-Tracks erfolgreich."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "GPS tracks downloaded successfully."
           }
         }
       }
@@ -284,29 +287,6 @@
         }
       }
     },
-    "banner_user_data_update_success" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Benutzerdaten erfolgreich geändert"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : " User data update successfull."
-          }
-        }
-      }
-    },
-    "Beschreibung" : {
-
-    },
-    "Beschreibung: %@" : {
-
-    },
     "cancel" : {
       "localizations" : {
         "de" : {
@@ -323,6 +303,22 @@
         }
       }
     },
+    "choose_area_color" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle eine Flächen-Farbe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Area Color"
+          }
+        }
+      }
+    },
     "choose_color" : {
       "localizations" : {
         "de" : {
@@ -335,6 +331,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose Color"
+          }
+        }
+      }
+    },
+    "color" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color"
+          }
+        }
+      }
+    },
+    "color_and_size" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe und Größe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color and Size"
           }
         }
       }
@@ -579,23 +607,6 @@
         }
       }
     },
-    "debug_button" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Debug Button"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Debug Button"
-          }
-        }
-      }
-    },
     "delete" : {
       "localizations" : {
         "de" : {
@@ -624,23 +635,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete All Areas"
-          }
-        }
-      }
-    },
-    "delete_all_areas_success" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle Flächen gelöscht"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete all Areas successful"
           }
         }
       }
@@ -737,6 +731,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete User"
+          }
+        }
+      }
+    },
+    "describtion" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beschreibung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describtion"
           }
         }
       }
@@ -891,14 +901,21 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
-    "Exportiere…" : {
-
-    },
-    "Farbe und Größe" : {
-
-    },
-    "Farbe: %@" : {
-
+    "export_all_as_gpx" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Tracks als .gpx Datei exportieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export all Tracks as .gpx File"
+          }
+        }
+      }
     },
     "fill_in_al_fields" : {
       "localizations" : {
@@ -916,18 +933,6 @@
         }
       }
     },
-    "Fläche erstellen" : {
-
-    },
-    "Fläche: n/a" : {
-
-    },
-    "Flächenfarbe auswählen" : {
-
-    },
-    "Flächenverwaltung" : {
-
-    },
     "geographical_coordinates" : {
       "localizations" : {
         "de" : {
@@ -943,9 +948,6 @@
           }
         }
       }
-    },
-    "Hochgeladen: %@" : {
-
     },
     "incorect_user_param" : {
       "localizations" : {
@@ -997,12 +999,6 @@
           }
         }
       }
-    },
-    "Keine Benutzertracks vorhanden" : {
-
-    },
-    "Keine eigenen Tracks vorhanden" : {
-
     },
     "last_change" : {
       "localizations" : {
@@ -1069,6 +1065,38 @@
         }
       }
     },
+    "manage_areas" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flächenverwaltung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage Areas"
+          }
+        }
+      }
+    },
+    "manage_tracks" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trackverwaltung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage Tracks"
+          }
+        }
+      }
+    },
     "manage_users" : {
       "localizations" : {
         "de" : {
@@ -1084,9 +1112,6 @@
           }
         }
       }
-    },
-    "Mein Track" : {
-
     },
     "menu" : {
       "localizations" : {
@@ -1105,7 +1130,7 @@
       }
     },
     "MGRS" : {
-
+      "shouldTranslate" : false
     },
     "my_local_track_color" : {
       "localizations" : {
@@ -1118,7 +1143,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "My local Track Color"
+            "value" : "My local track color"
           }
         }
       }
@@ -1139,6 +1164,22 @@
         }
       }
     },
+    "my_track" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mein Track"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Track"
+          }
+        }
+      }
+    },
     "my_user_data" : {
       "localizations" : {
         "de" : {
@@ -1155,19 +1196,18 @@
         }
       }
     },
-    "no_coordinates_available" : {
-      "extractionState" : "stale",
+    "no" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keine Koordinaten verfügbar"
+            "value" : "Nein"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No Coordinates available"
+            "value" : "No"
           }
         }
       }
@@ -1185,6 +1225,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "❌ No data received"
+          }
+        }
+      }
+    },
+    "no_describtion" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Beschreibung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Describtion"
+          }
+        }
+      }
+    },
+    "no_own_track_available" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein eigener Track verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No own track available"
+          }
+        }
+      }
+    },
+    "no_tracks_available" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Tracks vorhanden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tracks available"
+          }
+        }
+      }
+    },
+    "not_available" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not available"
+          }
+        }
+      }
+    },
+    "numbers_of_waypoints" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anzahl Wegpunkte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numbers of waypoints"
           }
         }
       }
@@ -1370,9 +1490,6 @@
         }
       }
     },
-    "Processing" : {
-
-    },
     "R" : {
       "shouldTranslate" : false
     },
@@ -1537,9 +1654,6 @@
         }
       }
     },
-    "Speichern" : {
-
-    },
     "Start" : {
       "localizations" : {
         "de" : {
@@ -1652,8 +1766,21 @@
         }
       }
     },
-    "Titel" : {
-
+    "title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        }
+      }
     },
     "track_color" : {
       "localizations" : {
@@ -1671,8 +1798,21 @@
         }
       }
     },
-    "Trackverwaltung" : {
-
+    "track_length" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Streckenlänge"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track length"
+          }
+        }
+      }
     },
     "unknown" : {
       "localizations" : {
@@ -1787,6 +1927,22 @@
         }
       }
     },
+    "uploaded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hochgeladen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uploaded"
+          }
+        }
+      }
+    },
     "user_data" : {
       "localizations" : {
         "de" : {
@@ -1847,6 +2003,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Write Operation Report"
+          }
+        }
+      }
+    },
+    "yes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yes"
           }
         }
       }

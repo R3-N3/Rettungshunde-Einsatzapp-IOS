@@ -11,7 +11,6 @@ import CoreData
 import MapKit
 
 struct MapView: View {
-    @State private var showMenu = false
     @Environment(\.managedObjectContext) var context
     @EnvironmentObject var router: AppRouter
     @StateObject private var locationManager = LocationManager()
@@ -19,6 +18,7 @@ struct MapView: View {
 
     let thinSpace = "\u{2009}"
 
+    @State private var showMenu = false
     @State private var mapType: MKMapType = .standard
     @State private var userTracks: [UserTrack] = []
     @State private var selectedUser: AllUserData? = nil
@@ -195,7 +195,7 @@ struct MapView: View {
                     NavigationLink(destination: TrackListView()) {
                         HStack {
                             Image(systemName: "point.bottomleft.forward.to.point.topright.filled.scurvepath")
-                            Text("Trackverwaltung").fontWeight(.medium)
+                            Text(String(localized: "manage_tracks")).fontWeight(.medium)
                         }
                     }
                     .buttonStyle(buttonStyleREAAnimated())
@@ -205,7 +205,7 @@ struct MapView: View {
                     NavigationLink(destination: AreasListView()) {
                         HStack {
                             Image(systemName: "square.3.stack.3d.top.fill")
-                            Text("Flächenverwaltung").fontWeight(.medium)
+                            Text(String(localized: "manage_areas")).fontWeight(.medium)
                         }
                     }
                     .buttonStyle(buttonStyleREAAnimated())
@@ -296,6 +296,7 @@ struct MapView: View {
                             if isDrawingArea {
                                 finishDrawingArea()
                             } else {
+                                showMenu = false
                                 drawingAreaCoordinates = []
                                 isDrawingArea = true
                                 refreshMapView = false
@@ -439,7 +440,7 @@ struct MapView: View {
     private var loadingOverlay: some View {
         ZStack {
             Color.black.opacity(0.3).ignoresSafeArea()
-            ProgressView("Processing")
+            ProgressView(String(localized: "processing"))
                 .padding()
                 .background(Color.white)
                 .cornerRadius(10)
@@ -451,24 +452,24 @@ struct MapView: View {
     @ViewBuilder
     func areaDetailSheet(area: Area) -> some View {
         VStack {
-            Text("Titel " + (area.title ?? "Unknown"))
+            Text(String(localized: "title") + " " + (area.title ?? String(localized: "unknown")))
                 .font(.title)
-            Text("Beschreibung: \(area.desc ?? "Keine Beschreibung")")
+            Text(String(localized: "describtion") + " " + (area.desc ?? String(localized: "no_describtion")))
                 .padding(.top)
             if let coordsSet = area.coordinates as? Set<AreaCoordinate> {
                 let sortedCoords = coordsSet.sorted { $0.orderIndex < $1.orderIndex }
                 let coords = sortedCoords.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
                 let areaSize = coords.calculateArea()
                 
-                Text(String(format: "Fläche: %.2f m²", areaSize))
+                Text(String(localized: "area") + " " + String(format: "%.2f m²", areaSize))
                     .padding(.top)
             } else {
-                Text("Fläche: n/a")
+                Text(String(localized: "area") + ": " + String(localized: "not_available"))
                     .padding(.top)
             }
-            Text("Farbe: \(area.color ?? "#FF0000")")
+            Text(String(localized: "color") + " " + (area.color ?? "#FF0000"))
                 .padding(.top)
-            Text("Hochgeladen: \(area.uploadedToServer ? "Ja" : "Nein")")
+            Text(String(localized: "uploaded") + ": " +  (area.uploadedToServer ? String(localized: "yes") : String(localized: "no")))
                         .padding(.top)
         }
         .padding()
@@ -479,7 +480,7 @@ struct MapView: View {
     @ViewBuilder
     func userDetailSheet(user: AllUserData) -> some View {
         VStack {
-            Text(user.username ?? "Unknown")
+            Text(user.username ?? String(localized: "unknown"))
                 .font(.title)
         }
         .padding()
@@ -489,13 +490,13 @@ struct MapView: View {
 
     @ViewBuilder
     func areaInputSheetView() -> some View {Form {
-        Section(header: Text("Fläche erstellen")) {
-            TextField("Titel", text: $newAreaTitle)
-            TextField("Beschreibung", text: $newAreaDescription)
+        Section(header: Text(String(localized: "add_area"))) {
+            TextField(String(localized: "title"), text: $newAreaTitle)
+            TextField(String(localized: "describtion"), text: $newAreaDescription)
         }
 
-        Section(header: Text("Farbe und Größe")) {
-            ColorPicker("Flächenfarbe auswählen", selection: Binding(
+        Section(header: Text(String(localized: "color_and_size"))) {
+            ColorPicker(String(localized: "choose_area_color"), selection: Binding(
                 get: {
                     Color(hex: newAreaColor) ?? .red
                 },
@@ -504,14 +505,14 @@ struct MapView: View {
                 }
             ))
             let areaSize = drawingAreaCoordinates.calculateArea()
-            Text(String(format: "Fläche: %.2f m²", areaSize))
+            Text(String(localized: "area") + " " + String(format: "%.2f m²", areaSize))
         }
 
 
         Section {
             HStack{
                 
-                Button("Abbrechen") {
+                Button(String(localized: "cancel")) {
                     drawingAreaCoordinates = []
                     refreshMapView = true
                     isDrawingArea = false
@@ -519,7 +520,7 @@ struct MapView: View {
                 }
                 .buttonStyle(buttonStyleREAAnimated())
                 
-                Button("Speichern") {
+                Button(String(localized: "save")) {
                     saveArea(
                         coordinates: drawingAreaCoordinates,
                         title: newAreaTitle,

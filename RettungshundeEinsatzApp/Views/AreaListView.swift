@@ -50,16 +50,16 @@ struct AreasListView: View {
                     }
                 }
                 
-                Section(header: Text("Alle Flächen")){
+                Section(header: Text(String(localized: "all_area"))){
                     ForEach(areas, id: \.self) { area in
                         VStack(alignment: .leading) {
-                            Text(area.title ?? "Unbenannt")
+                            Text(area.title ?? String(localized: "unknown"))
                                 .font(.headline)
-                            Text(area.desc ?? "Keine Beschreibung")
+                            Text(area.desc ?? String(localized: "no_describtion"))
                                 .font(.subheadline)
-                            Text("Hochgeladen: \(area.uploadedToServer ? "Ja" : "Nein")")
+                            Text(String(localized: "uploaded") + " " + (area.uploadedToServer ? String(localized: "yes") : String(localized: "no")))
                                 .font(.caption)
-                            Text("Farbe: \(area.color ?? "#FF0000")")
+                            Text(String(localized: "color") + (area.color ?? "#FF0000"))
                                 .font(.caption2)
                         }
                         .padding(.vertical, 4)
