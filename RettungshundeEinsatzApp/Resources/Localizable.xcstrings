@@ -11,6 +11,19 @@
         }
       }
     },
+    "%@: %lld Punkte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$lld Punkte"
+          }
+        }
+      }
+    },
+    "%lld Punkte" : {
+
+    },
     "A" : {
       "shouldTranslate" : false
     },
@@ -49,7 +62,16 @@
         }
       }
     },
+    "Alle Benutzer" : {
+
+    },
     "Alle Flächen" : {
+
+    },
+    "Alle Tracks" : {
+
+    },
+    "Alle Tracks als GPX exportieren" : {
 
     },
     "baner_input_saved_successfully" : {
@@ -869,6 +891,9 @@
     "ettungshunde" : {
       "shouldTranslate" : false
     },
+    "Exportiere…" : {
+
+    },
     "Farbe und Größe" : {
 
     },
@@ -973,6 +998,12 @@
         }
       }
     },
+    "Keine Benutzertracks vorhanden" : {
+
+    },
+    "Keine eigenen Tracks vorhanden" : {
+
+    },
     "last_change" : {
       "localizations" : {
         "de" : {
@@ -1053,6 +1084,9 @@
           }
         }
       }
+    },
+    "Mein Track" : {
+
     },
     "menu" : {
       "localizations" : {
@@ -1636,6 +1670,9 @@
           }
         }
       }
+    },
+    "Trackverwaltung" : {
+
     },
     "unknown" : {
       "localizations" : {

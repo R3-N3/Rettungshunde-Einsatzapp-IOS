@@ -26,22 +26,27 @@ struct AreasListView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section{
-                    if router.isLevelFuehrungskraft || router.isLevelAdmin {
-                        Button(action: {
-                            showDeleteAllAreasModal = true
-                        }) {
-                            HStack {
-                                Image(systemName: "trash.fill")
-                                Text(String(localized: "delete_all_areas")).fontWeight(.medium)
+                if router.isLevelFuehrungskraft || router.isLevelAdmin {
+                    Section{
+                        HStack{
+                            Spacer()
+                        
+                            Button(action: {
+                                showDeleteAllAreasModal = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "trash.fill")
+                                    Text(String(localized: "delete_all_areas")).fontWeight(.medium)
+                                }
                             }
+                            .buttonStyle(buttonStyleREAAnimatedRed())
+                            .sheet(isPresented: $showDeleteAllAreasModal) {
+                                deleteAllAreasSheet()
+                            }
+                            .padding(.horizontal)
+                            
+                            Spacer()
                         }
-                        .buttonStyle(buttonStyleREAAnimatedRed())
-                        .sheet(isPresented: $showDeleteAllAreasModal) {
-                            deleteAllAreasSheet()
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 20)
                     }
                 }
                 

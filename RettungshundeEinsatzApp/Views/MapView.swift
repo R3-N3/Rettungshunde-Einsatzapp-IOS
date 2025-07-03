@@ -23,8 +23,6 @@ struct MapView: View {
     @State private var userTracks: [UserTrack] = []
     @State private var selectedUser: AllUserData? = nil
     @State private var refreshUserTracks = false
-    @State private var showDeleteModal = false
-    @State private var showDeleteAllGPSDataModal = false
     @State private var isSubmitting = false
     @State private var selectedArea: Area? = nil
     @State private var refreshAreas = false
@@ -184,23 +182,6 @@ struct MapView: View {
                     .padding(.horizontal)
                     .padding(.top, 20)
                     
-                    
-                    Button(action: {
-                        showDeleteModal = true
-                    }) {
-                        HStack {
-                            Image(systemName: "trash")
-                            Text(String(localized: "delete_my_gps_data"))
-                                .fontWeight(.medium)
-                        }
-                    }
-                    .buttonStyle(buttonStyleREAAnimated())
-                    .sheet(isPresented: $showDeleteModal) {
-                        deleteMyGPSDataSheet()
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 20)
-                    
                     NavigationLink(destination: OperationReportView()) {
                         HStack {
                             Image(systemName: "pencil")
@@ -211,26 +192,15 @@ struct MapView: View {
                     .padding(.horizontal)
                     .padding(.top, 20)
                     
-                    
-                    // Zeige Button Lösche Alle GPS Daten für Admin und FK
-                    if router.isLevelFuehrungskraft || router.isLevelAdmin {
-                        Button(action: {
-                            showDeleteAllGPSDataModal = true
-                        }) {
-                            HStack {
-                                Image(systemName: "trash.fill")
-                                Text(String(localized: "delete_all_gps_data")).fontWeight(.medium)
-                            }
+                    NavigationLink(destination: TrackListView()) {
+                        HStack {
+                            Image(systemName: "point.bottomleft.forward.to.point.topright.filled.scurvepath")
+                            Text("Trackverwaltung").fontWeight(.medium)
                         }
-                        .buttonStyle(buttonStyleREAAnimated())
-                        .sheet(isPresented: $showDeleteAllGPSDataModal) {
-                            deleteAllGPSDataSheet()
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 20)
                     }
-                    
-                    
+                    .buttonStyle(buttonStyleREAAnimated())
+                    .padding(.horizontal)
+                    .padding(.top, 20)
 
                     NavigationLink(destination: AreasListView()) {
                         HStack {
@@ -321,25 +291,27 @@ struct MapView: View {
                 VStack{
                     Spacer()
                     
-                    Button(action: {
-                        if isDrawingArea {
-                            finishDrawingArea()
-                        } else {
-                            drawingAreaCoordinates = []
-                            isDrawingArea = true
-                            refreshMapView = false
+                    if router.isLevelFuehrungskraft || router.isLevelAdmin {
+                        Button(action: {
+                            if isDrawingArea {
+                                finishDrawingArea()
+                            } else {
+                                drawingAreaCoordinates = []
+                                isDrawingArea = true
+                                refreshMapView = false
+                            }
+                        }) {
+                            Image(systemName: isDrawingArea ? "square.and.arrow.down" : "plus.square.dashed")
+                                .font(.title)
+                                .frame(width: 30, height: 30)
+                                .padding()
+                                .background(Color(.tertiarySystemBackground).opacity(0.8))
+                                .clipShape(Circle())
+                                .foregroundColor(isDrawingArea ? Color(.systemGreen) : Color(.systemBlue))
                         }
-                    }) {
-                        Image(systemName: isDrawingArea ? "square.and.arrow.down" : "plus.square.dashed")
-                            .font(.title)
-                            .frame(width: 30, height: 30)
-                            .padding()
-                            .background(Color(.tertiarySystemBackground).opacity(0.8))
-                            .clipShape(Circle())
-                            .foregroundColor(isDrawingArea ? Color(.systemGreen) : Color(.systemBlue))
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 5)
                     }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 5)
                     
                     Button(action: {
                         downloadAllUserData(context: context) { success, message in
@@ -503,62 +475,6 @@ struct MapView: View {
         .presentationDetents([.height(300), .large])
         .presentationDragIndicator(.visible)
     }
-    
-    @ViewBuilder
-    func deleteAllGPSDataSheet() -> some View {
-        DeleteConfirmationModal(
-            title: String(localized: "confirm_delete_all_user_gps_titel"),
-            message: String(localized: "confirm_delete_all_user_gps_text"),
-            confirmButtonTitle: String(localized: "delete"),
-            onConfirm: {
-                showDeleteAllGPSDataModal = false
-                deleteAllGPSData { success, message in
-                    DispatchQueue.main.async {
-                        if success {
-                            // Download alle GPS Locations aller Benutzer und trigger update der UI
-                            downloadAllGpsLocations(context: context) { success, message in
-                                userTracks = loadUserTracks(context: context)
-                                refreshUserTracks = true
-                            }
-                        } else {
-                            bannerManager.showBanner(String(localized: "delete_all_gps_data_error"), type: .error)
-                        }
-                    }
-                }
-            },
-            onCancel: {
-                showDeleteAllGPSDataModal = false
-            }
-        )
-        .presentationDetents([.height(300)])
-        .presentationDragIndicator(.visible)
-    }
-    
-    @ViewBuilder
-    func deleteMyGPSDataSheet() -> some View {
-        DeleteConfirmationModal(
-            title: String(localized: "confirm_delete_my_gps_titel"),
-            message: String(localized: "confirm_delete_my_gps_text"),
-            confirmButtonTitle: String(localized: "delete"),
-            onConfirm: {
-                let success = deleteLokalGPSData()
-                if success {
-                    bannerManager.showBanner(String(localized: "delete_my_gps_data_success"), type: .success)
-                    userTracks = loadUserTracks(context: context)
-                    locationManager.fetchAllCoordinates()
-                } else {
-                    bannerManager.showBanner(String(localized: "delete_my_gps_data_error"), type: .error)
-                }
-                showDeleteModal = false
-            },
-            onCancel: {
-                showDeleteModal = false
-            }
-        )
-        .presentationDetents([.height(300)])
-        .presentationDragIndicator(.visible)
-    }
-    
 
     @ViewBuilder
     func userDetailSheet(user: AllUserData) -> some View {
