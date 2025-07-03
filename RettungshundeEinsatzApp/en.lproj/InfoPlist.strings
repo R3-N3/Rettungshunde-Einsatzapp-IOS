@@ -1,0 +1,11 @@
+//
+//  InfoPlist.strings
+//  RettungshundeEinsatzApp
+//
+//  Created by René Nettekoven on 03.07.25.
+//
+
+NSLocationWhenInUseUsageDescription = "We always need your location to track you during operations.";
+NSLocationAlwaysUsageDescription = "We need your location even in the background to track you during operations.";
+NSLocationAlwaysAndWhenInUseUsageDescription = "We always need your location to track you during operations.";
+

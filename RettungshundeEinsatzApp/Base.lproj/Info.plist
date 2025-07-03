@@ -48,5 +48,13 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+    <key>CFBundleDisplayName</key>
+    <string>Rettungshunde Einsatzapp</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>© 2025 René Nettekoven</string>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>location-services</string>
+    </array>
 </dict>
 </plist>

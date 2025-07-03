@@ -431,17 +431,6 @@ struct MapView: View {
                     
                 }
             }
-                
-
-            
-  
-            
-
-
-
-            
-            
-
         }
     }
 
@@ -459,40 +448,126 @@ struct MapView: View {
     
     @ViewBuilder
     func areaDetailSheet(area: Area) -> some View {
-        VStack {
-            Text(String(localized: "title") + " " + (area.title ?? String(localized: "unknown")))
-                .font(.title)
-            Text(String(localized: "describtion") + " " + (area.desc ?? String(localized: "no_describtion")))
-                .padding(.top)
-            if let coordsSet = area.coordinates as? Set<AreaCoordinate> {
-                let sortedCoords = coordsSet.sorted { $0.orderIndex < $1.orderIndex }
-                let coords = sortedCoords.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
-                let areaSize = coords.calculateArea()
-                
-                Text(String(localized: "area") + " " + String(format: "%.2f m²", areaSize))
-                    .padding(.top)
-            } else {
-                Text(String(localized: "area") + ": " + String(localized: "not_available"))
-                    .padding(.top)
+        VStack(alignment: .leading, spacing: 0){
+            HStack{
+                if let areaColor = area.color {
+                    Image(systemName: "hexagon.fill")
+                        .foregroundColor(Color(hex: areaColor) ?? Color(.systemGray))
+                }else{
+                    Image(systemName: "hexagon.fill")
+                }
+                Text((area.title ?? String(localized: "unknown")))
+                    .font(.title)
+                    .padding(.leading, 20)
             }
-            Text(String(localized: "color") + " " + (area.color ?? "#FF0000"))
-                .padding(.top)
-            Text(String(localized: "uploaded") + ": " +  (area.uploadedToServer ? String(localized: "yes") : String(localized: "no")))
-                        .padding(.top)
+            .padding(.horizontal)
+            
+            HStack{
+                Image(systemName: "text.bubble")
+                Text(area.desc ?? String(localized: "no_describtion"))
+                .padding(.leading, 20)
+            }
+            .padding(.horizontal)
+            
+            HStack{
+                Image(systemName: "base.unit")
+                if let coordsSet = area.coordinates as? Set<AreaCoordinate> {
+                    let sortedCoords = coordsSet.sorted { $0.orderIndex < $1.orderIndex }
+                    let coords = sortedCoords.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+                    let areaSize = coords.calculateArea()
+                    Text(String(format: "%.2f m²", areaSize))
+                        .padding(.leading, 20)
+                } else {
+                    Text(String(localized: "not_available"))
+                        .padding(.leading, 20)
+                }
+            }
+            .padding(.horizontal)
+ 
+            HStack{
+                Image(systemName: "checkmark.square")
+                Text(String(localized: "uploaded") + ": " +  (area.uploadedToServer ? String(localized: "yes") : String(localized: "no")))
+                    .padding(.leading, 20)
+            }
+            .padding(.horizontal)
         }
         .padding()
-        .presentationDetents([.height(300), .large])
+        .presentationDetents([.height(220), .large])
         .presentationDragIndicator(.visible)
     }
 
     @ViewBuilder
     func userDetailSheet(user: AllUserData) -> some View {
-        VStack {
-            Text(user.username ?? String(localized: "unknown"))
-                .font(.title)
+        VStack(alignment: .leading, spacing: 0) {
+            
+            HStack{
+                if let trackColor = user.trackcolor {
+                    Image(systemName: "person.fill")
+                        .foregroundColor(Color(hex: trackColor) ?? .red)
+                        //.frame(width: 30, height: 30)
+                }else{
+                    Image(systemName: "person.fill")
+                }
+                Text(user.username ?? String(localized: "unknown"))
+                    .font(.title)
+                    .padding(.leading, 20)
+            }
+            .padding(.horizontal)
+            
+            if let locationsSet = user.locations,
+                let locations = locationsSet.allObjects as? [AllUserGPSData],
+                let lastLocation = locations.sorted(by: { ($0.time ?? "") > ($1.time ?? "") }).first {
+                
+                HStack{
+                    Image(systemName: "mappin.and.ellipse")
+                    VStack(alignment: .leading, spacing: 0){
+                        Text(latToFormattedString(latitude: lastLocation.latitude))
+                        Text(lonToFormattedString(longitude: lastLocation.longitude))
+                        Text(latLonToMGRS(latitude: lastLocation.latitude, longitude: lastLocation.longitude))
+                    }
+                    .padding(.leading, 20)
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+                
+                HStack{
+                    Image(systemName: "clock")
+                    if let timeString = lastLocation.time {
+                        Text((timeString))
+                            .padding(.leading, 20)
+                    } else {
+                        Text("-")
+                            .padding(.leading, 20)
+                    }
+                    
+                    
+                }
+                .padding()
+            } else {
+                HStack{
+                    Image(systemName: "mappin.and.ellipse")
+                    VStack(alignment: .leading, spacing: 0){
+                        Text("-")
+                        Text("-")
+                        Text("-")
+                    }
+                    .padding(.leading, 20)
+                    
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+                
+                HStack{
+                    Image(systemName: "clock")
+                    Text("-")
+                    .padding(.leading, 20)
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+            }
         }
         .padding()
-        .presentationDetents([.height(320), .large])
+        .presentationDetents([.height(220), .large])
         .presentationDragIndicator(.visible)
     }
 

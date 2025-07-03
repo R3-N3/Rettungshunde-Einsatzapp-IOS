@@ -263,6 +263,13 @@ struct CustomMapView: UIViewRepresentable {
                     }
                 }
             }
+            
+            if let userAnnotation = view.annotation as? UserAnnotation, let user = userAnnotation.user {
+                print("👉 User tapped directly: \(user.username ?? "nil")")
+                DispatchQueue.main.async {
+                    self.parent.selectedUser = user
+                }
+            }
         }
         
 
@@ -323,7 +330,7 @@ struct CustomMapView: UIViewRepresentable {
 
             let identifier = "UserAnnotationView"
 
-            // ➡️ UserAnnotation wie bisher
+            // ➡️ UserAnnotation
             if let userAnnotation = annotation as? UserAnnotation {
                 var view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
                 if view == nil {
@@ -333,8 +340,6 @@ struct CustomMapView: UIViewRepresentable {
                     view?.markerTintColor = userAnnotation.color ?? .systemOrange
                     view?.displayPriority = .defaultHigh
                     view?.zPriority = .max
-                    let btn = UIButton(type: .detailDisclosure)
-                    view?.rightCalloutAccessoryView = btn
                 } else {
                     view?.annotation = annotation
                     view?.glyphImage = UIImage(systemName: "person.fill")
@@ -365,13 +370,6 @@ struct CustomMapView: UIViewRepresentable {
             }
 
             return nil
-        }
-
-        func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-            if let userAnnotation = view.annotation as? UserAnnotation, let user = userAnnotation.user {
-                print("👉 User tapped: \(user.username ?? "nil")")
-                parent.selectedUser = user
-            }
         }
         
         @objc func handleMapTap(_ gestureRecognizer: UITapGestureRecognizer) {
