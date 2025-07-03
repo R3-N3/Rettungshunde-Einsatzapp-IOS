@@ -389,6 +389,7 @@ struct MapView: View {
                         if router.isLevelAdmin || router.isLevelFuehrungskraft{
                             downloadAllGpsLocations(context: context) { success, message in
                                 if success {
+                                    userTracks = loadUserTracks(context: context)
                                     refreshUserTracks = true
                                 } else {
                                     bannerManager.showBanner(String(localized: "banner_user_data_update_error"), type: .error)
@@ -516,8 +517,8 @@ struct MapView: View {
                         if success {
                             // Download alle GPS Locations aller Benutzer und trigger update der UI
                             downloadAllGpsLocations(context: context) { success, message in
-                                refreshUserTracks = true
                                 userTracks = loadUserTracks(context: context)
+                                refreshUserTracks = true
                             }
                         } else {
                             bannerManager.showBanner(String(localized: "delete_all_gps_data_error"), type: .error)
