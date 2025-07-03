@@ -12,7 +12,7 @@
       }
     },
     "-" : {
-
+      "shouldTranslate" : false
     },
     "%@" : {
       "shouldTranslate" : false
@@ -52,16 +52,12 @@
         }
       }
     },
-    "all_area" : {
-
-    },
     "all_areas" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ale Flächen"
+            "value" : "Alle Flächen"
           }
         }
       }

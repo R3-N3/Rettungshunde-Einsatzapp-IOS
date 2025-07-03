@@ -50,7 +50,7 @@ struct AreasListView: View {
                     }
                 }
                 
-                Section(header: Text(String(localized: "all_area"))){
+                Section(header: Text(String(localized: "all_areas"))){
                     ForEach(areas, id: \.self) { area in
                         VStack(alignment: .leading) {
                             Text(area.title ?? String(localized: "unknown"))
