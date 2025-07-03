@@ -340,7 +340,11 @@ struct MapView: View {
                                                 refreshAreas = true
                                             }
                                         } else {
-                                            bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                                            if message == "Bereits in Bearbeitung"{
+                                                
+                                            }else{
+                                                bannerManager.showBanner("Fehler beim Download der Flächen: \(message)", type: .error)
+                                            }
                                         }
                                     }                            } else {
                                         print("❌ Upload fehlgeschlagen: \(message)")
@@ -354,7 +358,11 @@ struct MapView: View {
                                     // ggf. deine State-Variablen aktualisieren
                                     refreshAreas = true
                                 } else {
-                                    bannerManager.showBanner("Fehler beim Download: \(message)", type: .error)
+                                    if message == "Bereits in Bearbeitung"{
+                                        
+                                    }else{
+                                        bannerManager.showBanner("Fehler beim Download der Flächen: \(message)", type: .error)
+                                    }
                                 }
                             }
                         }

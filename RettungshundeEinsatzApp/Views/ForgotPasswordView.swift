@@ -38,147 +38,121 @@ struct ForgotPasswordView: View {
     var body: some View {
         ZStack {
             NavigationStack {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        
-                        //Text
-                        
-                        Text(String(localized: "reset_password_info_text"))
-                        
-                        
-                        // E-Mail
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(String(localized: "email"))
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                GeometryReader { geo in
+                    ScrollView {
+                        VStack(spacing: 24) {
                             
-                            TextField("", text: $email)
-                                .padding(12)
-                                .background(RoundedRectangle(cornerRadius: 12)
-                                    .stroke(focusedField == .email ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
-                                .background(Color(.systemBackground))
-                                .keyboardType(.emailAddress)
-                        }
-                        .padding(.horizontal)
-                        
-                        
-                        
-                        // Organisation
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(String(localized: "organisation"))
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                            Text(String(localized: "info"))
+                                .font(.headline)
                             
-                            Picker(String(localized: "organisation"), selection: $selectedOrg) {
-                                ForEach(org, id: \.self) { role in
-                                    Text(role).tag(role)
+                            Text(String(localized: "reset_password_info_text"))
+                            
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(String(localized: "email"))
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                
+                                TextField("", text: $email)
+                                    .padding(12)
+                                    .background(RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .email ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
+                                    .background(Color(.systemBackground))
+                                    .keyboardType(.emailAddress)
+                            }
+                            .padding(.horizontal)
+                            
+                            
+                            // Organisation
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(String(localized: "organisation"))
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                
+                                Picker(String(localized: "organisation"), selection: $selectedOrg) {
+                                    ForEach(org, id: \.self) { role in
+                                        Text(role).tag(role)
+                                    }
                                 }
+                                .pickerStyle(.menu)
+                                .padding(12)
+                                .labelsHidden()
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .role ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
+                                )
+                                .background(Color(.systemBackground))
                             }
-                            .pickerStyle(.menu)
-                            .padding(12)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(focusedField == .role ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
-                            )
-                            .background(Color(.systemBackground))
+                            .padding(.horizontal)
                             
-                        }
-                        .padding(.horizontal)
-                        
-                        
-                        
-                        
-                        
-                        
-                        HStack(spacing: 40) {
-                            
-                            // Abbrechen Button
-                            Button(action: {
-                                dismiss() //zurück zur vorherigen View
-                            }) {
-                                Text(String(localized: "cancel"))
-                            }
-                            .buttonStyle(buttonStyleREAAnimated())
- 
-                            
-                            
-                            
-                            
-                            
-                            // Zurücksetzen Button
-                            Button(action: {
-                                guard !isSubmitting else { return }
-                                isSubmitting = true
-                                resetPassword(
-                                    org: selectedOrg,
-                                    email: email
-                                ) { success, message in
-                                    DispatchQueue.main.async {
-                                        if success {
-                                            print("reset erfolgreich, wenn E-Mail korrekt")
-                                            alertTitle = String(localized: "success")
-                                            alertMessage = String(localized: "reset_password_success_text")
-                                            showAlert = true
-                                            isSubmitting = false
-                                            email = ""
-                                        } else {
-                                            print("❌ Reset nicht erfolgreich")
-                                            alertTitle = String(localized: "error")
-                                            alertMessage = message
-                                            showAlert = true
+                            HStack(spacing: 15) {
+                                
+                                // Abbrechen Button
+                                Button(action: {
+                                    dismiss() //zurück zur vorherigen View
+                                }) {
+                                    Text(String(localized: "cancel"))
+                                }
+                                .buttonStyle(buttonStyleREAAnimated())
+                                
+                                
+                                
+                                // Zurücksetzen Button
+                                Button(action: {
+                                    guard !isSubmitting else { return }
+                                    isSubmitting = true
+                                    resetPassword(
+                                        org: selectedOrg,
+                                        email: email
+                                    ) { success, message in
+                                        DispatchQueue.main.async {
+                                            if success {
+                                                print("reset erfolgreich, wenn E-Mail korrekt")
+                                                alertTitle = String(localized: "success")
+                                                alertMessage = String(localized: "reset_password_success_text")
+                                                showAlert = true
+                                                isSubmitting = false
+                                                email = ""
+                                            } else {
+                                                print("❌ Reset nicht erfolgreich")
+                                                alertTitle = String(localized: "error")
+                                                alertMessage = message
+                                                showAlert = true
+                                                isSubmitting = false
+                                            }
                                             isSubmitting = false
                                         }
-                                        isSubmitting = false
                                     }
+                                }) {
+                                    Text(String(localized: "reset"))
                                 }
-                            }) {
-                                Text(String(localized: "reset"))
-                            }
-                            .buttonStyle(buttonStyleREAAnimated())
-                            .disabled(isSubmitting)
-                            .alert(alertTitle, isPresented: $showAlert) {
-                                Button("OK", role: .cancel) {
-                                    if alertTitle == String(localized: "success"){
-                                        dismiss()
+                                .buttonStyle(buttonStyleREAAnimated())
+                                .disabled(isSubmitting)
+                                .alert(alertTitle, isPresented: $showAlert) {
+                                    Button("OK", role: .cancel) {
+                                        if alertTitle == String(localized: "success"){
+                                            dismiss()
+                                        }
                                     }
+                                } message: {
+                                    Text(alertMessage)
                                 }
-                            } message: {
-                                Text(alertMessage)
+                                
                             }
                             
-                            
-                            
-                            
-                            
-                            
-                            
-                            
+                            Spacer()
                             
                         }
-                        .padding(.horizontal)
-                        .padding(.top, 20)
-                        
-                        
-
+                        .padding()
+                        .frame(minHeight: geo.size.height)
+                        .frame(maxWidth: 500)
+                        .frame(maxWidth: .infinity)
+                        .frame(alignment: .center)
                         
                     }
-                    .frame(maxWidth: 500)
-                    .padding(.horizontal)
-                    .padding(.top, 60)
-                    .padding(.bottom, 40)
-                    .frame(maxWidth: .infinity)
-                }
-                .scrollDismissesKeyboard(.interactively)
             }
-
-            
-            
-            
-            
-            
-            
-            // Lade-Overlay
+        }
+        // Lade-Overlay
             if isSubmitting {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()

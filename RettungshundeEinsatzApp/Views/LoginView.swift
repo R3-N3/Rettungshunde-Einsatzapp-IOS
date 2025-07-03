@@ -30,131 +30,124 @@ struct LoginView: View {
     var body: some View {
         ZStack {
             NavigationStack {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Logo
-                        Image("LogoWithoutBackgroundRettungshundeEinsatzapp")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 80, height: 80)
-                            .padding(.top, 60)
-
-                        // Benutzername
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(String(localized: "username"))
-                                .font(.caption)
-                                .foregroundColor(.gray)
-
-                            TextField("", text: $username)
-                                .padding(12)
-                                .background(RoundedRectangle(cornerRadius: 12)
-                                .stroke(focusedField == .username ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
-                                .background(Color(.systemBackground))
-                        }
-                        .padding(.horizontal)
-
-                        // Passwort
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(String(localized: "password"))
-                                .font(.caption)
-                                .foregroundColor(.gray)
-
-                            SecureField("", text: $password)
-                                .padding(12)
-                                .background(RoundedRectangle(cornerRadius: 12)
-                                    .stroke(focusedField == .password ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
-                                .background(Color(.systemBackground))
-                        }
-                        .padding(.horizontal)
-
-                        // Organisation
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(String(localized: "organisation"))
-                                .font(.caption)
-                                .foregroundColor(.gray)
-
-                            Picker(String(localized: "organisation"), selection: $selectedOrg) {
-                                ForEach(org, id: \.self) { role in
-                                    Text(role).tag(role)
-                                }
+                GeometryReader { geo in
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            
+                            Spacer()
+                            
+                            // Benutzername
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(String(localized: "username"))
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                
+                                TextField("", text: $username)
+                                    .padding(12)
+                                    .background(RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .username ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
+                                    .background(Color(.systemBackground))
                             }
-                            .pickerStyle(.menu)
-                            .padding(12)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(focusedField == .role ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
-                            )
-                            .background(Color(.systemBackground))
- 
-                        }
-                        .padding(.horizontal)
-
-                        // Login Button
-                        Button(action: {
-                            guard !isSubmitting else { return }
-                            isSubmitting = true
-     
-                            checkLoginParam(
-                                username: username,
-                                password: password,
-                                org: selectedOrg
-                            ) { success, message in
-                                DispatchQueue.main.async {
-                                    if success {
-                                        if let token = KeychainHelper.loadToken() {
-                                            let defaults = UserDefaults.standard
-                                            let serverURL = defaults.string(forKey: "serverApiURL") ?? ""
-                                            print("🔑 Token geladen: \(token) Server URL: \(serverURL)")
+                            .padding(.horizontal)
+                            
+                            // Passwort
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(String(localized: "password"))
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                
+                                SecureField("", text: $password)
+                                    .padding(12)
+                                    .background(RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .password ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
+                                    .background(Color(.systemBackground))
+                            }
+                            .padding(.horizontal)
+                            
+                            // Organisation
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(String(localized: "organisation"))
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                
+                                Picker(String(localized: "organisation"), selection: $selectedOrg) {
+                                    ForEach(org, id: \.self) { role in
+                                        Text(role).tag(role)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .padding(12)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(focusedField == .role ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
+                                )
+                                .background(Color(.systemBackground))
+                                
+                            }
+                            .padding(.horizontal)
+                            
+                            // Login Button
+                            Button(action: {
+                                guard !isSubmitting else { return }
+                                isSubmitting = true
+                                
+                                checkLoginParam(
+                                    username: username,
+                                    password: password,
+                                    org: selectedOrg
+                                ) { success, message in
+                                    DispatchQueue.main.async {
+                                        if success {
+                                            if let token = KeychainHelper.loadToken() {
+                                                let defaults = UserDefaults.standard
+                                                let serverURL = defaults.string(forKey: "serverApiURL") ?? ""
+                                                print("🔑 Token geladen: \(token) Server URL: \(serverURL)")
+                                            } else {
+                                                print("❌❌❌ Kein Token gespeichert ❌❌❌")
+                                            }
+                                            router.isLoggedIn = true
                                         } else {
-                                            print("❌❌❌ Kein Token gespeichert ❌❌❌")
+                                            print("❌ Login nicht erfolgreich")
+                                            alertMessage = message
+                                            showAlert = true
+                                            isSubmitting = false
                                         }
-                                        router.isLoggedIn = true
-                                    } else {
-                                        print("❌ Login nicht erfolgreich")
-                                        alertMessage = message
-                                        showAlert = true
                                         isSubmitting = false
                                     }
-                                    isSubmitting = false
                                 }
+                            }) {
+                                Text(String(localized: "login"))
                             }
-                        }) {
-                            Text(String(localized: "login"))
+                            .buttonStyle(buttonStyleREAAnimated())
+                            .frame(maxWidth: 250)
+                            .disabled(isSubmitting)
+                            .padding(.horizontal)
+                            .padding(.top, 20)
+                            .alert(String(localized: "error"), isPresented: $showAlert) {
+                                Button("OK", role: .cancel) {}
+                            } message: {
+                                Text(alertMessage)
+                            }
+                            
+                            
+                            //ForgotPassword Button
+                            NavigationLink(destination: ForgotPasswordView()) {
+                                Text(String(localized: "reset_password"))
+                            }
+                            //.padding(.top, 40)
+                            
+                            Spacer()
+                            
                         }
-                        .buttonStyle(buttonStyleREAAnimated())
-                        .disabled(isSubmitting)
-                        .padding(.horizontal)
-                        .padding(.top, 20)
-                        .alert(String(localized: "error"), isPresented: $showAlert) {
-                            Button("OK", role: .cancel) {}
-                        } message: {
-                            Text(alertMessage)
-                        }
-                        
-                        
-                        Spacer()
-                        
-                        
-  
-                        
-                        
-                        //ForgotPassword Button
-                        NavigationLink(destination: ForgotPasswordView()) {
-                            Text(String(localized: "reset_password"))
-                        }
-                        .buttonStyle(buttonStyleREAAnimated())
-                        
-                        
+                        .frame(minHeight: geo.size.height)
+                        .frame(maxWidth: 500)
+                        .frame(maxWidth: .infinity)
+                        .frame(alignment: .center)
                         
                     }
-                    .frame(maxWidth: 500)
-                    .padding(.horizontal)
-                    .padding(.top, 60)
-                    .padding(.bottom, 40)
-                    .frame(maxWidth: .infinity)
+                    .scrollDismissesKeyboard(.interactively)
                 }
-                .scrollDismissesKeyboard(.interactively)
             }
 
 
