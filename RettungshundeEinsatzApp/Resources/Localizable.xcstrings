@@ -59,6 +59,12 @@
             "state" : "translated",
             "value" : "Alle Flächen"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Areas"
+          }
         }
       }
     },
@@ -606,6 +612,38 @@
         }
       }
     },
+    "datenschutz" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutz"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy"
+          }
+        }
+      }
+    },
+    "datenschutzerklaerung" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutzerklärung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        }
+      }
+    },
     "delete" : {
       "localizations" : {
         "de" : {
@@ -944,6 +982,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Geographical Coordinates"
+          }
+        }
+      }
+    },
+    "impressum" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impressum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imprint"
           }
         }
       }
@@ -1504,6 +1558,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Radio Call Sign"
+          }
+        }
+      }
+    },
+    "rechtliches" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechtliches"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legal"
           }
         }
       }

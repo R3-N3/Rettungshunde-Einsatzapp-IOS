@@ -83,6 +83,14 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section(header: Text(String(localized: "rechtliches"))) {
+                            NavigationLink(String(localized: "impressum"), destination: WebView(url: URL(string: "https://rettungshunde-einsatzapp.de/impressum.html")!)
+                                .navigationTitle(Text(String(localized: "impressum"))))
+                            
+                            NavigationLink(String(localized: "datenschutzerklaerung"), destination: WebView(url: URL(string: "https://rettungshunde-einsatzapp.de/datenschutz.html")!)
+                                .navigationTitle(Text(String(localized: "datenschutz"))))
+                        }
+                
                 Section(header: Text(String(localized: "logout"))){
                     // Logout Button
                     HStack {

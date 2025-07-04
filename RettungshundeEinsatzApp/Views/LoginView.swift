@@ -21,7 +21,11 @@ struct LoginView: View {
     @FocusState private var focusedField: Field?
     
     let defaults = UserDefaults.standard
-    let org = ["BRH RHS Bonn/Rhein-Sieg", "Demo", "Debug"]
+    #if DEBUG
+        let org = ["BRH RHS Bonn/Rhein-Sieg", "Demo", "Debug"]
+    #else
+        let org = ["BRH RHS Bonn/Rhein-Sieg", "Demo"]
+    #endif
     
     enum Field {
         case username, password, role
