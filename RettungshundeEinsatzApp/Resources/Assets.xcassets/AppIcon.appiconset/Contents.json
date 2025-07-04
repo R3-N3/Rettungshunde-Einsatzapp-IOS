@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "logo_rea_with_backgroud.png",
+      "filename" : "AppIcon_IOS_komplett.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "logo_rea_with_backgroud 1.png",
+      "filename" : "AppIcon_IOS_dunkel.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "logo_rea_with_backgroud 2.png",
+      "filename" : "AppIcon_IOS_tint.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

@@ -106,9 +106,14 @@ struct CustomMapView: UIViewRepresentable {
         
         // Füge Tracks und User hinzu
         for track in userTracks {
-            let polyline = MKPolyline(coordinates: track.coordinates, count: track.coordinates.count)
-            context.coordinator.overlayColors[polyline] = track.color
-            mapView.addOverlay(polyline)
+            
+            let segments = track.coordinates.splitSegments(maxDistance: 50)// trennt tracks wenn Punkte mehr als 50 meter auseinander sind
+            
+            for segment in segments {
+                let polyline = MKPolyline(coordinates: segment, count: segment.count)
+                context.coordinator.overlayColors[polyline] = track.color
+                mapView.addOverlay(polyline)
+            }
 
             if let user = track.user, let lastCoord = track.coordinates.last {
                 let annotation = UserAnnotation()
@@ -145,32 +150,40 @@ struct CustomMapView: UIViewRepresentable {
     private func addMyTrack(to mapView: MKMapView, context: Context) {
         
         if let lastCoords = context.coordinator.lastMyCoordinates, lastCoords.isEqualTo(coordinates) {
-            // Keine Änderung ➔ Return
-            return
+            return // keine Änderung ➔ Return
         }
         
         print("➡️ Load/Reload MyTrack in UI")
         
-        // Speichere neue Coordinates Referenz
         context.coordinator.lastMyCoordinates = coordinates
         
-        // Entferne vorhandene eigene Polyline
+        // Entferne vorhandene eigene Polyline(s)
         if let existing = context.coordinator.myPolyline {
             mapView.removeOverlay(existing)
         }
-
-        // ➡️ Füge neue eigene Polyline hinzu
-        if !coordinates.isEmpty {
-            let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+        
+        // ➡️ Splitte eigene Koordinaten in Segmente (z.B. max 30m)
+        let segments = coordinates.splitSegments(maxDistance: 30.0)
+        
+        // Füge alle Segmente hinzu
+        var lastPolyline: MKPolyline?
+        
+        for segment in segments {
+            guard segment.count >= 2 else { continue } // Polyline benötigt mind. 2 Punkte
+            
+            let polyline = MKPolyline(coordinates: segment, count: segment.count)
             let hexString = UserDefaults.standard.string(forKey: "trackColor")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "#FF0000"
             let myColor = UIColor(hex: hexString) ?? UIColor.systemRed
-
+            
             context.coordinator.overlayColors[polyline] = myColor
             mapView.addOverlay(polyline)
-
-            // Speichere Referenz
-            context.coordinator.myPolyline = polyline
+            
+            lastPolyline = polyline // letzte Polyline speichern
         }
+        
+        // Speichere Referenz zur letzten Polyline, falls du sie später wieder löschen möchtest
+        context.coordinator.myPolyline = lastPolyline
+        
         print("⬅️ Load/Reload MyTrack in UI - abgeschlossen")
     }
 

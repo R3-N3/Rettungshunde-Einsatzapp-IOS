@@ -16,11 +16,12 @@ struct StartView: View {
                         
                         Spacer()
                         
-                        Image("LogoWithoutBackgroundRettungshundeEinsatzapp")
+                        Image("AppLogoOhneREA")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 150, height: 150)
+                            .frame(width: 150)
                         
+        
                         VStack(alignment: .leading, spacing: 0) {
                             HStack(alignment: .firstTextBaseline, spacing: 0) {
                                 Text("R")
@@ -67,6 +68,7 @@ struct StartView: View {
                     .frame(maxWidth: .infinity)
                     .frame(alignment: .center) // zentriert Inhalt vertikal
                 }
+                //.background(Color.yellow)
             }
         }
     }

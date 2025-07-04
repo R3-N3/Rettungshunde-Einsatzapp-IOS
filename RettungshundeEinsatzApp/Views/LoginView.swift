@@ -16,17 +16,17 @@ struct LoginView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isSubmitting = false
-
-
+    
+    
     @FocusState private var focusedField: Field?
-
+    
     let defaults = UserDefaults.standard
     let org = ["BRH RHS Bonn/Rhein-Sieg", "Demo", "Debug"]
-
+    
     enum Field {
         case username, password, role
     }
-
+    
     var body: some View {
         ZStack {
             NavigationStack {
@@ -46,7 +46,15 @@ struct LoginView: View {
                                     .padding(12)
                                     .background(RoundedRectangle(cornerRadius: 12)
                                         .stroke(focusedField == .username ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
-                                    .background(Color(.systemBackground))
+                                //.background(Color(.systemBackground))
+                                    .textContentType(.username)
+                                    .autocapitalization(.none)
+                                    .disableAutocorrection(true)
+                                    .submitLabel(.next) // zeigt "Weiter" an
+                                    .onSubmit {
+                                        focusedField = .password // springt zum Passwortfeld
+                                    }
+                                    .focused($focusedField, equals: .username)
                             }
                             .padding(.horizontal)
                             
@@ -61,6 +69,13 @@ struct LoginView: View {
                                     .background(RoundedRectangle(cornerRadius: 12)
                                         .stroke(focusedField == .password ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5))
                                     .background(Color(.systemBackground))
+                                    .textContentType(.password)
+                                    .focused($focusedField, equals: .password)
+                                    .submitLabel(.go) // zeigt "Los" an
+                                        .onSubmit {
+                                            // Login auslösen
+                                            login()
+                                        }
                             }
                             .padding(.horizontal)
                             
@@ -83,40 +98,14 @@ struct LoginView: View {
                                         .stroke(focusedField == .role ? Color.blue : Color.gray.opacity(0.5), lineWidth: 1.5)
                                 )
                                 .background(Color(.systemBackground))
+                                //.foregroundColor(.system)
                                 
                             }
                             .padding(.horizontal)
                             
                             // Login Button
                             Button(action: {
-                                guard !isSubmitting else { return }
-                                isSubmitting = true
-                                
-                                checkLoginParam(
-                                    username: username,
-                                    password: password,
-                                    org: selectedOrg
-                                ) { success, message in
-                                    DispatchQueue.main.async {
-                                        if success {
-                                            if let token = KeychainHelper.loadToken() {
-                                                let defaults = UserDefaults.standard
-                                                let serverURL = defaults.string(forKey: "serverApiURL") ?? ""
-                                                print("🔑 Token geladen: \(token) Server URL: \(serverURL)")
-                                            } else {
-                                                print("❌❌❌ Kein Token gespeichert ❌❌❌")
-                                            }
-                                            router.isLoggedIn = true
-                                        } else {
-                                            print("❌ Login nicht erfolgreich")
-                                            alertMessage = message
-                                            showAlert = true
-                                            isSubmitting = false
-                                        }
-                                        isSubmitting = false
-                                    }
-                                }
-                            }) {
+                                login()}) {
                                 Text(String(localized: "login"))
                             }
                             .buttonStyle(buttonStyleREAAnimated())
@@ -149,13 +138,13 @@ struct LoginView: View {
                     .scrollDismissesKeyboard(.interactively)
                 }
             }
-
-
+            
+            
             // Lade-Overlay
             if isSubmitting {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
-
+                
                 VStack(spacing: 16) {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -167,7 +156,40 @@ struct LoginView: View {
                 .background(RoundedRectangle(cornerRadius: 16).fill(Color.black.opacity(0.7)))
             }
             
+            
         }
+    }
+    
+    func login(){
+        
+            guard !isSubmitting else { return }
+            isSubmitting = true
+            
+            checkLoginParam(
+                username: username,
+                password: password,
+                org: selectedOrg
+            ) { success, message in
+                DispatchQueue.main.async {
+                    if success {
+                        if let token = KeychainHelper.loadToken() {
+                            let defaults = UserDefaults.standard
+                            let serverURL = defaults.string(forKey: "serverApiURL") ?? ""
+                            print("🔑 Token geladen: \(token) Server URL: \(serverURL)")
+                        } else {
+                            print("❌❌❌ Kein Token gespeichert ❌❌❌")
+                        }
+                        router.isLoggedIn = true
+                    } else {
+                        print("❌ Login nicht erfolgreich")
+                        alertMessage = message
+                        showAlert = true
+                        isSubmitting = false
+                    }
+                    isSubmitting = false
+                }
+            }
+        
     }
 }
 
