@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Rettungshunde Einsatzapp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -20,11 +22,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>© 2025 René Nettekoven</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We always need your location to track you during operations.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -34,13 +38,16 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
-		<string>processing</string>
 		<string>fetch</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIMainStoryboardFile</key>
 	<string></string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>location-services</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
@@ -48,13 +55,5 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-    <key>CFBundleDisplayName</key>
-    <string>Rettungshunde Einsatzapp</string>
-    <key>NSHumanReadableCopyright</key>
-    <string>© 2025 René Nettekoven</string>
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-        <string>location-services</string>
-    </array>
 </dict>
 </plist>
