@@ -33,6 +33,8 @@ struct MapView: View {
     @State private var newAreaDescription = ""
     @State private var newAreaColor = "#FF0000"
     @State private var refreshMapView = false
+    @State private var animate = false
+
     
 
     @FetchRequest(entity: Area.entity(), sortDescriptors: []) var newAreas: FetchedResults<Area>
@@ -50,6 +52,9 @@ struct MapView: View {
             }
             .onAppear {
                 onAppearActions()
+            }
+            .onChange(of: locationManager.isUpdating) { oldValue, newValue in
+                animate = newValue
             }
             .overlay {
                 if isSubmitting {
@@ -162,7 +167,13 @@ struct MapView: View {
                         }
                     }) {
                         HStack {
-                            Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
+                            if locationManager.isUpdating {
+                                Image(systemName: "record.circle")
+                                    .foregroundColor(.red)
+                            } else {
+                                Image(systemName: "record.circle")
+                                    //.foregroundColor(.blue)
+                            }
                             Text(locationManager.isUpdating ? String(localized: "stop_gps") : String(localized: "start_gps"))
                                 .fontWeight(.medium)
                         }
@@ -174,7 +185,7 @@ struct MapView: View {
                     // Contacts Button
                     NavigationLink(destination: ContactsView()) {
                         HStack {
-                            Image(systemName: "square.fill")
+                            Image(systemName: "person.3.fill")
                             Text(String(localized: "contacts")).fontWeight(.medium)
                         }
                     }
@@ -217,7 +228,7 @@ struct MapView: View {
                     if router.isLevelAdmin {
                         NavigationLink(destination: UserListView()) {
                             HStack {
-                                Image(systemName: "person.crop.circle.badge.xmark")
+                                Image(systemName: "person.2.badge.gearshape.fill")
                                 Text(String(localized: "manage_users")).fontWeight(.medium)
                             }
                         }.buttonStyle(buttonStyleREAAnimated())
@@ -400,12 +411,20 @@ struct MapView: View {
                             bannerManager.showBanner(String(localized: "start_gps_done"), type: .success)
                         }
                     }) {
-                        Image(systemName: locationManager.isUpdating ? "stop.fill" : "play.fill")
+                        Image(systemName: "record.circle")
+                            .foregroundColor(locationManager.isUpdating ? .red : .blue)
                             .font(.title)
                             .frame(width: 30, height: 30)
                             .padding()
                             .background(Color(.tertiarySystemBackground).opacity(0.8))
                             .clipShape(Circle())
+                            .scaleEffect(animate ? 0.8 : 1.0)
+                            .animation(
+                                animate ?
+                                    Animation.easeInOut(duration: 0.8).repeatForever(autoreverses: true)
+                                    : .default,
+                                value: animate
+                            )
                     }
                     .padding(.trailing, 20)
                     .padding(.bottom, 5)
