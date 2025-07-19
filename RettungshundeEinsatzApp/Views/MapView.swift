@@ -426,9 +426,9 @@ struct MapView: View {
                                 value: animate
                             )
                     }
+                    .disabled(isDrawingArea)
                     .padding(.trailing, 20)
                     .padding(.bottom, 5)
-                    .disabled(isDrawingArea)
                     
                     Button(action: {
                         if mapType == .standard {

@@ -107,7 +107,7 @@ struct CustomMapView: UIViewRepresentable {
         // Füge Tracks und User hinzu
         for track in userTracks {
             
-            let segments = track.coordinates.splitSegments(maxDistance: 50)// trennt tracks wenn Punkte mehr als 50 meter auseinander sind
+            let segments = track.coordinates.splitSegments(maxDistance: 100)// trennt tracks wenn Punkte mehr als 50 meter auseinander sind
             
             for segment in segments {
                 let polyline = MKPolyline(coordinates: segment, count: segment.count)
@@ -163,7 +163,7 @@ struct CustomMapView: UIViewRepresentable {
         }
         
         // ➡️ Splitte eigene Koordinaten in Segmente (z.B. max 30m)
-        let segments = coordinates.splitSegments(maxDistance: 30.0)
+        let segments = coordinates.splitSegments(maxDistance: 100.0)
         
         // Füge alle Segmente hinzu
         var lastPolyline: MKPolyline?
